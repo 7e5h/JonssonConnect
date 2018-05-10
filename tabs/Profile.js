@@ -20,28 +20,8 @@
    }
 
    async componentDidMount() {
-     this.setState({
-       firstName: await AsyncStorage.getItem('firstName'),
-       lastName: await AsyncStorage.getItem('lastName'),
-       email: await AsyncStorage.getItem('email'),
-       userID: await AsyncStorage.getItem('userID'),
-       summary: await AsyncStorage.getItem('summary'),
-       userPhoto: await AsyncStorage.getItem('userPhoto'),
-       picture: await AsyncStorage.getItem('pictureurls'),
-       token: await AsyncStorage.getItem('token'),
-       checker: await AsyncStorage.getItem('checker'),
-       isLoading: false
-     });
-   }
-
-   static navigationOptions = {
-     tabBarLabel: 'Profile',
-     tabBarIcon: ({ tintcolor }) => (
-       <Image
-        source={require('../images/temocicon.png')}
-        style={{width: 32, height: 32}}>
-       </Image>
-     )
+     AsyncStorage.removeItem('LOGIN_TOKEN'),
+     this.props.navigation.navigate('Login')
    }
 
    render() {
@@ -52,18 +32,6 @@
          </View>
        );
      }
-     return (
-       <Container style={styles.containerStyle}>
-        <Content>
-          <Card style={styles.cardStyle}>
-          <Thumbnail large style={{ paddingTop: 30 }} source={{uri: this.state.userPhoto.toString() }} />
-           <Text style={{ paddingTop: 30, fontWeight:'100' }}>{ this.state.firstName.toString() } { this.state.lastName.toString() }</Text>
-           <Text style={{ paddingTop: 20, fontSize: 12, paddingLeft: 15, paddingRight: 15, fontWeight:'100' }}>{ this.state.userID.toString() }</Text>
-           <Text style={{ paddingTop: 20, fontSize: 12, paddingLeft: 15, paddingRight: 15, fontWeight:'100' }}>{ this.state.summary.toString() }</Text>
-          </Card>
-         </Content>
-       </Container>
-     )
    }
  }
 

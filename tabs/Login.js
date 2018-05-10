@@ -180,7 +180,7 @@ export default class Login extends React.Component {
           blurRadius={1}>
           <View style={styles.backdropView}>
             <Image source={require('../images/Temoc_Orange.png')} style={{ height: 180, width: 150, paddingTop: 100}}></Image>
-            <Text style={{ fontSize: 32, fontWeight: '800', fontFamily: 'System'}}>Jonsson <Text style={{ fontSize: 32, fontWeight: '200'}}>Connect </Text></Text>
+            <Text style={{ fontSize: 32, fontWeight: '800', fontFamily: 'System'}}>Jonsson <Text style={{ fontSize: 32, fontWeight: '500'}}>Connect </Text></Text>
             <Text style={{ fontSize: 22, fontWeight: '200', paddingTop: 20}}>Begin exploring oppotunities only offered by the Jonsson School. </Text>
             <Text style={{ fontSize: 8, position: "absolute", bottom: -150}}></Text>
           </View>

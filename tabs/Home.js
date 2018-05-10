@@ -4,7 +4,7 @@
  * @flow
  */
  import React, { Component } from 'react';
- import { ActivityIndicator, AsyncStorage, Image, ListView, ImageBackground, FlatList, RefreshControl, StyleSheet, TextInput, View, TouchableHighlight } from 'react-native';
+ import { Alert, ActivityIndicator, AsyncStorage, Image, ListView, Linking, ImageBackground, FlatList, RefreshControl, StyleSheet, TextInput, View, TouchableHighlight } from 'react-native';
  import { TabNavigator, StackNavigator } from "react-navigation";
  import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Item, Icon, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
  import * as firebase from 'firebase';
@@ -94,6 +94,7 @@
         })
         .catch((error) => {
           //console.error(error);
+           //style={{ borderLeftColor: '#398564', borderLeftWidth: 4, borderRightColor: '#398564', borderRightWidth: 4}}
           this.setState({
             isLoading: false,
             networkFailed: true,
@@ -101,10 +102,9 @@
         });
      }
 
-
      static navigationOptions = ({ navigation }) => ({
        headerRight: <Button transparent onPress={() =>
-         navigation.navigate('Login')
+         navigation.navigate('Profile')
        }><Icon name='ios-log-out' /></Button>,
        tabBarLabel: 'Home',
        tabBarIcon: ({ tintcolor }) => (
@@ -126,11 +126,15 @@
        const monthNames = ["January", "February", "March", "April", "May", "June",
          "July", "August", "September", "October", "November", "December"
        ]
+       const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+         "Saturday"
+       ]
 
        const date = new Date()
        var month = monthNames[date.getMonth()]
        var year = date.getFullYear()
        var day = date.getDate()
+       var dayofweek = days[date.getDay()]
 
        return (
          <Container style={styles.containerStyle}>
@@ -146,22 +150,21 @@
               <ImageBackground
                 style={styles.backdrop}
                 blurRadius={0}
-                source={require('../images/homebanner.png')} style={{ height: 180, width: null }}>
+                source={{ uri: 'https://images.pexels.com/photos/956999/milky-way-starry-sky-night-sky-star-956999.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'}}
+                >
                   <View style={styles.backdropView}>
-                  <View style={{flexDirection: "row", paddingTop: 5}}>
-                    <Image style={{ paddingTop: 30, paddingLeft: 5, borderColor: 'black', width: 90, height: 90, borderRadius: 5, borderWidth: .5, borderColor: '#343d46'}} source={{uri: this.state.userPhoto.toString() }} />
-                  </View>
-                    <Text style={{ fontSize: 18, fontWeight: '800', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46'}}>{this.state.firstName.toString()} {this.state.lastName.toString()}</Text>
-                    <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 2, color: '#4f5b66'}}> <Icon name='ios-pin' style={{ fontSize: 14, color: '#4f5b66' }}/> {this.state.location.toString().replace(/{"name":"/g, '').replace(/"}/g, '')}</Text>
-                    <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 2, color: '#4f5b66'}}> <Icon name='ios-globe' style={{ fontSize: 14, color: '#4f5b66' }}/> {this.state.industry.toString()}</Text>
+                    <Thumbnail large source={{uri: this.state.userPhoto.toString() }} />
+                    <Text style={{ fontSize: 20, fontWeight: '800', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#FFFFFF'}}>{this.state.firstName.toString()} {this.state.lastName.toString()}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '300', paddingBottom: 5, paddingTop: 2, color: '#FFFFFF'}}> <Icon name='ios-pin' style={{ fontSize: 14, color: '#FFFFFF' }}/> {this.state.location.toString().replace(/{"name":"/g, '').replace(/"}/g, '')}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '300', paddingBottom: 5, paddingTop: 2, color: '#FFFFFF'}}> <Icon name='ios-globe' style={{ fontSize: 14, color: '#FFFFFF' }}/> {this.state.industry.toString()}</Text>
                   </View>
               </ImageBackground>
             </View>
-            <Content style={{ backgroundColor: '#f8f6f6'}}>
+            <Content style={{ backgroundColor: '#FFFFFF'}}>
               <Card>
-                <CardItem style={{ borderLeftColor: '#398564', borderLeftWidth: 4, borderRightColor: '#398564', borderRightWidth: 4}}>
+                <CardItem bordered style={{ borderLeftColor: '#0039A6', borderLeftWidth: 2}}>
                   <Body>
-                    <Text style={{ fontSize: 22, fontWeight: '800', color: '#343d46'}}>Today, {month} {day}, {year}</Text>
+                    <Text style={{ fontSize: 22, fontWeight: '600', color: '#343d46'}}><Icon name='md-globe' style={{ fontSize: 22, color: '#0039A6'}}/> {dayofweek}, {month} {day}</Text>
                   </Body>
                 </CardItem>
               </Card>
@@ -171,7 +174,7 @@
               renderRow={(rowData) => {
                 const {uri} = rowData;
                 return (
-                 <Content style={{ borderLeftColor: rowData.articleColor, borderLeftWidth: 3}}>
+                 <Content>
                    <Text style={{fontSize: 14, fontWeight: '800'}}></Text>
                    <Text style={{color: rowData.articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 5, paddingTop: 10, }}>
                     <Icon name='ios-pricetag' style={{ fontSize: 10, color: rowData.articleColor}}/>  {rowData.articleType}
@@ -180,11 +183,26 @@
                     {rowData.articleName}
                    </Text>
                    <Text style={styles.dateStyle}>
-                    <Icon name='ios-clock-outline' style={{ fontSize: 10, color: '#878787'}}/> {rowData.postedOn}</Text>
+                    <Icon name='ios-clock-outline' style={{ fontSize: 12, color: '#878787'}}/> {monthNames[parseInt(rowData.postedOn.toString().substr(5, 5).substr(0, 2)) - 1]} {parseInt(rowData.postedOn.toString().substr(8, 2))}, {rowData.postedOn.toString().substr(0, 4)}</Text>
                  </Content>
                 )
               }}
             />
+            <Content>
+              <Card bordered>
+                <CardItem bordered>
+                  <Body style={{ alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{ fontSize: 18, fontWeight: '800', alignItems: 'center', justifyContent: 'center'}}>Make a Gift</Text>
+                    <Text style={{ fontSize: 12, fontWeight: '100', alignItems: 'center', justifyContent: 'center', paddingTop: 5}}>Please click the donate button to make on online donation.</Text>
+                    <View style={{ alignItems: 'center', paddingTop: 5}}>
+                    <Button rounded success onPress={ ()=>{ Linking.openURL('https://giving.utdallas.edu/ECS')}}>
+                      <Text>Donate Now</Text>
+                    </Button>
+                    </View>
+                  </Body>
+                </CardItem>
+              </Card>
+            </Content>
            </Content>
          </Container>
        )
@@ -207,10 +225,12 @@
     height: 180
   },
   backdropView: {
-    height: 115,
-    width: 380,
+    paddingTop: 10,
+    width: 400,
     backgroundColor: 'rgba(0,0,0,0)',
     paddingLeft: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   hostStyle: {
     fontWeight: '800',
@@ -223,7 +243,7 @@
   },
   nameStyle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '400',
     paddingTop: 5,
     paddingLeft: 15,
     paddingRight: 5,

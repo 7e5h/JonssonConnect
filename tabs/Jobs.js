@@ -92,12 +92,22 @@
             />
           }
         >
-          <Image source={require('../images/jobsBanner.png')} style={{ height: 155, width: null }}></Image>
+        <View style={styles.container2}>
+          <ImageBackground
+            style={styles.backdrop}
+            blurRadius={0}
+            source={{ uri: 'https://images.unsplash.com/photo-1501876991173-f9c47cd28268?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=11822fe6ab2de36ee07cd74486dbdaf4&auto=format&fit=crop&w=1906&q=80'}}
+            >
+              <View style={styles.backdropView}>
+                <Text style={{ fontSize: 30, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Jonsson|<Text style={{ fontSize: 30, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Careers</Text></Text>
+              </View>
+          </ImageBackground>
+        </View>
           <Content>
           <Card>
-            <CardItem style={{ borderLeftColor: '#3e9876', borderLeftWidth: 4, borderRightColor: '#3e9876', borderRightWidth: 4}}>
+            <CardItem style={{ borderLeftColor: '#008542', borderLeftWidth: 2}}>
               <Body>
-                <Text style={{ fontSize: 22, fontWeight: '800'}}><Icon name='md-trending-up' style={{ fontSize: 22, color: '#4d7358'}}/> Trending Jobs</Text>
+                <Text style={{ fontSize: 22, fontWeight: '800'}}><Icon name='md-trending-up' style={{ fontSize: 22, color: '#383838'}}/> Trending Jobs</Text>
               </Body>
             </CardItem>
           </Card>
@@ -107,7 +117,7 @@
              renderRow={(rowData) => {
                const {uri} = rowData;
                return (
-                 <Content style={{ borderLeftColor: '#3e9876', borderLeftWidth: 3}}>
+                 <Content>
                   <List style={{ backgroundColor: '#FFFFFF'}}>
                     <ListItem>
                       <Left>
@@ -130,6 +140,10 @@
                )
              }}
            />
+           <Image
+             style={{ height: 150, width: null, borderRadius: 10, position: 'relative',}}
+             source={require('../images/jcjobsbanner.png')}
+           />
          </Content>
        </Container>
      )
@@ -137,6 +151,25 @@
  }
 
  const styles = StyleSheet.create({
+  container2: {
+     flex: 1,
+     justifyContent: 'flex-start',
+     alignItems: 'center',
+     width: null,
+     backgroundColor: '#FFFFFF'
+  },
+  backdrop: {
+     width: null,
+     height: 100,
+  },
+  backdropView: {
+     paddingTop: 10,
+     width: 400,
+     backgroundColor: 'rgba(0,0,0,0)',
+     paddingLeft: 15,
+     alignItems: 'center',
+     justifyContent: 'center',
+  },
   listStyle: {
      backgroundColor: '#FFFFFF',
   },

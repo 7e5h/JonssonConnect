@@ -4,7 +4,7 @@
  * @flow
  */
  import React, { Component } from 'react';
- import { ActivityIndicator, AsyncStorage, Image, ListView, Linking, FlatList, RefreshControl, StyleSheet, TouchableHighlight, View } from 'react-native';
+ import { ActivityIndicator, AsyncStorage, Image, ListView, Linking, FlatList, ImageBackground, RefreshControl, StyleSheet, TouchableHighlight, View } from 'react-native';
  import { TabNavigator, StackNavigator } from "react-navigation";
  import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Tabs, Tab, Text, Title, Button, Left, Body, Right, H1, H2, H3} from 'native-base';
  import * as firebase from 'firebase';
@@ -31,6 +31,7 @@
           isLoading: false,
           dataSource: ds.cloneWithRows(responseJson.Events),
         }, function() {
+
         });
       })
       .catch((error) => {
@@ -97,10 +98,21 @@
             />
           }
         >
+        <View style={styles.container2}>
+          <ImageBackground
+            style={styles.backdrop}
+            blurRadius={0}
+            source={{ uri: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8ccfcc13bfcdfca6f54a8e043ffbe075&auto=format&fit=crop&w=1650&q=80'}}
+            >
+              <View style={styles.backdropView}>
+                <Text style={{ fontSize: 35, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Comet Calender</Text>
+              </View>
+          </ImageBackground>
+        </View>
           <Content style={{ backgroundColor: '#f8f6f6'}}>
           </Content>
           <Card>
-            <CardItem style={{ borderLeftColor: '#3e9876', borderLeftWidth: 4, borderRightColor: '#3e9876', borderRightWidth: 4}}>
+            <CardItem style={{ borderLeftColor: '#800000', borderLeftWidth: 2 }}>
               <Body>
                 <Text style={{ fontSize: 22, fontWeight: '800'}}><Icon name='ios-flame' style={{ fontSize: 22, color: '#d64d4d'}}/>  Find Events</Text>
               </Body>
@@ -111,11 +123,11 @@
              renderRow={(rowData) => {
                const {uri} = rowData;
                return (
-                 <Content style={{ borderLeftColor: '#3e9876', borderLeftWidth: 3}}>
+                 <Content>
                   <List style={{ backgroundColor: '#FFFFFF'}}>
                     <ListItem>
                       <Body>
-                        <Text style={{fontWeight: '800', fontSize: 16}}><Icon name='ios-ionitron-outline' style={{ fontSize: 16, color: '#5d5d5d'}}/> {rowData.eventTitle}</Text>
+                        <Text style={{fontWeight: '800', fontSize: 16}}>{rowData.eventTitle}</Text>
                         <Text style={{fontWeight: '200', fontSize: 12, paddingTop: 5}}>
                           <Icon name='ios-calendar-outline' style={{ fontSize: 12, color: '#5d5d5d'}}/> {monthNames[parseInt(rowData.eventDate.toString().substr(5, 5).substr(0, 2)) - 1]} {parseInt(rowData.eventDate.toString().substr(8, 2))}, {rowData.eventDate.toString().substr(0, 4)}
                         </Text>
@@ -126,10 +138,18 @@
                           () => this.props.navigation.navigate("EventDetails", {rowData})}
                           >
                           <Image
-                            style={{ height: 220, width: null, borderRadius: 10}}
+                            style={{ height: 200, width: null, borderRadius: 10, position: 'relative',}}
                             source={{ uri: rowData.eventImageURL}}
                           />
                         </TouchableHighlight>
+                        <View style={{flexDirection: "row", paddingTop: 5}}>
+                          <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46'}}>
+                            <Icon name='ios-flame' style={{ fontSize: 14, color: '#f37735'}}/> {rowData.attendingCount} people attending
+                          </Text>
+                          <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46'}}>
+                            <Icon name='ios-heart' style={{ fontSize: 14, color: '#d11141'}}/> {rowData.interestedCount} people interested
+                          </Text>
+                        </View>
                       </Body>
                     </ListItem>
                   </List>
@@ -144,6 +164,25 @@
  }
 
  const styles = StyleSheet.create({
+   container2: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      width: null,
+      backgroundColor: '#FFFFFF'
+   },
+   backdrop: {
+      width: null,
+      height: 120,
+   },
+   backdropView: {
+      paddingTop: 30,
+      width: 400,
+      backgroundColor: 'rgba(0,0,0,0)',
+      paddingLeft: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+   },
   bigHeader: {
      fontSize: 18,
      fontWeight: '800',
@@ -169,7 +208,8 @@
      fontSize: 14,
     },
   eventNameStyle: {
-    fontSize: 12,
+    fontSize: 14,
+    fontWeight: '800'
   },
   eventDescriptionStyle: {
     fontSize: 10,

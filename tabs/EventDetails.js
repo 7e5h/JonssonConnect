@@ -90,7 +90,7 @@
               <Body>
               <Button full style={{ backgroundColor: this.state.buttonColor}}
               onPress={() => {
-                this.setState({ buttonColor: '#008000' });
+                this.setState({ buttonColor: '#137ed9' });
                 var query = firebaseApp.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.rowData.eventTitle);
                 query.once( 'value', data => {
                     data.forEach(userSnapshot => {
