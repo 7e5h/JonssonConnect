@@ -166,10 +166,9 @@
      height: 120,
   },
   backdropView: {
-     paddingTop: 30,
+     paddingTop: 20,
      width: 400,
      backgroundColor: 'rgba(0,0,0,0)',
-     paddingLeft: 15,
      alignItems: 'center',
      justifyContent: 'center',
   },
