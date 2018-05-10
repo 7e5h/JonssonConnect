@@ -27,7 +27,6 @@
       title: "News Feed",
       headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#ffffff', borderBottomWidth: 1},
       headerTitleStyle: { fontSize: 18, fontWeight: '100'},
-      //headerRight: <Button transparent onPress={() => navigation.navigate('Login')}><Icon name='ios-log-out' /></Button>
     })
    },
    ArticleDetails: {screen: ArticleDetails},

@@ -30,7 +30,7 @@
   },
   "rnpm": {
     "assets": [
-      "./assests/fonts/",
+      "./assets/fonts/",
       "resources/fonts"
     ]
   },
