@@ -7,20 +7,7 @@
  import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, View } from 'react-native';
  import { TabNavigator, StackNavigator } from "react-navigation";
  import { Container, Header, Content, Card, Col, CardItem, Grid, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, Row, H1, H2, H3 } from 'native-base';
-
- //import firebaseApp from '../App';
  import * as firebase from 'firebase';
-
- // Initialize Firebase
- export var config = {
-   apiKey: "AIzaSyAt7rZyHL1GNFonaUquH0p4QyQFXi1lz6U",
-   authDomain: "jonssonconnect.firebaseapp.com",
-   databaseURL: "https://jonssonconnect.firebaseio.com",
-   projectId: "jonssonconnect",
-   storageBucket: "jonssonconnect.appspot.com",
- };
-
- export const firebaseApp = firebase.initializeApp(config);
 
  export default class EventDetails extends Component {
 

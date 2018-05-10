@@ -16,9 +16,18 @@
  import EventDetails from './tabs/EventDetails'
  import JobsDetails from './tabs/JobsDetails'
  import ArticleDetails from './tabs/ArticleDetails'
-
-
  import * as firebase from 'firebase';
+
+ // Initialize Firebase
+ export var config = {
+   apiKey: "TODO",
+   authDomain: "jonssonconnect.firebaseapp.com",
+   databaseURL: "https://jonssonconnect.firebaseio.com",
+   projectId: "jonssonconnect",
+   storageBucket: "jonssonconnect.appspot.com",
+ };
+
+ export const firebaseApp = firebase.initializeApp(config);
 
  export const HomeFeedStack = StackNavigator({
    Home: {
@@ -32,11 +41,11 @@
    ArticleDetails: {screen: ArticleDetails},
  });
 
- export const FeedStack = StackNavigator({
+ export const EventsFeedStack = StackNavigator({
    EventsTab: {
      screen: Events,
      navigationOptions:({navigation}) => ({
-      title: "Events",
+      title: "Event Listings",
       headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#ffffff', borderBottomWidth: 1},
       headerTitleStyle: { fontSize: 18, fontWeight: '100' },
     })
@@ -57,11 +66,11 @@
  });
 
  export const AppScreenNavigator = TabNavigator({
-   //LoginFeedStack: {screen: LoginFeedStack},
    HomeFeedStack: {screen: HomeFeedStack},
    JobsTab: {screen: JobsFeedStack},
-   EventsTab: {screen: FeedStack},
-  }, {
+   EventsTab: {screen: EventsFeedStack},
+  },
+  {
    tabBarPosition : 'bottom',
    tabBarOptions : {
      activeTintColor: '#3e9876',

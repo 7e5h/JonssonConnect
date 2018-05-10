@@ -4,9 +4,9 @@
  * @flow
  */
  import React, { Component } from 'react';
- import { ActivityIndicator, AsyncStorage, Image, ListView, Linking, FlatList, ImageBackground, RefreshControl, StyleSheet, TouchableHighlight, View } from 'react-native';
+ import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, View, Linking, RefreshControl, TextInput, ImageBackground, TouchableHighlight } from 'react-native';
  import { TabNavigator, StackNavigator } from "react-navigation";
- import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Tabs, Tab, Text, Title, Button, Left, Body, Right, H1, H2, H3} from 'native-base';
+ import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
  import * as firebase from 'firebase';
 
  import firebaseApp from './EventDetails';
@@ -30,8 +30,9 @@
         this.setState({
           isLoading: false,
           dataSource: ds.cloneWithRows(responseJson.Events),
+          data: responseJson.Events,
         }, function() {
-
+			// do something with new state
         });
       })
       .catch((error) => {
@@ -53,7 +54,6 @@
          });
      })
      .catch((error) => {
-       //console.error(error);
        this.setState({
          isLoading: false,
          networkFailed: true,
@@ -87,7 +87,7 @@
      }
      const monthNames = ["January", "February", "March", "April", "May", "June",
        "July", "August", "September", "October", "November", "December"
-     ]
+   ];
      return (
        <Container style={styles.containerStyle}>
         <Content
@@ -109,15 +109,15 @@
               </View>
           </ImageBackground>
         </View>
-          <Content style={{ backgroundColor: '#f8f6f6'}}>
-          </Content>
+          <Content>
           <Card>
             <CardItem style={{ borderLeftColor: '#800000', borderLeftWidth: 2 }}>
               <Body>
-                <Text style={{ fontSize: 22, fontWeight: '800'}}><Icon name='ios-flame' style={{ fontSize: 22, color: '#d64d4d'}}/>  Find Events</Text>
+                <Text style={{ fontSize: 22, fontWeight: '800'}}><Icon name='ios-flame' style={{ fontSize: 22, color: '#d64d4d'}}/> Find Events</Text>
               </Body>
             </CardItem>
           </Card>
+		  </Content>
            <ListView
              dataSource={this.state.dataSource}
              renderRow={(rowData) => {
@@ -126,6 +126,7 @@
                  <Content>
                   <List style={{ backgroundColor: '#FFFFFF'}}>
                     <ListItem>
+					<Left>
                       <Body>
                         <Text style={{fontWeight: '800', fontSize: 16}}>{rowData.eventTitle}</Text>
                         <Text style={{fontWeight: '200', fontSize: 12, paddingTop: 5}}>
@@ -151,6 +152,7 @@
                           </Text>
                         </View>
                       </Body>
+					  </Left>
                     </ListItem>
                   </List>
                  </Content>
@@ -183,6 +185,9 @@
       alignItems: 'center',
       justifyContent: 'center',
    },
+   listStyle: {
+      backgroundColor: '#FFFFFF',
+   },
   bigHeader: {
      fontSize: 18,
      fontWeight: '800',
@@ -194,10 +199,41 @@
      fontWeight: '800',
      paddingTop: 10,
      paddingLeft: 15,
-     color: '#0039A6',
+     color: '#008542',
   },
   containerStyle: {
-     backgroundColor: '#F6F6F6',
+     backgroundColor: '#FFFFFF',
+  },
+  buttonStyle: {
+    fontSize: 12,
+  },
+  search: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderRadius: 2,
+    borderColor: '#ddd',
+    borderBottomWidth: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  searchbarColor: {
+    backgroundColor: '#0039A6',
+  },
+  searchButton: {
+    fontSize: 12,
+    color: '#ffffff',
+  },
+  textInput: {
+	height: 30,
+	backgroundColor: '#ffffff',
+	borderWidth: 1,
+	borderColor: '#FFFFFF',
+	marginBottom: 5,
+	marginVertical: 5,
+	marginHorizontal: 5,
   },
   hostStyle: {
     fontWeight: '800',
@@ -213,27 +249,5 @@
   },
   eventDescriptionStyle: {
     fontSize: 10,
-  },
-  buttonStyle: {
-    fontSize: 12,
-  },
-  search: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderRadius: 2,
-    borderColor: '#ddd',
-    borderBottomWidth: 0,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  searchbarColor: {
-    backgroundColor: '#0039A6',
-  },
-  searchButton: {
-    fontSize: 12,
-    color: '#ffffff',
   },
 });

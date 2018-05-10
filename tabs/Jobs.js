@@ -9,6 +9,9 @@
  import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
  import * as firebase from 'firebase';
 
+ import firebaseApp from './JobsDetails';
+ import config from './JobsDetails';
+
  export default class Jobs extends Component {
 
    constructor(props) {
@@ -99,7 +102,7 @@
             source={{ uri: 'https://images.unsplash.com/photo-1501876991173-f9c47cd28268?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=11822fe6ab2de36ee07cd74486dbdaf4&auto=format&fit=crop&w=1906&q=80'}}
             >
               <View style={styles.backdropView}>
-                <Text style={{ fontSize: 30, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Jonsson|<Text style={{ fontSize: 30, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Careers</Text></Text>
+                <Text style={{ fontSize: 35, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Jonsson|<Text style={{ fontSize: 35, fontWeight: '200', paddingBottom: 5, paddingTop: 15, color: '#FFFFFF'}}>Careers</Text></Text>
               </View>
           </ImageBackground>
         </View>
@@ -160,10 +163,10 @@
   },
   backdrop: {
      width: null,
-     height: 100,
+     height: 120,
   },
   backdropView: {
-     paddingTop: 10,
+     paddingTop: 30,
      width: 400,
      backgroundColor: 'rgba(0,0,0,0)',
      paddingLeft: 15,
@@ -178,33 +181,16 @@
     fontWeight: '800',
     paddingTop: 10,
     paddingLeft: 15,
-    paddingBottom: 15,
   },
   colorHeader: {
     fontSize: 18,
     fontWeight: '800',
     paddingTop: 10,
     paddingLeft: 15,
-    paddingBottom: 15,
     color: '#008542',
   },
   containerStyle: {
     backgroundColor: '#FFFFFF',
-  },
-  companyNameStyle: {
-    fontWeight: '100',
-    fontSize: 12,
-    paddingTop: 3,
-  },
-  positionTitleStyle: {
-     fontWeight: '500',
-     fontSize: 14,
-  },
-  jobLocationStyle: {
-     fontSize: 12,
-     color: '#808080',
-     paddingTop: 3,
-     fontWeight: '100'
   },
   buttonStyle: {
     fontSize: 12,
@@ -236,5 +222,20 @@
     marginBottom: 5,
     marginVertical: 5,
     marginHorizontal: 5,
+  },
+  companyNameStyle: {
+    fontWeight: '100',
+    fontSize: 12,
+    paddingTop: 3,
+  },
+  positionTitleStyle: {
+     fontWeight: '500',
+     fontSize: 14,
+  },
+  jobLocationStyle: {
+     fontSize: 12,
+     color: '#808080',
+     paddingTop: 3,
+     fontWeight: '100'
   },
 });
