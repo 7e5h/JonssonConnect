@@ -15,7 +15,6 @@ import {
 
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
 
-
 //import { CLIENT_ID, CLIENT_SECRET } from './config'
 
 import LinkedInModal from 'react-native-linkedin'

@@ -1,6 +1,6 @@
 /**
- * JonssonConnect Jobs Dertails Page
- * https://github.com/facebook/react-native
+ * JonssonConnect Job Details Page
+ * https://github.com/mendoza-git/JonssonConnect
  * @flow
  */
  import React, { Component } from 'react';
