@@ -62,7 +62,7 @@
              <Body>
                <Text style={styles.articlenameStyle}>{this.props.navigation.state.params.rowData.articleName}</Text>
                <Text style={{fontSize: 14, fontWeight: '800'}}></Text>
-               <Text style={{fontSize: 14, color: '#808080',}}><Icon name='ios-clock-outline' style={{ fontSize: 14}}/> Published on {this.props.navigation.state.params.rowData.postedOn}</Text>
+               <Text style={{fontSize: 14, color: '#808080',}}><Icon name='ios-clock-outline' style={{ fontSize: 14}}/> Published on {new Date(this.props.navigation.state.params.rowData.postedOn).toLocaleDateString("en-US", { month:'short', day:'numeric', year:'numeric' })}</Text>
                <Text style={{fontSize: 12, fontWeight: '100', color: "#b6b6b6",}}>_____________________________________________________________</Text>
                <Text style={{fontSize: 12, fontWeight: '800'}}></Text>
                <Text style={{fontSize: 14, fontWeight: '800'}}> <Icon name='ios-paper-outline' style={{ fontSize: 14}}/> Article Highlights</Text>
