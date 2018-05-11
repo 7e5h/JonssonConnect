@@ -7,15 +7,15 @@
  import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, TouchableHighlight, View } from 'react-native';
  import { TabNavigator, StackNavigator } from "react-navigation";
  import { Container, Header, Content, Card, CardItem, Thumbnail, Icon, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
- import ComputerScience from './tabs/ComputerScience'
- import Home from './tabs/Home'
- import Jobs from './tabs/Jobs'
- import Events from './tabs/Events'
- import Login from './tabs/Login'
- import Profile from './tabs/Profile'
- import EventDetails from './tabs/EventDetails'
- import JobsDetails from './tabs/JobsDetails'
- import ArticleDetails from './tabs/ArticleDetails'
+ //import ComputerScience from './tabs/ComputerScience'
+ //import Profile from './tabs/Profile'
+ import Home from './tabs/Home';
+ import Jobs from './tabs/Jobs';
+ import Events from './tabs/Events';
+ import Login from './tabs/Login';
+ import EventDetails from './tabs/EventDetails';
+ import JobsDetails from './tabs/JobsDetails';
+ import ArticleDetails from './tabs/ArticleDetails';
  import * as firebase from 'firebase';
 
  // Initialize Firebase
