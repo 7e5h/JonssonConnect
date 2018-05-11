@@ -71,13 +71,14 @@
    EventsTab: {screen: EventsFeedStack},
   },
   {
-   tabBarPosition : 'bottom',
-   tabBarOptions : {
+   tabBarPosition: 'bottom',
+   swipeEnabled: false,
+   animationEnabled: false,
+   tabBarOptions: {
      activeTintColor: '#3e9876',
      activeBackgroundColor: '#ffffff',
      inactiveBackgroundColor: '#ffffff',
      inactiveTintColor: '#B7C3D0',
-     swipingEnbled: 'true',
    }
  });
 
