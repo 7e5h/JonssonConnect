@@ -30,16 +30,15 @@
        location: await AsyncStorage.getItem('location'),
        industry: await AsyncStorage.getItem('industry'),
      });
-     return fetch('https://jonssonconnect.firebaseio.com/.json')
-     //return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
+     //return fetch('https://jonssonconnect.firebaseio.com/.json') // NOTE: As of Aug-2018, Firebase rules prevent this
+     return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
      //return fetch('/Users/mendoza/Downloads/articles.json')
       .then((response) => response.json())
       .then((responseJson) => {
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
           isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson.Articles),
-          //dataSource: ds.cloneWithRows(responseJson.filter(x => x.articleName == 'UT Dallas Team Wins Grand Prize at Texas A&M Hackathon')),
+          dataSource: ds.cloneWithRows(responseJson),
         }, function() {
           });
       })
@@ -54,16 +53,13 @@
 
 
     firstSearch() {
-      //return fetch('https://jonssonconnect.firebaseio.com/.json')
-      //return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
-      return fetch('/Users/mendoza/Downloads/articles.json')
+      return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
        .then((response) => response.json())
        .then((responseJson) => {
          let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
          this.setState({
            isLoading: false,
-           //dataSource: ds.cloneWithRows(responseJson.Articles),
-           dataSource: ds.cloneWithRows(responseJson.filter(x => x.articleName == 'UT Dallas Team Wins Grand Prize at Texas A&M Hackathon')),
+           dataSource: ds.cloneWithRows(responseJson),
          }, function() {
            });
        })
@@ -78,23 +74,19 @@
 
      _onRefresh() {
        this.setState({refreshing: true});
-       return fetch('https://jonssonconnect.firebaseio.com/.json')
-       //return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
-       //return fetch('/Users/mendoza/Downloads/articles.json')
+       return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
         .then((response) => response.json())
         .then((responseJson) => {
           let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
           this.setState({
             isLoading: false,
-            dataSource: ds.cloneWithRows(responseJson.Articles),
+            dataSource: ds.cloneWithRows(responseJson),
             refreshing: false,
-            //dataSource: ds.cloneWithRows(responseJson.filter(x => x.articleName == 'UT Dallas Team Wins Grand Prize at Texas A&M Hackathon')),
           }, function() {
             });
         })
         .catch((error) => {
           //console.error(error);
-           //style={{ borderLeftColor: '#398564', borderLeftWidth: 4, borderRightColor: '#398564', borderRightWidth: 4}}
           this.setState({
             isLoading: false,
             networkFailed: true,

@@ -19,13 +19,13 @@
    }
 
    componentDidMount() {
-    return fetch('https://jonssonconnect.firebaseio.com/.json')
+    return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
       .then((response) => response.json())
       .then((responseJson) => {
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
           isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson.Articles),
+          dataSource: ds.cloneWithRows(responseJson),
         }, function() {
           // do something with new state
         });

@@ -23,13 +23,13 @@
    }
 
    componentDidMount() {
-    return fetch('https://jonssonconnect.firebaseio.com/.json')
+    return fetch('https://jonssonconnect.firebaseio.com/Jobs.json')
       .then((response) => response.json())
       .then((responseJson) => {
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
           isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson.Jobs),
+          dataSource: ds.cloneWithRows(responseJson),
           data: responseJson.Jobs,
         }, function() {
           // do something with new state
@@ -42,13 +42,13 @@
 
     _onRefresh() {
       this.setState({refreshing: true});
-      return fetch('https://jonssonconnect.firebaseio.com/.json')
+      return fetch('https://jonssonconnect.firebaseio.com/Jobs.json')
        .then((response) => response.json())
        .then((responseJson) => {
          let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
          this.setState({
            isLoading: false,
-           dataSource: ds.cloneWithRows(responseJson.Jobs),
+           dataSource: ds.cloneWithRows(responseJson),
            refreshing: false,
          }, function() {
            });
