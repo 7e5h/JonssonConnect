@@ -1,101 +1,224 @@
 /**
- * JonssonConnect Application
- * https://github.com/facebook/react-native
- * @flow
+ * JonssonConnect App Page
+ * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
  */
- import React, { Component } from 'react';
- import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, TouchableHighlight, View } from 'react-native';
- import { TabNavigator, StackNavigator } from "react-navigation";
- import { Container, Header, Content, Card, CardItem, Thumbnail, Icon, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
- //import ComputerScience from './tabs/ComputerScience'
- //import Profile from './tabs/Profile'
- import Home from './tabs/Home';
- import Jobs from './tabs/Jobs';
- import Events from './tabs/Events';
- import Login from './tabs/Login';
- import EventDetails from './tabs/EventDetails';
- import JobsDetails from './tabs/JobsDetails';
- import ArticleDetails from './tabs/ArticleDetails';
- import * as firebase from 'firebase';
 
- // Initialize Firebase
- export var config = {
-   apiKey: "TODO",
-   authDomain: "jonssonconnect.firebaseapp.com",
-   databaseURL: "https://jonssonconnect.firebaseio.com",
-   projectId: "jonssonconnect",
-   storageBucket: "jonssonconnect.appspot.com",
- };
+import React, { Component } from 'react';
+import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { createMaterialTopTabNavigator, createStackNavigator, createSwitchNavigator, createDrawerNavigator } from "react-navigation";
+import { Container, Header, Content, Card, CardItem, Thumbnail, Icon, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
 
- export const firebaseApp = firebase.initializeApp(config);
+//import ComputerScience from './tabs/ComputerScience'
+//import Profile from './tabs/Profile'
+import Home from './tabs/Home';
+import Jobs from './tabs/Jobs';
+import Events from './tabs/Events';
+import Login from './tabs/Login';
+import EventDetails from './tabs/EventDetails';
+import JobsDetails from './tabs/JobsDetails';
+import ArticleDetails from './tabs/ArticleDetails';
+import EventsCalendar from './tabs/EventsCalendar';
+import DrawerScreen from './tabs/DrawerScreen';
+import Rewards from './tabs/Rewards';
+import Help from './tabs/Help';
+import Agenda from './tabs/Agenda';
+import Qrcode from './tabs/Qrcode';
+import Redeem from './tabs/Redeem';
+import CodeDisplay from './tabs/CodeDisplay';
 
- export const HomeFeedStack = StackNavigator({
-   Home: {
-     screen: Home,
-     navigationOptions:({navigation}) => ({
+import * as firebase from 'firebase';
+
+console.disableYellowBox = true
+
+// Initialize Firebase
+export var config = {
+  apiKey: "TODO",
+  authDomain: "jonssonconnect.firebaseapp.com",
+  databaseURL: "https://jonssonconnect.firebaseio.com",
+  projectId: "jonssonconnect",
+  storageBucket: "jonssonconnect.appspot.com",
+};
+
+export const firebaseApp = firebase.initializeApp(config);
+
+export const HomeFeedStack = createStackNavigator({
+  Home: {
+    screen: Home,
+    navigationOptions: ({ navigation }) => ({
       title: "News Feed",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#ffffff', borderBottomWidth: 1},
-      headerTitleStyle: { fontSize: 18, fontWeight: '100'},
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
-   },
-   ArticleDetails: {screen: ArticleDetails},
- });
-
- export const EventsFeedStack = StackNavigator({
-   EventsTab: {
-     screen: Events,
-     navigationOptions:({navigation}) => ({
-      title: "Event Listings",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#ffffff', borderBottomWidth: 1},
-      headerTitleStyle: { fontSize: 18, fontWeight: '100' },
-    })
-   },
-   EventDetails: {screen: EventDetails},
- });
-
- export const JobsFeedStack = StackNavigator({
-   JobsTab: {
-     screen: Jobs,
-     navigationOptions:({navigation}) => ({
-      title: "Job Listings",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#ffffff', borderBottomWidth: 1},
-      headerTitleStyle: { fontSize: 18, fontWeight: '100' },
-    })
-   },
-   JobsDetails: {screen: JobsDetails},
- });
-
- export const AppScreenNavigator = TabNavigator({
-   HomeFeedStack: {screen: HomeFeedStack},
-   JobsTab: {screen: JobsFeedStack},
-   EventsTab: {screen: EventsFeedStack},
   },
+
+  ArticleDetails: {
+    screen: ArticleDetails,
+    navigationOptions: ({ navigation }) => ({
+      title: "News Article",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+
+  Rewards: {
+    screen: Rewards,
+    navigationOptions: ({ navigation }) => ({
+      title: "Rewards",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+
+  Redeem: {
+    screen: Redeem,
+    navigationOptions: ({ navigation }) => ({
+      title: "Redeem Whoosh Bits",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+
+  CodeDisplay: {
+    screen: CodeDisplay,
+    navigationOptions: ({ navigation }) => ({
+      title: "QR Code",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+
+  Help: {
+    screen: Help,
+    navigationOptions: ({ navigation }) => ({
+      title: "Help & Feedback",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  }
+});
+
+export const EventsFeedStack = createStackNavigator({
+  EventsTab: {
+    screen: EventsCalendar,
+    navigationOptions: ({ navigation }) => ({
+      title: "Events Calendar",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+  EventDetails: { screen: EventDetails,
+    navigationOptions: ({ navigation }) => ({
+      title: "Event Details",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+  EventsCalendar: { screen: EventsCalendar },
+  Agenda: {
+    screen: Agenda,
+    navigationOptions: ({ navigation }) => ({
+      title: "Events List",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+  Qrcode: { screen: Qrcode,
+    navigationOptions: ({ navigation }) => ({
+      title: "Scan QR Code Here",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+});
+
+export const JobsFeedStack = createStackNavigator({
+  JobsTab: {
+    screen: Jobs,
+    navigationOptions: ({ navigation }) => ({
+      title: "Job Listings",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+  JobsDetails: { screen: JobsDetails,
+    navigationOptions: ({ navigation }) => ({
+      title: "Job Details",
+      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    })
+  },
+});
+
+export const AppScreenNavigator = createMaterialTopTabNavigator({
+  Home: { screen: HomeFeedStack },
+  Jobs: { screen: JobsFeedStack },
+  Events: { screen: EventsFeedStack },
+},
   {
-   tabBarPosition: 'bottom',
-   swipeEnabled: false,
-   animationEnabled: false,
-   tabBarOptions: {
-     activeTintColor: '#3e9876',
-     activeBackgroundColor: '#ffffff',
-     inactiveBackgroundColor: '#ffffff',
-     inactiveTintColor: '#B7C3D0',
-   }
- });
+    tabBarPosition: 'bottom',
+    swipeEnabled: true,
+    animationEnabled: true,
+    tabBarOptions: {
+      activeTintColor: '#FFFFFF',
+      labelStyle: {
+        fontSize: 15,
+      },
+      style: {
+        backgroundColor: '#008542', // UTD Color
+      },
+    }
+  });
 
- const AppNavigator = StackNavigator({
-   Login:{screen: Login,
-     navigationOptions:({navigation}) => ({
+export const DrawerNavigator = createDrawerNavigator({
+  AppScreenNavigator: {
+    screen: AppScreenNavigator
+  }
+}, {
+    //initialRouteName: 'HomeFeedStack',
+    contentComponent: DrawerScreen,
+    drawerWidth: 250
+  });
+
+const MenuImage = ({ navigation }) => {
+  if (!navigation.state.isDrawerOpen) {
+    return <Text>Not Open</Text>
+  } else {
+    return <Text>Drawer is Open</Text>
+  }
+}
+
+// Main navigator for the app
+const AppNavigator = createSwitchNavigator({
+  Login: {
+    screen: Login,
+    navigationOptions: ({ navigation }) => ({
       header: null
-    })},
-   AppScreenNavigator:{screen: AppScreenNavigator,
-    navigationOptions:({navigation}) => ({
-      gesturesEnabled: false,
-      header: null})
- }});
+    })
+  },
+  DrawerNavigator: {
+    screen: DrawerNavigator
+  }
+}, {
+    navigationOptions: ({ navigation }) => ({
+      title: 'ReactNavigation',  // Title to appear in status bar
+      headerLeft:
+        <TouchableOpacity onPress={() => { navigation.dispatch(DrawerActions.toggleDrawer()) }}>
+          <MenuImage style="styles.bar" navigation={navigation} />
+        </TouchableOpacity>,
+      headerStyle: {
+        backgroundColor: '#333',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
 
- AppScreenNavigator.navigationOptions = {
-   title: "App"
- };
+    })
+  });
 
- export default AppNavigator
- //export default AppScreenNavigator
+AppScreenNavigator.navigationOptions = {
+  title: "App"
+};
+
+export default AppNavigator
+//export default AppScreenNavigator
