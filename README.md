@@ -186,6 +186,8 @@ If you're not able to load the `http` URL in your phone's web browser, try using
 
 ### iOS Simulator won't open
 
+You'll need to install [watchman](https://facebook.github.io/watchman/) on MacOS for the simulator to run. Homebrew is the easiest way to install.
+
 If you're on a Mac, there are a few errors that users sometimes see when attempting to `npm run ios`:
 
 * "non-zero exit code: 107"
