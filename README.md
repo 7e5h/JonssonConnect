@@ -1,3 +1,7 @@
+## Application Availability
+* [App Store](https://itunes.apple.com/us/app/jonsson-connect/id1404450905?mt=8)
+* [Google Play Store](https://play.google.com/store/apps/details?id=edu.utdallas.jonsson.connect)
+
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
