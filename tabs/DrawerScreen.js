@@ -334,7 +334,6 @@ const styles = {
   userInfo: {
     alignItems: 'center',
     justifyContent: 'center',
-    textAlign: 'center',
     paddingTop: 5,
     paddingBottom: 5
   },

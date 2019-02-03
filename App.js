@@ -46,7 +46,7 @@ export const HomeFeedStack = createStackNavigator({
     screen: Home,
     navigationOptions: ({ navigation }) => ({
       title: "News Feed",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -55,7 +55,7 @@ export const HomeFeedStack = createStackNavigator({
     screen: ArticleDetails,
     navigationOptions: ({ navigation }) => ({
       title: "News Article",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerStyle: { backgroundColor: '#C75B12' },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -64,7 +64,7 @@ export const HomeFeedStack = createStackNavigator({
     screen: Rewards,
     navigationOptions: ({ navigation }) => ({
       title: "Rewards",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerStyle: { backgroundColor: '#C75B12' },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -73,7 +73,7 @@ export const HomeFeedStack = createStackNavigator({
     screen: Redeem,
     navigationOptions: ({ navigation }) => ({
       title: "Redeem Whoosh Bits",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerStyle: { backgroundColor: '#C75B12' },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -82,7 +82,7 @@ export const HomeFeedStack = createStackNavigator({
     screen: CodeDisplay,
     navigationOptions: ({ navigation }) => ({
       title: "QR Code",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12' },
+      headerStyle: { backgroundColor: '#C75B12' },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -91,7 +91,7 @@ export const HomeFeedStack = createStackNavigator({
     screen: Help,
     navigationOptions: ({ navigation }) => ({
       title: "Help & Feedback",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   }
@@ -102,14 +102,14 @@ export const EventsFeedStack = createStackNavigator({
     screen: EventsCalendar,
     navigationOptions: ({ navigation }) => ({
       title: "Events Calendar",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
   EventDetails: { screen: EventDetails,
     navigationOptions: ({ navigation }) => ({
       title: "Event Details",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -118,14 +118,14 @@ export const EventsFeedStack = createStackNavigator({
     screen: Agenda,
     navigationOptions: ({ navigation }) => ({
       title: "Events List",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
   Qrcode: { screen: Qrcode,
     navigationOptions: ({ navigation }) => ({
       title: "Scan QR Code Here",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
@@ -136,14 +136,14 @@ export const JobsFeedStack = createStackNavigator({
     screen: Jobs,
     navigationOptions: ({ navigation }) => ({
       title: "Job Listings",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
   JobsDetails: { screen: JobsDetails,
     navigationOptions: ({ navigation }) => ({
       title: "Job Details",
-      headerStyle: { paddingRight: 10, paddingLeft: 10, backgroundColor: '#C75B12', borderBottomWidth: 1 },
+      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
       headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
     })
   },
