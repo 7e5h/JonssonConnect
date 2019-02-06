@@ -21,7 +21,7 @@ export default class Home extends Component {
     }
   }
 
-  studentUser = () => 
+  studentUser = () =>
   {
     console.log('Current Student Pressed!')
     var fName = this.state.firstName
@@ -96,14 +96,19 @@ export default class Home extends Component {
     this.setState({
       userID: await AsyncStorage.getItem('userID'),
     });
-     
+
     var classificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
     classificationRef.on('value', this.gotData, this.errData);
 
-    
+
     await Expo.Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+      'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
+      'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+      'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+      'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
+      'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
     });
 
     this.setState({

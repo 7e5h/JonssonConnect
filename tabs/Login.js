@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     height: hp('90%'),
     // borderWidth: 2,
     flexDirection: 'column',
-    justifyContent: 'space-around' 
+    justifyContent: 'space-around'
   },
   backdrop: {
     height: 475,
@@ -205,7 +205,20 @@ export default class Login extends React.Component {
   constructor(props) {
     super(props)
     // StatusBar.setHidden(true)
-    this.state = { isLoggedIn: false };
+    this.state = {
+      isLoggedIn: false,
+      loadingFonts: true
+    };
+  }
+
+  async componentDidMount() {
+    await Expo.Font.loadAsync({
+      'Roboto': require('native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+    });
+
+    //This will happen as soon as the fonts are fully loaded
+    this.setState({ loadingFonts: false });
   }
 
   // This will see if the login token already exists - If it does, go to Main App Screen
@@ -213,7 +226,7 @@ export default class Login extends React.Component {
 
     // //DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
     // Segment.setEnabledAsync(false);
-    
+
     let LOGIN_TOKEN = await AsyncStorage.getItem('LOGIN_TOKEN');
     const sliderState = await AsyncStorage.getItem('sliderState');
     this.setState({ sliderState });
@@ -330,6 +343,11 @@ export default class Login extends React.Component {
   }
 
   render() {
+    if (this.state.loadingFonts) {
+      //The fonts are still loading
+      return <Expo.AppLoading />;
+    }
+
     const { emailAddress, pictureUrl, refreshing, firstName, lastName, summary, id, headline, location } = this.state;
     console.log('sliderstate is ' + this.state.sliderState);
     if (this.state.loggedInStatus === 'loggedIn') {
