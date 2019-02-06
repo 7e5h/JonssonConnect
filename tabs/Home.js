@@ -18,6 +18,7 @@ export default class Home extends Component {
     this.state = {
       isLoading: true,
       refreshing: false,
+      loadingFonts: true,
     }
   }
 
@@ -112,6 +113,7 @@ export default class Home extends Component {
     });
 
     this.setState({
+      loadingFonts: false,
       firstName: await AsyncStorage.getItem('firstName'),
       lastName: await AsyncStorage.getItem('lastName'),
       userPhoto: await AsyncStorage.getItem('userPhoto'),
@@ -185,7 +187,7 @@ export default class Home extends Component {
 
 
   render() {
-    if (this.state.isLoading) {
+    if (this.state.isLoading || this.state.loadingFonts) {
       return (
         <View style={{ flex: 1, paddingTop: 20 }}>
           <ActivityIndicator />
