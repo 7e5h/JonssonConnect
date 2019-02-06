@@ -29,6 +29,7 @@ export default class Events extends Component {
   }
 
   componentDidMount() {
+
     return fetch('https://jonssonconnect.firebaseio.com/Events.json')
       .then((response) => response.json())
       .then((responseJson) => {
@@ -44,6 +45,7 @@ export default class Events extends Component {
       .catch((error) => {
         console.error(error);
       });
+
   }
 
   _onRefresh() {
