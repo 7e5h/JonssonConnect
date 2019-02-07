@@ -41,10 +41,10 @@ export default class EventsCalendar extends Component {
 
     loadEvents = () => {
         let userType = this.state.userClassification
-        if (userType == "student" || userType == "alumni") {
+        if (userType === "student" || userType === "alumni") {
             let eventsRef = firebase.database().ref("Events/").orderByChild("eventClassification").equalTo(userType);
             eventsRef.on('value', this.eventsLoaded, this.printError);
-        } else if (userType == "admin") {
+        } else if (userType === "admin") {
             let eventsRef = firebase.database().ref("Events/").orderByChild("eventClassification");
             eventsRef.on('value', this.eventsLoaded, this.printError);
         } else {
@@ -93,7 +93,7 @@ export default class EventsCalendar extends Component {
 
     handleDayClick = (day) => {
         for (let date in this.state.markedDates) {
-            if (day.dateString == date) {
+            if (day.dateString === date) {
                 this.props.navigation.navigate("Agenda", { day });
                 return;
             }
