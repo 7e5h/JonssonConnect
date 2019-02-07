@@ -18,7 +18,6 @@ export default class Home extends Component {
     this.state = {
       isLoading: true,
       refreshing: false,
-      loadingFonts: true,
     }
   }
 
@@ -101,19 +100,7 @@ export default class Home extends Component {
     var classificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
     classificationRef.on('value', this.gotData, this.errData);
 
-
-    await Expo.Font.loadAsync({
-      'Roboto': require('native-base/Fonts/Roboto.ttf'),
-      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-      'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
-      'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-      'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-      'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
-      'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
-    });
-
     this.setState({
-      loadingFonts: false,
       firstName: await AsyncStorage.getItem('firstName'),
       lastName: await AsyncStorage.getItem('lastName'),
       userPhoto: await AsyncStorage.getItem('userPhoto'),
@@ -187,7 +174,7 @@ export default class Home extends Component {
 
 
   render() {
-    if (this.state.isLoading || this.state.loadingFonts) {
+    if (this.state.isLoading) {
       return (
         <View style={{ flex: 1, paddingTop: 20 }}>
           <ActivityIndicator />
