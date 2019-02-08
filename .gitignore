@@ -53,3 +53,7 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+# Expo
+.expo
+__generated__

@@ -49,10 +49,12 @@ export default class DrawerScreen extends Component {
   // }
 
   async componentWillMount() {
+
     await Expo.Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
     });
+
     this.setState({
       firstName: await AsyncStorage.getItem('firstName'),
       lastName: await AsyncStorage.getItem('lastName'),
@@ -66,6 +68,7 @@ export default class DrawerScreen extends Component {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
     );
+
     let finalStatus = existingStatus;
 
     // only ask if permissions have not already been determined, because
@@ -81,9 +84,11 @@ export default class DrawerScreen extends Component {
     if (finalStatus !== 'granted') {
       return;
     }
+
     // Get the token that uniquely identifies this device
     let token = await Notifications.getExpoPushTokenAsync();
     console.log('The updated token is ' + token);
+
     let userID = await AsyncStorage.getItem('userID');
     
     // get firstname and lastname from state

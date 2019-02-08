@@ -32,7 +32,7 @@ console.disableYellowBox = true
 
 // Initialize Firebase
 export var config = {
-  apiKey: "TODO",
+  apiKey: "AIzaSyAt7rZyHL1GNFonaUquH0p4QyQFXi1lz6U",
   authDomain: "jonssonconnect.firebaseapp.com",
   databaseURL: "https://jonssonconnect.firebaseio.com",
   projectId: "jonssonconnect",
