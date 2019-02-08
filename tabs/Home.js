@@ -18,10 +18,11 @@ export default class Home extends Component {
     this.state = {
       isLoading: true,
       refreshing: false,
+      loadingFonts: true,
     }
   }
 
-  studentUser = () => 
+  studentUser = () =>
   {
     console.log('Current Student Pressed!')
     var fName = this.state.firstName
@@ -96,15 +97,9 @@ export default class Home extends Component {
     this.setState({
       userID: await AsyncStorage.getItem('userID'),
     });
-     
+
     var classificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
     classificationRef.on('value', this.gotData, this.errData);
-
-    
-    await Expo.Font.loadAsync({
-      'Roboto': require('native-base/Fonts/Roboto.ttf'),
-      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-    });
 
     this.setState({
       firstName: await AsyncStorage.getItem('firstName'),
@@ -243,7 +238,7 @@ export default class Home extends Component {
                     {rowData.articleName}
                   </Text>
                   <Text style={styles.dateStyle}>
-                    <Icon name='ios-clock-outline' style={{ fontSize: 12, color: '#878787' }} /> {monthNames[parseInt(rowData.postedOn.toString().substr(5, 5).substr(0, 2)) - 1]} {parseInt(rowData.postedOn.toString().substr(8, 2))}, {rowData.postedOn.toString().substr(0, 4)}</Text>
+                    <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} /> {monthNames[parseInt(rowData.postedOn.toString().substr(5, 5).substr(0, 2)) - 1]} {parseInt(rowData.postedOn.toString().substr(8, 2))}, {rowData.postedOn.toString().substr(0, 4)}</Text>
                 </Content>
               )
             }}

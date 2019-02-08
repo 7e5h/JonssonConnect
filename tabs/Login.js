@@ -13,12 +13,11 @@ import {
   TouchableHighlight,
 } from 'react-native'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Ionicons } from '@expo/vector-icons';
 import RF from 'react-native-responsive-fontsize';
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
 import { Segment } from 'expo';
 import AppIntro from 'rn-app-intro-screen';
-
+import Expo from 'expo';
 //import { CLIENT_ID, CLIENT_SECRET } from './config'
 
 import LinkedInModal from 'react-native-linkedin'
@@ -200,6 +199,7 @@ export default class Login extends React.Component {
     access_token: undefined,
     expires_in: undefined,
     refreshing: false,
+      fonts_loaded: false,
   }
 
   constructor(props) {
@@ -213,8 +213,21 @@ export default class Login extends React.Component {
 
     // //DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
     // Segment.setEnabledAsync(false);
-    
-    let LOGIN_TOKEN = await AsyncStorage.getItem('LOGIN_TOKEN');
+      //This needs to happen here as the fonts only need to be loaded once,
+
+      await Expo.Font.loadAsync({
+          'Roboto': require('native-base/Fonts/Roboto.ttf'),
+          'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+          'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
+          'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+          'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+          'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+          'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
+          'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
+          'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
+      });
+      this.setState({ fonts_loaded: true });
+      let LOGIN_TOKEN = await AsyncStorage.getItem('LOGIN_TOKEN');
     const sliderState = await AsyncStorage.getItem('sliderState');
     this.setState({ sliderState });
     if (LOGIN_TOKEN == null) {
@@ -307,8 +320,8 @@ export default class Login extends React.Component {
   _renderNextButton = () => {
     return (
       <View style={styles.buttonCircle}>
-        <Ionicons
-          name="md-arrow-round-forward"
+        <Icon
+          name="ios-arrow-dropright"
           color="#000000"
           size={40}
           style={{ backgroundColor: 'transparent' }}
@@ -319,8 +332,8 @@ export default class Login extends React.Component {
   _renderDoneButton = () => {
     return (
       <View style={styles.buttonCircle}>
-        <Ionicons
-          name="md-checkmark"
+        <Icon
+          name="check"
           color="#000000"
           size={40}
           style={{ backgroundColor: 'transparent' }}
@@ -330,12 +343,20 @@ export default class Login extends React.Component {
   }
 
   render() {
+
     const { emailAddress, pictureUrl, refreshing, firstName, lastName, summary, id, headline, location } = this.state;
     console.log('sliderstate is ' + this.state.sliderState);
-    if (this.state.loggedInStatus === 'loggedIn') {
+      if (!this.state.fonts_loaded) {
+          return (
+              <View style={{flex: 1, paddingTop: 20}}>
+                  <ActivityIndicator/>
+              </View>
+          );
+      }
+    else if (this.state.loggedInStatus === 'loggedIn') {
       this.props.navigation.navigate("HomeFeedStack")
     }
-    if (!this.state.sliderState) {
+    else if (!this.state.sliderState) {
       return <AppIntro
         slides={slides}
         // dotStyle={styles.allDotStyle}

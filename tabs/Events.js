@@ -71,7 +71,7 @@ export default class Events extends Component {
   static navigationOptions =({navigation})=> ({
     headerRight:(
          <Button transparent onPress={() => navigation.navigate('EventsCalendar')}>
-         <Icon name='ios-calendar-outline' style={{color: 'white'}} />
+         <Icon name='ios-calendar' style={{color: 'white'}} />
         </Button>
   )
 });
@@ -131,7 +131,7 @@ export default class Events extends Component {
                           <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 }}>
                             <Icon name='ios-calendar-outline' style={{ fontSize: 12, color: '#5d5d5d' }} /> {monthNames[parseInt(rowData.eventDate.toString().substr(5, 5).substr(0, 2)) - 1]} {parseInt(rowData.eventDate.toString().substr(8, 2))}, {rowData.eventDate.toString().substr(0, 4)}
                           </Text>
-                          <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}><Icon name='ios-pin-outline' style={{ fontSize: 12, color: '#5d5d5d' }} /> {rowData.eventLocation}</Text>
+                          <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}><Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} /> {rowData.eventLocation}</Text>
                           <Text style={{ fontWeight: '800', fontSize: 22 }}></Text>
                           <TouchableHighlight
                             onPress={

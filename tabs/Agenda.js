@@ -197,9 +197,9 @@ console.log("OBJECT TESTERERE:"+ JSON.stringify(filteredObjects));
             <Card>
               <CardItem>
                 <Body>
-                  <Text style={{ color: '#c75b12', fontSize: 22, fontWeight: '800' }}><Icon name='ios-flame' style={{ fontSize: 32, color: '#c75b12' }} />    Jonsson|Calendar</Text>
+                  <Text style={{ color: '#c75b12', fontSize: 22, fontWeight: '800' }}><Icon name='ios-flame' style={{ fontSize: 32, color: '#c75b12' }} />    Jonsson | Calendar</Text>
                 </Body>
-                <Icon type="MaterialCommunityIcons" name='qrcode-scan' style={{color: '#c75b12'}} onPress={this.qrCodePressed} />
+                <Icon type="FontAwesome" name='qrcode' style={{color: '#c75b12'}} onPress={this.qrCodePressed} />
               </CardItem>
             </Card>
           </Content>
@@ -226,12 +226,12 @@ console.log("OBJECT TESTERERE:"+ JSON.stringify(filteredObjects));
                         <Body>
                           <Text style={{ fontWeight: '800', fontSize: 16 }}>{rowData.eventTitle}</Text>
                           <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 }}>
-                            <Icon name='ios-calendar-outline' style={{ fontSize: 12, color: '#5d5d5d' }} /> {eventDay}
+                            <Icon name='ios-calendar' style={{ fontSize: 12, color: '#5d5d5d' }} /> {eventDay}
                           </Text>
                           <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 }}>
                             <Icon name='md-time' style={{ fontSize: 12, color: '#5d5d5d' }} /> {eventTime}
                           </Text>
-                          <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}><Icon name='ios-pin-outline' style={{ fontSize: 12, color: '#5d5d5d' }} /> {rowData.eventLocation}</Text>
+                          <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}><Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} /> {rowData.eventLocation}</Text>
                           <Text style={{ fontWeight: '800', fontSize: 22 }}></Text>
                           <View style={{ flex: 1, justifyContent: "center", alignItems: "center", flexDirection: "row", paddingTop: 5 }}>
                             <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46' }}>
