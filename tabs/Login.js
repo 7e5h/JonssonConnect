@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: hp('90%'),
     // borderWidth: 2,
     flexDirection: 'column',
-    justifyContent: 'space-around' 
+    justifyContent: 'space-around'
   },
   backdrop: {
     height: 475,
@@ -222,9 +222,11 @@ export default class Login extends React.Component {
           'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
           'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
           'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+          'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
           'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
           'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
           'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
+          'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
       });
       this.setState({ fonts_loaded: true });
       let LOGIN_TOKEN = await AsyncStorage.getItem('LOGIN_TOKEN');
