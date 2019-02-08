@@ -75,8 +75,16 @@ export default class EventsCalendar extends Component {
     }
 
     loadedClassification = (newClassification) => {
-        AsyncStorage.setItem('userClassification', newClassification.val());
-        this.setState({ userClassification: newClassification.val() });
+
+        let value = newClassification.val();
+
+        if (value === null) {
+            console.log("EventsCalendar: newClassification === null");
+            return;
+        }
+        
+        AsyncStorage.setItem('userClassification', value);
+        this.setState({ userClassification: value });
         this.loadEvents();
     }
 
