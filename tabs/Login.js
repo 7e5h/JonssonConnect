@@ -179,16 +179,11 @@ export default class Login extends React.Component {
   }
 
   async componentWillMount() {
-    this.deleteStorageForTesting()
     this.loadFontsAndIcons()
     this.checkIfUserHasCompletedTutorial()
     this.checkUserLogin();
   }
-
-  async deleteStorageForTesting() {
-    await AsyncStorage.clear()
-  }
-
+  
   async loadFontsAndIcons() {
 
     // DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
