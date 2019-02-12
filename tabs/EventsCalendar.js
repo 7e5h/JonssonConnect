@@ -82,7 +82,7 @@ export default class EventsCalendar extends Component {
             console.log("EventsCalendar: newClassification === null");
             return;
         }
-        
+
         AsyncStorage.setItem('userClassification', value);
         this.setState({ userClassification: value });
         this.loadEvents();

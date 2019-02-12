@@ -188,7 +188,7 @@ const MenuImage = ({ navigation }) => {
 }
 
 // Main navigator for the app
-const AppNavigator = createSwitchNavigator({
+export const AppNavigator = createSwitchNavigator({
   Login: {
     screen: Login,
     navigationOptions: ({ navigation }) => ({

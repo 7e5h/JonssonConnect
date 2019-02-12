@@ -204,27 +204,25 @@ export default class Login extends React.Component {
 
   constructor(props) {
     super(props)
-    // StatusBar.setHidden(true)
     this.state = { isLoggedIn: false };
   }
 
-  // This will see if the login token already exists - If it does, go to Main App Screen
+
   async componentWillMount() {
 
-    // //DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
-    // Segment.setEnabledAsync(false);
-    
-    let LOGIN_TOKEN = await AsyncStorage.getItem('LOGIN_TOKEN');
-    const sliderState = await AsyncStorage.getItem('sliderState');
+    this.checkUserLogin();
+
+    let sliderState = await AsyncStorage.getItem('sliderState');
     this.setState({ sliderState });
-    if (LOGIN_TOKEN == null) {
-      // DO nothing and continue login process
-      console.log('Login token not found');
-    }
-    else {
-      console.log('Login token has been found');
-      let category = await this.chooseCategory();
-      console.log(category);
+  }
+
+  async checkUserLogin() {
+
+    // This will see if the login token already exists - If it does, go to Main App Screen
+    let loginToken = await AsyncStorage.getItem('LOGIN_TOKEN');
+
+    if (loginToken != null) {
+      // Login token found, continue to main app
       this.props.navigation.navigate("DrawerNavigator");
     }
   }
@@ -252,37 +250,39 @@ export default class Login extends React.Component {
         Authorization: 'Bearer ' + access_token,
       },
     })
+
     const payload = await response.json()
+
     this.setState({
       ...payload,
       refreshing: false,
     })
+
     let value = this.state.pictureUrl
+
     if (value == null) {
       AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png')
     }
     else {
       AsyncStorage.setItem('userPhoto', this.state.pictureUrl)
     }
+
     AsyncStorage.setItem('lastName', this.state.lastName),
-      AsyncStorage.setItem('firstName', this.state.firstName),
-      AsyncStorage.setItem('email', this.state.emailAddress),
-      AsyncStorage.setItem('headline', this.state.headline),
-      AsyncStorage.setItem('userID', this.state.id),
-      AsyncStorage.setItem('location', JSON.stringify(this.state.location)),
-      AsyncStorage.setItem('industry', this.state.industry),
-      AsyncStorage.setItem('LOGIN_TOKEN', "loggedIn"),
-      AsyncStorage.getItem('loggedInStatus',
-        (value) => {
-          this.setState({ loggedInStatus: 'loggedIn' });
-        });
+    AsyncStorage.setItem('firstName', this.state.firstName),
+    AsyncStorage.setItem('email', this.state.emailAddress),
+    AsyncStorage.setItem('headline', this.state.headline),
+    AsyncStorage.setItem('userID', this.state.id),
+    AsyncStorage.setItem('location', JSON.stringify(this.state.location)),
+    AsyncStorage.setItem('industry', this.state.industry),
+    AsyncStorage.setItem('LOGIN_TOKEN', "loggedIn"),
+    AsyncStorage.getItem('loggedInStatus',
+      (value) => {
+        this.setState({ loggedInStatus: 'loggedIn' });
+      });
+
     this.props.navigation.navigate('DrawerNavigator');
   }
 
-  chooseCategory = () => {
-    let category = 'student';
-    return category;
-  }
 
   renderItem(label, value) {
     return (
@@ -316,6 +316,7 @@ export default class Login extends React.Component {
       </View>
     );
   }
+
   _renderDoneButton = () => {
     return (
       <View style={styles.buttonCircle}>

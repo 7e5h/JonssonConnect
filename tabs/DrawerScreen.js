@@ -37,6 +37,12 @@ export default class DrawerScreen extends Component {
     this.props.navigation.navigate("Help");
   }
 
+  logout = () => {
+    console.log("Logging out");
+    AsyncStorage.clear();
+    this.props.navigation.navigate('AppNavigator');
+  }
+
   // componentDidMount = async() => {
   //   this.setState({
   //     firstName: await AsyncStorage.getItem('firstName'),
@@ -242,6 +248,13 @@ export default class DrawerScreen extends Component {
               </Text>
             </TouchableOpacity>
 
+            <TouchableOpacity style={styles.sidebar}>
+              <Icon type="MaterialCommunityIcons" name='exit' style={{color: '#c75b12'}}/>
+              <Text style={styles.settingsStyle} onPress = {() => this.logout()}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+
             {/* <TouchableOpacity style={styles.sidebar}
               transparent onPress={() => navigation.navigate('Profile')
               }>
@@ -257,8 +270,11 @@ export default class DrawerScreen extends Component {
   }
 }
 
+
+
 DrawerScreen.propTypes = {
   navigation: PropTypes.object
+  
 };
 
 const styles = {

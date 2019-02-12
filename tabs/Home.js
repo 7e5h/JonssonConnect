@@ -28,20 +28,20 @@ export default class Home extends Component {
     var lName = this.state.lastName
     let userRef = firebase.database().ref('Users/' + this.state.userID + '/');
     console.log("USER ID FROM STUDENT USER FUNC IN HOME.JS: " + this.state.userID)
-      userRef.update({
-        classification: "student",
-        userStatus: "approved",
-        isAdmin: "false",
-        numOfEvents: 0,
-        points: 0,
-        firstName: fName,
-        lastName: lName
-      }).then(function () {
-        console.log('STUDENT CLASSIFICATION SUCCEEDED');
-      })
-        .catch(function (error) {
-          console.log('STUDENT CLASSIFICATION FAILED' + error);
-        });
+    userRef.update({
+      classification: "student",
+      userStatus: "approved",
+      isAdmin: "false",
+      numOfEvents: 0,
+      points: 0,
+      firstName: fName,
+      lastName: lName
+    }).then(function () {
+      console.log('STUDENT CLASSIFICATION SUCCEEDED');
+    })
+    .catch(function (error) {
+      console.log('STUDENT CLASSIFICATION FAILED' + error);
+    });
   }
 
   alumniUser = () =>
