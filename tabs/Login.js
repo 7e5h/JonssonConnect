@@ -284,9 +284,9 @@ export default class Login extends React.Component {
     // Check if the user has a picture url from LinkedIn
     let picUrl = this.state.pictureUrl
     if (picUrl === null) {
-
+      await AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png')
     } else {
-      await AsyncStorage.setItem('pictureUrl', picUrl)
+      await AsyncStorage.setItem('userPhoto', picUrl)
     }
 
     await AsyncStorage.setItem('lastName', this.state.lastName)
