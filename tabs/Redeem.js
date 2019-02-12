@@ -123,6 +123,8 @@ export default class Redeem extends Component {
         })
     }
 
+
+
     render() {
         return (
             <ScrollView style={styles.masterView}>

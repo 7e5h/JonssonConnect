@@ -83,7 +83,7 @@ export default class JobsDetails extends Component {
           <Text style={{ fontSize: 18, fontWeight: '200', paddingLeft: 15, paddingTop: 10, color: '#C75B12', textAlign: 'center' }}><Icon name='ios-school' style={{ fontSize: 20, color: '#C75B12' }} /> Desired Major(s)</Text>
           <Text style={styles.descriptionStyle}>{'\n' + this.props.navigation.state.params.rowData.desiredMajors + '\n\n'}</Text>
           
-          <Text style={{ fontSize: 18, fontWeight: '200', paddingLeft: 15, paddingTop: 10, color: '#C75B12', textAlign: 'center' }}><Icon type='MaterialCommunityIcons' name='worker' style={{ fontSize: 20, color: '#C75B12' }} /> Job-Type</Text>
+          <Text style={{ fontSize: 18, fontWeight: '200', paddingLeft: 15, paddingTop: 10, color: '#C75B12', textAlign: 'center' }}><Icon  type='MaterialIcons'  name='business-center' style={{ fontSize: 20, color: '#C75B12' }} /> Job-Type</Text>
           <Text style={styles.descriptionStyle}>{'\n' + this.props.navigation.state.params.rowData.jobType + '\n\n'}</Text>
 
           <Text style={{ fontSize: 14, fontWeight: '800', alignSelf: 'center' }}>Check Us Out On Handshake! {'\t'} :) {'\n\n'}</Text>

@@ -156,7 +156,7 @@ export default class EventDetails extends Component {
               </Body>
             </CardItem>
             <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}>
-              <Icon name='ios-calendar-outline' style={{ fontSize: 12, color: '#5d5d5d' }} /> {this.props.navigation.state.params.eventDay.toString()}
+              <Icon name='ios-calendar' style={{ fontSize: 12, color: '#5d5d5d' }} /> {this.props.navigation.state.params.eventDay.toString()}
             </Text>
             <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}>
               <Icon name='md-time' style={{ fontSize: 12, color: '#5d5d5d' }} /> {this.props.navigation.state.params.eventTime.toString()}

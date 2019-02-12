@@ -40,8 +40,8 @@ export default class EventsCalendar extends Component {
     }
 
     loadEvents = () => {
-        let userType = this.state.userClassification
-        if (userType === "student" || userType === "alumni") {
+        let userType = this.state.userClassification;
+        if (userType == "student" || userType == "alumni") {
             let eventsRef = firebase.database().ref("Events/").orderByChild("eventClassification").equalTo(userType);
             eventsRef.on('value', this.eventsLoaded, this.printError);
         } else if (userType === "admin") {

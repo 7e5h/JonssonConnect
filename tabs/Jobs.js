@@ -112,10 +112,10 @@ export default class Jobs extends Component {
                            {rowData.positionTitle}
                          </Text>
                          <Text onPress={() => this.props.navigation.navigate("JobsDetails", {rowData})} style={styles.companyNameStyle}>
-                           <Icon name='ios-at-outline' style={{ fontSize: 10}}/> {rowData.companyName}
+                           @ {rowData.companyName}
                          </Text>
                          <Text onPress={() => this.props.navigation.navigate("JobsDetails", {rowData})} style={styles.jobLocationStyle}>
-                           <Icon name='ios-pin-outline' style={{ fontSize: 10, color: '#878787'}}/> {rowData.jobLocation}
+                           <Icon name='ios-pin' style={{ fontSize: 10, color: '#878787'}}/> {rowData.jobLocation}
                          </Text>
                        </Body>
                      </Left>
