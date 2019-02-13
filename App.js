@@ -156,7 +156,7 @@ export const AppScreenNavigator = createMaterialTopTabNavigator({
 },
   {
     tabBarPosition: 'bottom',
-    swipeEnabled: true,
+    swipeEnabled: false,
     animationEnabled: true,
     tabBarOptions: {
       activeTintColor: '#FFFFFF',
@@ -166,6 +166,9 @@ export const AppScreenNavigator = createMaterialTopTabNavigator({
       style: {
         backgroundColor: '#008542', // UTD Color
       },
+        tabStyle: {
+            padding: 10, margin:10,
+        },
     }
   });
 

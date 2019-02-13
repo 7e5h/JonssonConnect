@@ -4,6 +4,9 @@ import { Container, Header, Content, Accordion, Form, Item, Input, Label } from 
 import * as firebase from 'firebase';
 import Axios from 'axios';
 
+
+const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
+
 export default class Help extends Component {
 
     constructor(props) {
@@ -34,7 +37,7 @@ export default class Help extends Component {
                 Object.keys(responseJson).forEach(function (key) {
                     var data = responseJson[key];
                     arr.push({ "title": data.Question, "content": data.Answer });
-                })
+                });
 
                 //console.log(responseJson)
                 //console.log(arr)
@@ -129,21 +132,14 @@ export default class Help extends Component {
 
     giveFeedbackPressed = () => {
         this.setState({ giveFeedback: true });
-    }
+    };
+
+    replayTutorialPressed = () =>{
+        AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'false');
+        this.props.navigation.navigate("Login");
+    };
 
     feedbackSubmitted = () => {
-
-        // if (this.hasWhitespace(this.state.email) || this.state.email === null)
-        // {
-        //     Alert.alert(
-        //         'Oops!',
-        //         'We noticed that the email field is blank. \n\nDid you tap the feedback button by mistake?',
-        //         [
-        //             {text: 'LOL, Yea!', onPress: () => console.log('blankFeedbackEmail acknowledged!')},
-        //         ],
-        //         {cancelable: false}
-        //     )
-        // }
         if (this.hasWhitespace(this.state.message) || this.state.message === null) {
             Alert.alert(
                 'Oops!',
@@ -157,7 +153,7 @@ export default class Help extends Component {
         else {
             this.setState({
                 isLoading: true
-            })
+            });
 
             Alert.alert(
                 "Awesome!",
@@ -166,13 +162,13 @@ export default class Help extends Component {
                     { text: 'Awesome!', onPress: () => console.log('Feedback Submitted!') },
                 ],
                 { cancelable: false }
-            )
+            );
             this.setState({
                 isLoading: true
-            })
+            });
             this.postFeedback(this.state.userEmail, this.state.message);
         }
-    }
+    };
 
     componentDidMount() {
         this.readUserData();
@@ -181,7 +177,7 @@ export default class Help extends Component {
     render() {
 
         if (this.state.giveFeedback == false) {
-            console.log("USER EMAIL ID: " + this.state.userEmail)
+            console.log("USER EMAIL ID: " + this.state.userEmail);
             return (
                 <ScrollView style={styles.masterView}>
                     <Text style={{ fontSize: 20, paddingHorizontal: 20, textAlign: 'center', paddingVertical: 25, fontWeight: 'bold', color: "#C75B12" }}>
@@ -215,6 +211,12 @@ export default class Help extends Component {
                     >
                         <Text style={styles.buttonText}>Give Feedback</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={this.replayTutorialPressed}
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>Replay Tutorial</Text>
+                    </TouchableOpacity>
                     <View style={styles.bottom1}>
                         <Text style={styles.buildStyle}>Build Number: 2.1.10</Text>
                     </View>
@@ -222,7 +224,7 @@ export default class Help extends Component {
                 </ScrollView>
             );
         } else {
-            console.log("USER EMAIL ID: " + this.state.userEmail)
+            console.log("USER EMAIL ID: " + this.state.userEmail);
             return (
                 <ScrollView style={styles.masterView}>
                 <Text style={{ fontSize: 20, paddingHorizontal: 20, textAlign: 'center', paddingVertical: 25, fontWeight: 'bold', color: "#C75B12" }}>
@@ -289,8 +291,8 @@ const styles = StyleSheet.create({
     button: {
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
-        marginTop: 30,
+        padding: 10,
+        marginTop: 20,
     },
     buttonText: {
         color: '#E98300',
