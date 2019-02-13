@@ -23,7 +23,7 @@ export default class EventsCalendar extends Component {
 
         this.state = {
             userClassification: '',
-            markedDates: false,
+            markedDates: [],
             eventDates: []
         }
     }
@@ -40,16 +40,8 @@ export default class EventsCalendar extends Component {
     }
 
     loadEvents = () => {
-        let userType = this.state.userClassification;
-        if (userType == "student" || userType == "alumni") {
-            let eventsRef = firebase.database().ref("Events/").orderByChild("eventClassification").equalTo(userType);
-            eventsRef.on('value', this.eventsLoaded, this.printError);
-        } else if (userType === "admin") {
-            let eventsRef = firebase.database().ref("Events/").orderByChild("eventClassification");
-            eventsRef.on('value', this.eventsLoaded, this.printError);
-        } else {
-            console.log("EventsCalendar: User classification type not recognized");
-        }
+        let eventsRef = firebase.database().ref("Events/").orderByChild("eventClassification");
+        eventsRef.on('value', this.eventsLoaded, this.printError);
     }
 
     updateClassification = () => {
@@ -58,15 +50,26 @@ export default class EventsCalendar extends Component {
     }
 
     eventsLoaded = (data) => {
+
+        let userType = this.state.userClassification;
+        if (userType !== "student" && userType !== "alumni" && userType !== "admin") {
+            console.log("EventsCalendar: User classification type not recognized");
+            return;
+        }
+
         let eventData = data.val();
         let currentDate  = moment().toISOString(true).slice(0, 10);
         let events = [];
         for (let key in eventData) {
             let dateOfEvent = eventData[key]['modifiedDate'];
+            let eventClassification = eventData[key]['eventClassification'];
 
             // check if event has already passed
-            if (!moment(dateOfEvent).isBefore(currentDate)) {
-                events.push(dateOfEvent)
+            if (moment(dateOfEvent).isBefore(currentDate)) { continue }
+
+            // Only include events that the user should see here
+            if (userType == 'admin' || eventClassification == 'both' || eventClassification == userType) {
+                events.push(dateOfEvent);
             }
         }
 
