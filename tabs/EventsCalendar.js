@@ -125,7 +125,7 @@ export default class EventsCalendar extends Component {
                     // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
                     minDate={currentDate}
                     // By default, agenda dates are marked if they have at least one item, but you can override this if needed
-                    // markedDates={this.state.markedDates}
+                    markedDates={this.state.markedDates}
                     //This attribute enables multiple dots on a single date
                     markingType={'multi-dot'}
                     // callback that gets called on day press
