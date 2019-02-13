@@ -15,8 +15,6 @@ import AppIntro from 'rn-app-intro-screen';
 import Expo from 'expo';
 
 import LinkedInModal from 'react-native-linkedin'
-
-const APP_INTRO_BACKGROUND_COLOR = '#E98300'
 const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
 const IS_LOGGED_IN_KEY = "isLoggedIn";
 
@@ -108,6 +106,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#C75B12",
   },
+  slideImage: {
+    width: 350,
+    height: 501,
+  }
 });
 
 const slides = [
@@ -119,48 +121,39 @@ const slides = [
     textStyle: styles.introTextStyle,
     image: require('../images/appicon.png'),
     imageStyle: styles.image,
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Login',
+    key: 'slide1',
     image: require('../assets/image1.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Home',
+    key: 'slide2',
     image: require('../assets/image2.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'RSVP',
+    key: 'slide3',
     image: require('../assets/image3.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Redeem',
+    key: 'slide4',
     image: require('../assets/image4.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Rewards',
+    key: 'slide5',
     image: require('../assets/image5.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Jobs',
+    key: 'slide6',
     image: require('../assets/image6.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Calendar',
+    key: 'slide7',
     image: require('../assets/image7.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
   },
   {
-    key: 'Drawer',
+    key: 'slide8',
     image: require('../assets/image8.png'),
-    backgroundColor: APP_INTRO_BACKGROUND_COLOR,
-  }
+  },
 ];
 
 export default class Login extends React.Component {
@@ -179,11 +172,11 @@ export default class Login extends React.Component {
   }
 
   async componentWillMount() {
-    this.loadFontsAndIcons()
-    this.checkIfUserHasCompletedTutorial()
+    this.loadFontsAndIcons();
+    this.checkIfUserHasCompletedTutorial();
     this.checkUserLogin();
   }
-  
+
   async loadFontsAndIcons() {
 
     // DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
@@ -314,7 +307,6 @@ export default class Login extends React.Component {
         slides={slides}
         onDone={this.completedTutorial}
         bottomButton
-        showSkipButton
       />;
     }
 
