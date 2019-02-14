@@ -11,6 +11,14 @@ import { Container, Header, Content, Card, CardItem, Thumbnail, List, Icon, List
 import { Permissions, Notifications } from 'expo';
 import * as firebase from 'firebase';
 
+const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
+
+const RCTNetworking = require("RCTNetworking");
+function clearCookies() {
+  RCTNetworking.clearCookies((cleared) => {
+    console.log('Cookies cleared, had cookies=' + cleared.toString());
+  })
+}
 
 export default class DrawerScreen extends Component {
 
@@ -35,22 +43,17 @@ export default class DrawerScreen extends Component {
     this.props.navigation.navigate("Help");
   }
 
-  logout = () => {
-    console.log("Logging out");
-    AsyncStorage.clear();
+  async logout() {
+    await AsyncStorage.clear();
+    await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
+
+    // Must clear cookies in web browser to be able to login with different account
+    clearCookies()
+
     this.props.navigation.navigate('Login');
   }
 
-  // componentDidMount = async() => {
-  //   this.setState({
-  //     firstName: await AsyncStorage.getItem('firstName'),
-  //     lastName: await AsyncStorage.getItem('lastName'),
-  //     userPhoto: await AsyncStorage.getItem('userPhoto'),
-  //     headline: await AsyncStorage.getItem('headline'),
-  //     location: await AsyncStorage.getItem('location'),
-  //     industry: await AsyncStorage.getItem('industry'),
-  //   }, this.setState({ isLoading: false }));
-  // }
+
 
   async componentWillMount() {
 
