@@ -4,10 +4,8 @@
  */
 
 import React, { Component } from 'react';
-import { NavigationActions } from 'react-navigation';
 import PropTypes from 'prop-types';
 import { ScrollView, Text, View, Linking, TouchableOpacity, ActivityIndicator, AsyncStorage, ImageBackground, Image } from 'react-native';
-import { DrawerActions } from 'react-navigation';
 import RF from 'react-native-responsive-fontsize';
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, Icon, ListItem, Item, Input, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
 import { Permissions, Notifications } from 'expo';

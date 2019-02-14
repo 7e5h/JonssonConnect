@@ -171,8 +171,8 @@ export default class Login extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.loadFontsAndIcons();
+  async componentDidMount() {
+    await this.loadFontsAndIcons();
     this.checkIfUserHasCompletedTutorial();
   }
   
@@ -199,9 +199,7 @@ export default class Login extends React.Component {
   }
 
   async checkIfUserHasCompletedTutorial() {
-
     let hasCompletedTutorial = await AsyncStorage.getItem(TUTORIAL_COMPLETED_KEY);
-    console.log("tutorial status:"+hasCompletedTutorial);
     if (hasCompletedTutorial === 'true') {
       this.setState({ tutorialCompleted: true});
       this.checkUserLogin()

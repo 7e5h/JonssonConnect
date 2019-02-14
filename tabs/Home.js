@@ -5,11 +5,8 @@
 
 import React, { Component } from 'react';
 import { Alert, ActivityIndicator, AsyncStorage, Image, ListView, Linking, ImageBackground, FlatList, RefreshControl, StyleSheet, TextInput, View, TouchableHighlight } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator } from "react-navigation";
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Item, Icon, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
 import * as firebase from 'firebase';
-import firebaseApp from '../App';
-import rootRef from '../App';
 
 export default class Home extends Component {
 
@@ -234,7 +231,7 @@ export default class Home extends Component {
                   <Text style={{ color: rowData.articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
                     <Icon name='ios-pricetag' style={{ fontSize: 10, color: rowData.articleColor }} />  {rowData.articleType}
                   </Text>
-                  <Text onPress={() => this.props.navigation.navigate("ArticleDetails", { rowData })} style={styles.nameStyle}>
+                  <Text onPress={() => this.props.navigation.push("ArticleDetails", { rowData })} style={styles.nameStyle}>
                     {rowData.articleName}
                   </Text>
                   <Text style={styles.dateStyle}>

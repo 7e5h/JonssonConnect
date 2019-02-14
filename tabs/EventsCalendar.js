@@ -23,7 +23,7 @@ export default class EventsCalendar extends Component {
 
         this.state = {
             userClassification: '',
-            markedDates: [],
+            markedDates: {},
             eventDates: []
         }
     }

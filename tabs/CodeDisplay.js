@@ -5,7 +5,7 @@ import { QRCode } from 'react-native-custom-qr-codes';
 
 
 
-export default class CodeDisplay extends Component {
+export default class CodeDisplay extends React.Component {
     
 render() {
 
