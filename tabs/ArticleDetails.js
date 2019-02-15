@@ -56,19 +56,19 @@
      return (
        <Container>
        <Content>
-       <Image source={{uri: this.props.navigation.state.params.rowData.articleImageURL}} style={{ height: 300 }}></Image>
-       
+       <Image source={{uri: this.props.navigation.state.params.item[1].articleImageURL}} style={{ height: 300 }}></Image>
+
            <CardItem>
              <Body>
-               <Text style={styles.articlenameStyle}>{this.props.navigation.state.params.rowData.articleName}</Text>
+               <Text style={styles.articlenameStyle}>{this.props.navigation.state.params.item[1].articleName}</Text>
                <Text style={{fontSize: 14, fontWeight: '800'}}></Text>
-               <Text style={{fontSize: 14, color: '#808080',}}><Icon type='SimpleLineIcons'  name='clock' style={{ fontSize: 14}}/> Published on {new Date(this.props.navigation.state.params.rowData.postedOn).toLocaleDateString("en-US", { month:'short', day:'numeric', year:'numeric' })}</Text>
+               <Text style={{fontSize: 14, color: '#808080',}}><Icon type='SimpleLineIcons'  name='clock' style={{ fontSize: 14}}/> Published on {new Date(this.props.navigation.state.params.item[1].postedOn).toLocaleDateString("en-US", { month:'short', day:'numeric', year:'numeric' })}</Text>
                {/* <Text style={{fontSize: 12, fontWeight: '100', color: "#b6b6b6",}}>_____________________________________________________________</Text> */}
-               <Text style={styles.contentStyle}>{'\n\n\t\t\t\t\t' + this.props.navigation.state.params.rowData.articleContent + '\n\n'}</Text>
+               <Text style={styles.contentStyle}>{'\n\n\t\t\t\t\t' + this.props.navigation.state.params.item[1].articleContent + '\n\n'}</Text>
                <Text style={{fontSize: 10, fontWeight: '100', color:'#b6b6b6', alignSelf: 'center'}}> --- End of News Article ---</Text>
              </Body>
            </CardItem>
-        
+
        </Content>
        </Container>
      )

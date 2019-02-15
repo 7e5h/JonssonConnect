@@ -4,7 +4,7 @@
  */
 
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, AsyncStorage, Image, ListView, Linking, ImageBackground, FlatList, RefreshControl, StyleSheet, TextInput, View, TouchableHighlight } from 'react-native';
+import { Alert, ActivityIndicator, AsyncStorage, FlatList, Image, Linking, ImageBackground, RefreshControl, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator } from "react-navigation";
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Item, Icon, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
 import * as firebase from 'firebase';
@@ -19,7 +19,11 @@ export default class Home extends Component {
       isLoading: true,
       refreshing: false,
       loadingFonts: true,
-    }
+    };
+
+    this._monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
   }
 
   studentUser = () =>
@@ -109,70 +113,95 @@ export default class Home extends Component {
       location: await AsyncStorage.getItem('location'),
       industry: await AsyncStorage.getItem('industry'),
     });
-    //return fetch('https://jonssonconnect.firebaseio.com/.json') // NOTE: As of Aug-2018, Firebase rules prevent this
-    return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
-      //return fetch('/Users/mendoza/Downloads/articles.json')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        let ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-        this.setState({
-          isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson),
-        }, function () {
-        });
-      })
-      .catch((error) => {
-        //console.error(error);
-        this.setState({
-          isLoading: false,
-          networkFailed: true,
-        })
-      });
-  }
 
-  firstSearch() {
-    return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        let ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-        this.setState({
-          isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson),
-        }, function () {
-        });
-      })
-      .catch((error) => {
-        //console.error(error);
-        this.setState({
-          isLoading: false,
-          networkFailed: true,
-        })
-      });
+    this._downloadNews();
   }
 
   _onRefresh() {
     this.setState({ refreshing: true });
-    return fetch('https://jonssonconnect.firebaseio.com/Articles.json')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        let ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+    this._downloadNews(true);
+  }
+
+  _downloadNews(refresh) {
+    fetch(firebase.database().ref('Articles') + ".json")
+      .then((response) => {
+        return response.json();
+      }).then((responseJson) => {
+        let dataArray = [];
+        for(let article in responseJson) {
+          dataArray.push([article, responseJson[article]]);
+        }
+
+        dataArray.sort(function(a, b) {
+          let date1 = new Date(a[1].postedOn);
+          let date2 = new Date(b[1].postedOn);
+          return -1*(date1 - date2);
+        });
+
         this.setState({
           isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson),
-          refreshing: false,
-        }, function () {
+          dataSource: dataArray,
         });
+
+        if(refresh) {
+          this.setState({
+            refreshing: false
+          });
+        }
       })
       .catch((error) => {
         //console.error(error);
         this.setState({
           isLoading: false,
           networkFailed: true,
-        })
+        });
       });
   }
 
+  _keyExtractor = (item, index) => item[0];
 
+  _renderArticle = ({item}) => {
+    let datePosted = new Date(item[1].postedOn);
+    let dateStr = "  " + this._monthNames[datePosted.getMonth()] + " " + datePosted.getDate() + ", " + datePosted.getFullYear();
+    return (
+      <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF'}}>
+        <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
+          <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
+        </Text>
+        <Text onPress={() => this.props.navigation.navigate("ArticleDetails", { item })} style={styles.nameStyle}>
+          { item[1].articleName }
+        </Text>
+        <Text style={styles.dateStyle}>
+          <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
+          { dateStr }
+        </Text>
+      </View>
+    );
+  };
+
+  _renderHeader = () => {
+    return (
+      <View>
+        <View style={styles.container2}>
+          <ImageBackground
+            style={styles.backdrop}
+            blurRadius={0}
+            source={require('../images/image2.jpg')}>
+            <View style={styles.backdropView}></View>
+          </ImageBackground>
+        </View>
+        <View style={{ backgroundColor: '#FFFFFF' }}>
+          <Card>
+            <CardItem bordered style={{ borderLeftColor: '#0039A6', borderLeftWidth: 2}}>
+              <Body>
+                <Text style={{ fontSize: 22, fontWeight: '800', color: '#C75B12' }}><Icon type='FontAwesome' name='newspaper-o' style={{ fontSize: 22, color: '#C75B12' }} /> {" "}Jonsson | News</Text>
+              </Body>
+            </CardItem>
+          </Card>
+        </View>
+      </View>
+    );
+  };
 
   render() {
     if (this.state.isLoading) {
@@ -182,70 +211,17 @@ export default class Home extends Component {
         </View>
       );
     }
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ]
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-      "Saturday"
-    ]
-
-    const date = new Date()
-    var month = monthNames[date.getMonth()]
-    var year = date.getFullYear()
-    var day = date.getDate()
-    var dayofweek = days[date.getDay()]
 
     return (
-      <Container style={styles.containerStyle}>
-        <Content
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh.bind(this)}
-            />
-          }
-        >
-          <View style={styles.container2}>
-            <ImageBackground
-              style={styles.backdrop}
-              blurRadius={0}
-              source={require('../images/image2.jpg')}>
-              <View style={styles.backdropView}>
-                {/* <Text style={{ fontSize: 35, fontWeight: 'bold', paddingBottom: 5, paddingTop: 15, color: '#000000'}}>Jonsson|<Text style={{ fontSize: 35, fontWeight: 'bold', paddingBottom: 5, paddingTop: 15, color: '#c75b12'}}>Careers</Text></Text> */}
-              </View>
-            </ImageBackground>
-          </View>
-          <Content style={{ backgroundColor: '#FFFFFF' }}>
-            <Card>
-              <CardItem bordered style={{ borderLeftColor: '#0039A6', borderLeftWidth: 2}}>
-                <Body>
-                  <Text style={{ fontSize: 22, fontWeight: '800', color: '#C75B12' }}><Icon type='FontAwesome' name='newspaper-o' style={{ fontSize: 22, color: '#C75B12' }} /> {" "}Jonsson | News</Text>
-                </Body>
-              </CardItem>
-            </Card>
-          </Content>
-          <ListView
-            dataSource={this.state.dataSource}
-            renderRow={(rowData) => {
-              const { uri } = rowData;
-              return (
-                <Content style={{paddingBottom: 10}}>
-                  <Text style={{ fontSize: 14, fontWeight: '800' }}></Text>
-                  <Text style={{ color: rowData.articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
-                    <Icon name='ios-pricetag' style={{ fontSize: 10, color: rowData.articleColor }} />  {rowData.articleType}
-                  </Text>
-                  <Text onPress={() => this.props.navigation.navigate("ArticleDetails", { rowData })} style={styles.nameStyle}>
-                    {rowData.articleName}
-                  </Text>
-                  <Text style={styles.dateStyle}>
-                    <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} /> {monthNames[parseInt(rowData.postedOn.toString().substr(5, 5).substr(0, 2)) - 1]} {parseInt(rowData.postedOn.toString().substr(8, 2))}, {rowData.postedOn.toString().substr(0, 4)}</Text>
-                </Content>
-              )
-            }}
-          />
-        </Content>
-      </Container>
-    )
+      <FlatList
+        keyExtractor={this._keyExtractor}
+        data={this.state.dataSource}
+        renderItem={this._renderArticle}
+        ListHeaderComponent={this._renderHeader}
+        onRefresh={this._onRefresh.bind(this)}
+        refreshing={this.state.refreshing}
+      />
+    );
   }
 }
 
