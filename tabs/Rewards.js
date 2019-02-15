@@ -12,15 +12,14 @@ import firebaseApp from './EventDetails';
 import config from './EventDetails'
 import moment from 'moment';
 
-var tempVal = 0;
 export default class Rewards extends Component {
 
     constructor(props) {
-        super(props);
+        super();
         const ev = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
             isLoading: true,
-            refreshing: false,
+            pointsLoading: true,
             dataSource: ev.cloneWithRows([]),
             points: 0,
             numOfEvents: 0
@@ -34,89 +33,44 @@ export default class Rewards extends Component {
         this.state.numOfEvents = eventsAttendedValue
     }
 
-    whooshBitsUpdate = (data) => {
-        var whooshBitsValue = data.val();
-        console.log("REWARDS PAGE # WHOOSH BITS: " + whooshBitsValue);
-        this.state.points = whooshBitsValue
+    getPointsValues(){
+        fetch('https://jonssonconnect.firebaseio.com/Users/' + this.state.userID + '/points.json')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    points: responseJson,
+                    pointsLoading: false,
+                });
+            })
+            .catch((error) => {
+                console.error("AN ERROR OCCURED WHEN FETCHING points FROM FIREBASE: " + err);
+            });
     }
-
-    numOfEventsUpdateErr = (err) => {
-        console.log("AN ERROR OCCURED WHEN FETCHING numOfEvents FROM FIREBASE: " + err);
+    getEventCount(){
+        fetch('https://jonssonconnect.firebaseio.com/Users/' + this.state.userID + '/numOfEvents.json')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    numOfEvents: responseJson
+                });
+            })
+            .catch((error) => {
+                console.error("AN ERROR OCCURED WHEN FETCHING numOfEvents FROM FIREBASE: " + error);
+            });
     }
-
-    whooshBitsUpdateErr = (err) => {
-        console.log("AN ERROR OCCURED WHEN FETCHING points FROM FIREBASE: " + err);
-    }
-
 
     async componentDidMount() {
-
         this.setState({
             userID: await AsyncStorage.getItem('userID'),
             isLoading: false
         });
-
-        return fetch('https://jonssonconnect.firebaseio.com/Events.json')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                //console.log(responseJson);
-                var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-                var userId = this.state.userID;
-                var pointsCount = 0;
-                for (var key in responseJson) {
-                    if (responseJson.hasOwnProperty(key)) {
-                        //console.log('users',responseJson[key].usersRsvp)
-                        if (responseJson[key].usersAttended) {
-                            if (responseJson[key].usersAttended.hasOwnProperty(userId)) {
-                                pointsCount += Number(responseJson[key].whooshBits);
-                            } else {
-                                delete responseJson[key]
-                            }
-                        } else {
-                            delete responseJson[key]
-                        }
-                    }
-                }
-                console.log(responseJson)
-                this.setState({
-                    isLoading: false,
-                    dataSource: ds.cloneWithRows(responseJson),
-                    data: responseJson.Events,
-                    numOfEvents: Object.keys(responseJson).length,
-                    points: pointsCount
-                }, function () {
-                    // do something with new state
-                });
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
-
-    _onRefresh() {
-        this.setState({ refreshing: true });
-        return fetch('https://jonssonconnect.firebaseio.com/Events.json')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                let ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-                this.setState({
-                    isLoading: false,
-                    dataSource: ds.cloneWithRows(responseJson),
-                    refreshing: false,
-                }, function () {
-                });
-            })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    networkFailed: true,
-                })
-            });
+        this.getPointsValues()
+        this.getEventCount()
     }
 
     onRedeemPressed = () => {
-        var localPoints = this.state.points
-        this.props.navigation.navigate('Redeem', { localPoints, tempVal });
+        var userPoints = this.state.points;
+        this.props.navigation.navigate('Redeem', {userPoints });
     }
 
     utcToLocal = (time) => {
@@ -125,21 +79,8 @@ export default class Rewards extends Component {
     }
 
     render() {
-        var firebasePointsRef = firebase.database().ref("Users/" + this.state.userID + "/points/");
-        firebasePointsRef.on('value', function (snapshot) {
-            tempVal = snapshot.val()
-            console.log("TEMP VAL REDEEM.JS: " + tempVal)
-            // this.state.ourPoints = tempVal;
-        });
 
-        // var numOfEventsRef = firebase.database().ref("Users/" + this.state.userID + "/numOfEvents/");
-        // var whooshBitsRef = firebase.database().ref("Users/" + this.state.userID + "/points/");
-        // numOfEventsRef.on('value', this.numOfEventsUpdate, this.numOfEventsUpdateErr);
-        // whooshBitsRef.on('value', this.whooshBitsUpdate, this.whooshBitsUpdateErr);
-        // console.log("********** EVENTS ATTENDED: " + this.state.numOfEvents);
-        // console.log("********** WHOOSH BITS: " + this.state.points);
-
-        if (this.state.isLoading) {
+        if (this.state.isLoading || this.state.pointsLoading) {
             return (
                 <View style={{ flex: 1, paddingTop: 20 }}>
                     <ActivityIndicator />
@@ -325,8 +266,4 @@ export default class Rewards extends Component {
             </View>
         );
     }
-
-
-} //Class
-
-
+}

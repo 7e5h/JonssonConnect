@@ -44,36 +44,12 @@ export default class Redeem extends Component {
     }
 
     validWhooshBitsRedeemValue(wbVal) {
-        //this.state.points = wbVal;        //wbVal IS THE POINTS FROM USER'S FIREBASE & STATE WHOOSH BITS IS POINTS ENTERED
-        //console.log("&&&&& THIS.STATE POINTS: " + this.state.points);
-        // console.log("&&&&& RAP SONG POINTS: " + wbVal);
-        // console.log("&&&&& STATE WHOOSH BITS VALUE: " + this.state.whooshBitsValue)
-        if ((parseInt(wbVal).toString() !== '0') && (parseInt(wbVal) > 0) && (parseInt(this.state.whooshBitsValue) <= parseInt(wbVal))) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return (parseInt(wbVal).toString() !== '0') && (parseInt(wbVal) > 0) && (parseInt(this.state.whooshBitsValue) <= parseInt(wbVal))
     }
 
-    // zeroCheck(zeroVal)
-    // {
-    //     //this.state.points = wbVal;        //wbVal IS THE POINTS FROM USER'S FIREBASE & STATE WHOOSH BITS IS POINTS ENTERED
-    //     //console.log("&&&&& THIS.STATE POINTS: " + this.state.points);
-    //     // console.log("&&&&& RAP SONG POINTS: " + wbVal);
-    //     // console.log("&&&&& STATE WHOOSH BITS VALUE: " + this.state.whooshBitsValue)
-    //     if (parseInt(zeroVal) > 0)
-    //     {
-    //         return true;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
 
     displayQRCode() {
-        // console.log("&&&&& RAP SONG POINTS: " + this.props.navigation.state.params.localPoints.toString());
-        if (this.state.whooshBitsValue !== null && this.hasWhitespace(this.state.whooshBitsValue) == false && this.validWhooshBitsRedeemValue(this.props.navigation.state.params.tempVal.toString())) {
+        if (this.state.whooshBitsValue !== null && this.hasWhitespace(this.state.whooshBitsValue) == false && this.validWhooshBitsRedeemValue(this.props.navigation.state.params.userPoints.toString())) {
             var woosh = this.state.whooshBitsValue;
             var ourUserID = this.state.userID;
             console.log("FROM REDEEM PAGE: " + woosh);
@@ -83,7 +59,7 @@ export default class Redeem extends Component {
         else if (this.state.whooshBitsValue == null) {
             Alert.alert(
                 "Hmm...",
-                "That doesn't seem right. Did you mean to enter some other value?\n\nYou have " + this.props.navigation.state.params.tempVal.toString() + " whoosh bits remaining!",
+                "That doesn't seem right. Did you mean to enter some other value?\n\nYou have " + this.props.navigation.state.params.userPoints.toString() + " whoosh bits remaining!",
                 [
                     { text: 'Got it!', onPress: () => console.log('User tried to scam us!') },
                 ],
@@ -91,10 +67,10 @@ export default class Redeem extends Component {
             )
             this.props.navigation.goBack(null);
         }
-        else if (!this.validWhooshBitsRedeemValue(this.props.navigation.state.params.tempVal.toString())) {
+        else if (!this.validWhooshBitsRedeemValue(this.props.navigation.state.params.userPoints.toString())) {
             Alert.alert(
                 "That's wayy too much!",
-                'We noticed that you\'re trying to redeem more whoosh bits than available!\n\nYou can only redeem ' + this.props.navigation.state.params.tempVal.toString() + ' whoosh bits!',
+                'We noticed that you\'re trying to redeem more whoosh bits than available!\n\nYou can only redeem ' + this.props.navigation.state.params.userPoints.toString() + ' whoosh bits!',
                 [
                     { text: 'Got it!', onPress: () => console.log('User tried to scam us!') },
                 ],
@@ -155,20 +131,10 @@ export default class Redeem extends Component {
                     <Text style={styles.bodyStyle}>3. And you're done! That's it!</Text>
                     <Text style={styles.bodyStyle}>4. Just show this QR code to an attendant to approve your redeem points request!</Text>
                 </View>
-                {/* <View>
-                    <Text style={{
-                        textAlign: 'center',
-                        fontSize: 20,
-                        paddingTop: 30,
-                        color: '#008542',
-                        fontWeight: 'bold'
-                    }}>
-                        FYI, You Have {this.props.navigation.state.params.tempVal.toString()} Whoosh Bits Remaining!</Text>
-                </View> */}
                 <Form style={styles.formView}>
-                {/* "FYI, you have " + this.props.navigation.state.params.tempVal.toString() + " Whoosh Bits remaining!" */}
+                {/* "FYI, you have " + this.props.navigation.state.params.userPoints.toString() + " Whoosh Bits remaining!" */}
                     <Item stackedLabel>
-                        <Input placeholder= {"FYI, you have " + this.props.navigation.state.params.tempVal.toString() + " Whoosh Bits!"} keyboardType='numeric' onChangeText={(w) => { (this.redeemPointsUpdater(w)) }} name="whooshBits" />
+                        <Input placeholder= {"FYI, you have " + this.props.navigation.state.params.userPoints.toString() + " Whoosh Bits!"} keyboardType='numeric' onChangeText={(w) => { (this.redeemPointsUpdater(w)) }} name="whooshBits" />
                         {console.log('Whoosh Bits value entered: ' + this.state.whooshBitsValue)}
                     </Item>
                     <TouchableOpacity
@@ -220,12 +186,10 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     infoStyle: {
-        textAlign: "center",
         paddingHorizontal: 20,
     },
 
     headStyle: {
-        textAlign: "center",
         paddingHorizontal: 10,
     }
 });

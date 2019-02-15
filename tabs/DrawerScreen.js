@@ -4,15 +4,21 @@
  */
 
 import React, { Component } from 'react';
-import { NavigationActions } from 'react-navigation';
 import PropTypes from 'prop-types';
 import { ScrollView, Text, View, Linking, TouchableOpacity, ActivityIndicator, AsyncStorage, ImageBackground, Image } from 'react-native';
-import { DrawerActions } from 'react-navigation';
 import RF from 'react-native-responsive-fontsize';
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, Icon, ListItem, Item, Input, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
 import { Permissions, Notifications } from 'expo';
 import * as firebase from 'firebase';
 
+const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
+
+const RCTNetworking = require("RCTNetworking");
+function clearCookies() {
+  RCTNetworking.clearCookies((cleared) => {
+    console.log('Cookies cleared, had cookies=' + cleared.toString());
+  })
+}
 
 export default class DrawerScreen extends Component {
 
@@ -37,16 +43,17 @@ export default class DrawerScreen extends Component {
     this.props.navigation.navigate("Help");
   }
 
-  // componentDidMount = async() => {
-  //   this.setState({
-  //     firstName: await AsyncStorage.getItem('firstName'),
-  //     lastName: await AsyncStorage.getItem('lastName'),
-  //     userPhoto: await AsyncStorage.getItem('userPhoto'),
-  //     headline: await AsyncStorage.getItem('headline'),
-  //     location: await AsyncStorage.getItem('location'),
-  //     industry: await AsyncStorage.getItem('industry'),
-  //   }, this.setState({ isLoading: false }));
-  // }
+  async logout() {
+    await AsyncStorage.clear();
+    await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
+
+    // Must clear cookies in web browser to be able to login with different account
+    clearCookies()
+
+    this.props.navigation.navigate('Login');
+  }
+
+
 
   async componentWillMount() {
 
@@ -202,11 +209,7 @@ export default class DrawerScreen extends Component {
 
             <TouchableOpacity style={styles.sidebar}>
               {/* <Icon type="FontAwesome" name='gift' size={5} /> */}
-              <Image
-              source={require('../images/ccicon.png')}
-              fadeDuration={0}
-              style={{width: 30, height: 30}}
-              />
+                <Icon type="FontAwesome" name='gift'  style={{color: '#c75b12'}} onPress={this.navigateToRewardsPage}/>
               <Text style={styles.settingsStyle} onPress={() => this.navigateToRewardsPage()}>
                 Rewards
               </Text>
@@ -214,31 +217,30 @@ export default class DrawerScreen extends Component {
 
             <TouchableOpacity style={styles.sidebar}
               onPress={() => { Linking.openURL('https://giving.utdallas.edu/ECS') }}>
-              <Image
-              source={require('../images/dicon.png')}
-              fadeDuration={0}
-              style={{width: 30, height: 30}}
-              />
+                <Icon type="FontAwesome" name='dollar' style={{color: '#c75b12'}} onPress={this.navigateToScreen()}/>
               <Text style={styles.settingsStyle} onPress={this.navigateToScreen()}>
                 Donate Now
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.sidebar}>
-              <Image
-              source={require('../images/hicon.png')}
-              fadeDuration={0}
-              style={{width: 30, height: 30}}
-              />
+                <Icon type="FontAwesome" name='question'  style={{color: '#c75b12'}}/>
               <Text style={styles.settingsStyle} onPress={() => this.navigateToHelpPage()}>
                 Help & Feedback
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.sidebar}>
-              <Icon type="MaterialCommunityIcons" name='qrcode-scan' style={{color: '#c75b12'}}/>
+              <Icon type="FontAwesome" name='qrcode'  style={{color: '#c75b12'}}/>
               <Text style={styles.settingsStyle} onPress={() => this.props.navigation.navigate('Qrcode', {theUserID, kaiser})}>
                 Scan QR Code
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.sidebar}>
+              <Icon type='FontAwesome' name='arrow-circle-o-left' style={{color: '#c75b12'}}/>
+              <Text style={styles.settingsStyle} onPress = {() => this.logout()}>
+                Logout
               </Text>
             </TouchableOpacity>
 
@@ -257,8 +259,11 @@ export default class DrawerScreen extends Component {
   }
 }
 
+
+
 DrawerScreen.propTypes = {
   navigation: PropTypes.object
+  
 };
 
 const styles = {

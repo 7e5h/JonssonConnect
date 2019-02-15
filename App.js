@@ -3,16 +3,11 @@
  * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
  */
 
-import React, { Component } from 'react';
-import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { createMaterialTopTabNavigator, createStackNavigator, createSwitchNavigator, createDrawerNavigator } from "react-navigation";
-import { Container, Header, Content, Card, CardItem, Thumbnail, Icon, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
+import React from 'react';
+import { createAppContainer, createMaterialTopTabNavigator, createStackNavigator, createSwitchNavigator, createDrawerNavigator } from "react-navigation";
 
-//import ComputerScience from './tabs/ComputerScience'
-//import Profile from './tabs/Profile'
-import Home from './tabs/Home';
+import HomeScreen from './tabs/Home';
 import Jobs from './tabs/Jobs';
-import Events from './tabs/Events';
 import Login from './tabs/Login';
 import EventDetails from './tabs/EventDetails';
 import JobsDetails from './tabs/JobsDetails';
@@ -24,7 +19,7 @@ import Help from './tabs/Help';
 import Agenda from './tabs/Agenda';
 import Qrcode from './tabs/Qrcode';
 import Redeem from './tabs/Redeem';
-import CodeDisplay from './tabs/CodeDisplay';
+import CodeDisplayScreen from './tabs/CodeDisplay';
 
 import * as firebase from 'firebase';
 
@@ -41,184 +36,152 @@ export var config = {
 
 export const firebaseApp = firebase.initializeApp(config);
 
-export const HomeFeedStack = createStackNavigator({
-  Home: {
-    screen: Home,
-    navigationOptions: ({ navigation }) => ({
-      title: "News Feed",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
+const HomeFeedStack = createStackNavigator(
+    {
+      Home: {
+        screen: HomeScreen,
+        navigationOptions: {
+          title: 'News Feed',
+        }
+      },
+      ArticleDetails: {
+        screen: ArticleDetails,
+        navigationOptions: {
+          title: 'News Article',
+        }
+      },
+      Rewards: {
+        screen: Rewards,
+        navigationOptions: {
+          title: 'Rewards',
+        }
+      },
+      Redeem: {
+        screen: Redeem,
+        navigationOptions: {
+          title: 'Redeem',
+        }
+      },
+      CodeDisplay: {
+        screen: CodeDisplayScreen,
+        navigationOptions: {
+          title: 'QR Code',
+        }
+      },
+      Help: {
+        screen: Help,
+        navigationOptions: {
+          title: 'Help',
+        }
+      },
+    },
+    {
+      initialRouteName: 'Home',
+      defaultNavigationOptions: {
+        headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+      },
+    });
 
-  ArticleDetails: {
-    screen: ArticleDetails,
-    navigationOptions: ({ navigation }) => ({
-      title: "News Article",
-      headerStyle: { backgroundColor: '#C75B12' },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
+const JobsFeedStack = createStackNavigator(
+    {
+      Jobs: {
+        screen: Jobs,
+        navigationOptions: {
+          title: 'Job Listings',
+        }
+      },
+      JobsDetails: {
+        screen: JobsDetails,
+        navigationOptions: {
+          title: 'Job Details',
+        }
+      },
+    },
+    {
+      initialRouteName: 'Jobs',
+      defaultNavigationOptions: {
+        headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+    },
+    });
 
-  Rewards: {
-    screen: Rewards,
-    navigationOptions: ({ navigation }) => ({
-      title: "Rewards",
-      headerStyle: { backgroundColor: '#C75B12' },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
+const EventsFeedStack = createStackNavigator(
+    {
+      EventsCalendar: {
+        screen: EventsCalendar,
+        navigationOptions: {
+          title: 'Events Calendar',
+        }
+      },
+      EventDetails: {
+        screen: EventDetails,
+        navigationOptions: {
+          title: 'Event Details',
+        }
+      },
+      Agenda: {
+        screen: Agenda,
+        navigationOptions: {
+          title: 'Event List',
+        }
+      },
+      Qrcode: {
+        screen: Qrcode,
+        navigationOptions: {
+          title: 'Scan QR Code Here',
+        }
+      },
+    },
+    {
+      initialRouteName: 'EventsCalendar',
+      defaultNavigationOptions: {
+        headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
+        headerTintColor: '#ffffff',
+        headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
+      },
+    });
 
-  Redeem: {
-    screen: Redeem,
-    navigationOptions: ({ navigation }) => ({
-      title: "Redeem Whoosh Bits",
-      headerStyle: { backgroundColor: '#C75B12' },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-
-  CodeDisplay: {
-    screen: CodeDisplay,
-    navigationOptions: ({ navigation }) => ({
-      title: "QR Code",
-      headerStyle: { backgroundColor: '#C75B12' },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-
-  Help: {
-    screen: Help,
-    navigationOptions: ({ navigation }) => ({
-      title: "Help & Feedback",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  }
-});
-
-export const EventsFeedStack = createStackNavigator({
-  EventsTab: {
-    screen: EventsCalendar,
-    navigationOptions: ({ navigation }) => ({
-      title: "Events Calendar",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-  EventDetails: { screen: EventDetails,
-    navigationOptions: ({ navigation }) => ({
-      title: "Event Details",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-  EventsCalendar: { screen: EventsCalendar },
-  Agenda: {
-    screen: Agenda,
-    navigationOptions: ({ navigation }) => ({
-      title: "Events List",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-  Qrcode: { screen: Qrcode,
-    navigationOptions: ({ navigation }) => ({
-      title: "Scan QR Code Here",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-});
-
-export const JobsFeedStack = createStackNavigator({
-  JobsTab: {
-    screen: Jobs,
-    navigationOptions: ({ navigation }) => ({
-      title: "Job Listings",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-  JobsDetails: { screen: JobsDetails,
-    navigationOptions: ({ navigation }) => ({
-      title: "Job Details",
-      headerStyle: { backgroundColor: '#C75B12', borderBottomWidth: 1 },
-      headerTitleStyle: { fontSize: 18, fontWeight: '100', color: 'white' },
-    })
-  },
-});
-
-export const AppScreenNavigator = createMaterialTopTabNavigator({
+const AppScreenNavigator = createMaterialTopTabNavigator({
   Home: { screen: HomeFeedStack },
   Jobs: { screen: JobsFeedStack },
   Events: { screen: EventsFeedStack },
 },
-  {
-    tabBarPosition: 'bottom',
-    swipeEnabled: true,
-    animationEnabled: true,
-    tabBarOptions: {
-      activeTintColor: '#FFFFFF',
-      labelStyle: {
-        fontSize: 15,
-      },
-      style: {
-        backgroundColor: '#008542', // UTD Color
-      },
+    {
+      tabBarPosition: 'bottom',
+      swipeEnabled: false,
+      animationEnabled: true,
+      tabBarOptions: {
+        activeTintColor: '#FFFFFF',
+        labelStyle: {
+          fontSize: 15,
+        },
+        style: {
+          backgroundColor: '#008542', // UTD Color
+        },
+        tabStyle: {
+          padding: 10, margin:10,
+        },
+      }
     }
-  });
+    );
 
-export const DrawerNavigator = createDrawerNavigator({
-  AppScreenNavigator: {
-    screen: AppScreenNavigator
-  }
-}, {
-    //initialRouteName: 'HomeFeedStack',
-    contentComponent: DrawerScreen,
-    drawerWidth: 250
-  });
+const DrawerNavigator = createDrawerNavigator(
+    {
+      AppScreenNavigator: AppScreenNavigator
+    },
+    {
+      initialRouteName: 'AppScreenNavigator',
+      contentComponent: DrawerScreen,
+      drawerWidth: 250
+    });
 
-const MenuImage = ({ navigation }) => {
-  if (!navigation.state.isDrawerOpen) {
-    return <Text>Not Open</Text>
-  } else {
-    return <Text>Drawer is Open</Text>
-  }
-}
+const AppNavigator = createSwitchNavigator ({
+  Login: Login,
+  DrawerNavigator: DrawerNavigator
+});
 
-// Main navigator for the app
-const AppNavigator = createSwitchNavigator({
-  Login: {
-    screen: Login,
-    navigationOptions: ({ navigation }) => ({
-      header: null
-    })
-  },
-  DrawerNavigator: {
-    screen: DrawerNavigator
-  }
-}, {
-    navigationOptions: ({ navigation }) => ({
-      title: 'ReactNavigation',  // Title to appear in status bar
-      headerLeft:
-        <TouchableOpacity onPress={() => { navigation.dispatch(DrawerActions.toggleDrawer()) }}>
-          <MenuImage style="styles.bar" navigation={navigation} />
-        </TouchableOpacity>,
-      headerStyle: {
-        backgroundColor: '#333',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+export default App = createAppContainer(AppNavigator);
 
-    })
-  });
-
-AppScreenNavigator.navigationOptions = {
-  title: "App"
-};
-
-export default AppNavigator
-//export default AppScreenNavigator

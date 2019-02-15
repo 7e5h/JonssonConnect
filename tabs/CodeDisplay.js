@@ -5,7 +5,7 @@ import { QRCode } from 'react-native-custom-qr-codes';
 
 
 
-export default class CodeDisplay extends Component {
+export default class CodeDisplay extends React.Component {
     
 render() {
 
@@ -24,7 +24,7 @@ render() {
             <Card>
               <CardItem bordered style={{ borderLeftColor: '#0039A6', borderLeftWidth: 2}}>
                 <Body>
-                  <Text style={{ fontSize: 22, fontWeight: '800', color: '#C75B12' }}><Icon type='MaterialCommunityIcons' name='qrcode' style={{ fontSize: 22, color: '#C75B12' }} /> {" "}Your Personalized QR Code</Text>
+                  <Text style={{ fontSize: 22, fontWeight: '800', color: '#C75B12' }}><Icon type="FontAwesome" name='qrcode' style={{ fontSize: 22, color: '#C75B12' }} /> {" "}Your Personalized QR Code</Text>
                 </Body>
               </CardItem>
             </Card>
@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
 },
   infoStyle: {
-      textAlign: "center",
       paddingHorizontal: 20,
   },
 

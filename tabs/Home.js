@@ -5,11 +5,8 @@
 
 import React, { Component } from 'react';
 import { Alert, ActivityIndicator, AsyncStorage, FlatList, Image, Linking, ImageBackground, RefreshControl, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator } from "react-navigation";
 import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Item, Icon, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
 import * as firebase from 'firebase';
-import firebaseApp from '../App';
-import rootRef from '../App';
 
 export default class Home extends Component {
 
@@ -33,20 +30,20 @@ export default class Home extends Component {
     var lName = this.state.lastName
     let userRef = firebase.database().ref('Users/' + this.state.userID + '/');
     console.log("USER ID FROM STUDENT USER FUNC IN HOME.JS: " + this.state.userID)
-      userRef.update({
-        classification: "student",
-        userStatus: "approved",
-        isAdmin: "false",
-        numOfEvents: 0,
-        points: 0,
-        firstName: fName,
-        lastName: lName
-      }).then(function () {
-        console.log('STUDENT CLASSIFICATION SUCCEEDED');
-      })
-        .catch(function (error) {
-          console.log('STUDENT CLASSIFICATION FAILED' + error);
-        });
+    userRef.update({
+      classification: "student",
+      userStatus: "approved",
+      isAdmin: "false",
+      numOfEvents: 0,
+      points: 0,
+      firstName: fName,
+      lastName: lName
+    }).then(function () {
+      console.log('STUDENT CLASSIFICATION SUCCEEDED');
+    })
+    .catch(function (error) {
+      console.log('STUDENT CLASSIFICATION FAILED' + error);
+    });
   }
 
   alumniUser = () =>
@@ -168,7 +165,7 @@ export default class Home extends Component {
         <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
           <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
         </Text>
-        <Text onPress={() => this.props.navigation.navigate("ArticleDetails", { item })} style={styles.nameStyle}>
+        <Text onPress={() => this.props.navigation.push("ArticleDetails", { item })} style={styles.nameStyle}>
           { item[1].articleName }
         </Text>
         <Text style={styles.dateStyle}>

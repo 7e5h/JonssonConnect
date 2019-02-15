@@ -4,23 +4,19 @@ import {
   StyleSheet,
   Linking,
   View,
-  Dimensions,
-  Clipboard,
   Image,
-  ImageBackground,
   ActivityIndicator,
-  StatusBar,
   TouchableHighlight,
 } from 'react-native'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import RF from 'react-native-responsive-fontsize';
-import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
-import { Segment } from 'expo';
+import { Icon, Text, Button, } from 'native-base';
 import AppIntro from 'rn-app-intro-screen';
 import Expo from 'expo';
-//import { CLIENT_ID, CLIENT_SECRET } from './config'
 
 import LinkedInModal from 'react-native-linkedin'
+const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
+const IS_LOGGED_IN_KEY = "isLoggedIn";
 
 const styles = StyleSheet.create({
   container: {
@@ -110,12 +106,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#C75B12",
   },
-  // activeDot: {
-  //   color: "#C75B12"
-  // },
-  // allDotStyle: {
-  //   color: "blue"
-  // },
+  slideImage: {
+    width: 350,
+    height: 501,
+  }
 });
 
 const slides = [
@@ -129,125 +123,118 @@ const slides = [
     imageStyle: styles.image,
   },
   {
-    key: 'Login',
-    // text: "Make sure you've got your LinkedIn Creds with you!",
+    key: 'slide1',
     image: require('../assets/image1.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#C75B12',
   },
   {
-    key: 'Home',
-    // title: 'Home Sweet Home!',
-    // text: "Check the latest news here!\nPro Tip: Double tap on the bottom tabs to go back to the primary screen!",
+    key: 'slide2',
     image: require('../assets/image2.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#008542',
   },
   {
-    key: 'RSVP',
-    // title: 'Rocket guy',
-    // text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
+    key: 'slide3',
     image: require('../assets/image3.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#0039A6',
   },
   {
-    key: 'Redeem',
-    // title: 'Title 1',
-    // text: 'Description.\nSay something cool',
+    key: 'slide4',
     image: require('../assets/image4.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#FFB612',
   },
   {
-    key: 'Rewards',
-    // title: 'Title 2',
-    // text: 'Other cool stuff',
+    key: 'slide5',
     image: require('../assets/image5.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#69BE28',
   },
   {
-    key: 'Jobs',
-    // title: 'Rocket guy',
-    // text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
+    key: 'slide6',
     image: require('../assets/image6.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#C75B12',
   },
   {
-    key: 'Calendar',
-    // title: 'Title 2',
-    // text: 'Other cool stuff',
+    key: 'slide7',
     image: require('../assets/image7.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#008542',
   },
   {
-    key: 'Drawer',
-    // title: 'Rocket guy',
-    // text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
+    key: 'slide8',
     image: require('../assets/image8.png'),
-    // imageStyle: styles.image,
-    // backgroundColor: '#0039A6',
-  }
+  },
 ];
 
 export default class Login extends React.Component {
 
-  state = {
-    access_token: undefined,
-    expires_in: undefined,
-    refreshing: false,
-      fonts_loaded: false,
-  }
-
   constructor(props) {
     super(props)
-    // StatusBar.setHidden(true)
-    this.state = { isLoggedIn: false };
+
+    this.state = {
+      isLoggedIn: false,
+      access_token: undefined,
+      expires_in: undefined,
+      refreshing: false,
+      fonts_loaded: false,
+      tutorialCompleted: false,
+    };
   }
 
-  // This will see if the login token already exists - If it does, go to Main App Screen
-  async componentWillMount() {
+  async componentDidMount() {
+    await this.loadFontsAndIcons();
+    this.checkIfUserHasCompletedTutorial();
+  }
+  
+  async loadFontsAndIcons() {
 
-    // //DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
+    // DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
     // Segment.setEnabledAsync(false);
-      //This needs to happen here as the fonts only need to be loaded once,
+    // This needs to happen here as the fonts only need to be loaded once,
+    await Expo.Font.loadAsync({
+      'Roboto': require('native-base/Fonts/Roboto.ttf'),
+      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+      'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
+      'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+      'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+      'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+      'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+      'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
+      'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
+      'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
+      'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
+    });
 
-      await Expo.Font.loadAsync({
-          'Roboto': require('native-base/Fonts/Roboto.ttf'),
-          'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-          'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
-          'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-          'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-          'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-          'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-          'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
-          'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
-          'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
-          'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
-      });
-      this.setState({ fonts_loaded: true });
-      let LOGIN_TOKEN = await AsyncStorage.getItem('LOGIN_TOKEN');
-    const sliderState = await AsyncStorage.getItem('sliderState');
-    this.setState({ sliderState });
-    if (LOGIN_TOKEN == null) {
-      // DO nothing and continue login process
-      console.log('Login token not found');
+    this.setState({ fonts_loaded: true });
+  }
+
+  async checkIfUserHasCompletedTutorial() {
+    let hasCompletedTutorial = await AsyncStorage.getItem(TUTORIAL_COMPLETED_KEY);
+    if (hasCompletedTutorial === 'true') {
+      this.setState({ tutorialCompleted: true});
+      this.checkUserLogin()
+    } else {
+      this.setState({ tutorialCompleted: false});
     }
-    else {
-      console.log('Login token has been found');
-      let category = await this.chooseCategory();
-      console.log(category);
+  }
+
+  async checkUserLogin() {
+
+    // This will see if the login token already exists - If it does, go to Main App Screen
+    let loginToken = await AsyncStorage.getItem(IS_LOGGED_IN_KEY);
+
+    if (loginToken != null) {
+      // Login token found, continue to main app
       this.props.navigation.navigate("DrawerNavigator");
     }
   }
 
+  completedTutorial = () => {
+    AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
+    this.setState({ tutorialCompleted: true });
+    this.checkUserLogin()
+  }
+
+  /*
+  *
+  * Login Process (After authenticating with LinkedIn)
+  *
+  */
   async getUser({ access_token }) {
+
     this.setState({ refreshing: true })
+
     const baseApi = 'https://api.linkedin.com/v1/people/'
-    const qs = { format: 'json' }
     const params = [
       'first-name',
       'last-name',
@@ -267,106 +254,63 @@ export default class Login extends React.Component {
         Authorization: 'Bearer ' + access_token,
       },
     })
+
     const payload = await response.json()
+
+    await this.saveUserData(payload)
+    this.userLoggedInSuccessfully()
+  }
+
+  async saveUserData(data) {
+
     this.setState({
-      ...payload,
+      ...data,
       refreshing: false,
     })
-    let value = this.state.pictureUrl
-    if (value == null) {
-      AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png')
+
+    // Check if the user has a picture url from LinkedIn
+    let picUrl = this.state.pictureUrl;
+
+    if (picUrl != null) {
+      await AsyncStorage.setItem('userPhoto', picUrl);
+    } else {
+      await AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png');
     }
-    else {
-      AsyncStorage.setItem('userPhoto', this.state.pictureUrl)
-    }
-    AsyncStorage.setItem('lastName', this.state.lastName),
-      AsyncStorage.setItem('firstName', this.state.firstName),
-      AsyncStorage.setItem('email', this.state.emailAddress),
-      AsyncStorage.setItem('headline', this.state.headline),
-      AsyncStorage.setItem('userID', this.state.id),
-      AsyncStorage.setItem('location', JSON.stringify(this.state.location)),
-      AsyncStorage.setItem('industry', this.state.industry),
-      AsyncStorage.setItem('LOGIN_TOKEN', "loggedIn"),
-      AsyncStorage.getItem('loggedInStatus',
-        (value) => {
-          this.setState({ loggedInStatus: 'loggedIn' });
-        });
+
+    await AsyncStorage.setItem('lastName', this.state.lastName);
+    await AsyncStorage.setItem('firstName', this.state.firstName);
+    await AsyncStorage.setItem('headline', this.state.headline);
+    await AsyncStorage.setItem('userID', this.state.id);
+    await AsyncStorage.setItem('location', JSON.stringify(this.state.location));
+    await AsyncStorage.setItem('industry', this.state.industry);
+    await AsyncStorage.setItem(IS_LOGGED_IN_KEY, "loggedIn");
+  }
+
+  userLoggedInSuccessfully() {
+    this.setState({ loggedInStatus: 'loggedIn' });
     this.props.navigation.navigate('DrawerNavigator');
-  }
-
-  chooseCategory = () => {
-    let category = 'student';
-    return category;
-  }
-
-  renderItem(label, value) {
-    return (
-      <View style={styles.item}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.label}>{label}</Text>
-        </View>
-        <View style={styles.valueContainer}>
-          <Text style={styles.value}>{value}</Text>
-        </View>
-      </View>
-    )
-  }
-
-  _onDone = () => {
-    // User finished the introduction. Show real app through
-    // navigation or simply by controlling state
-    AsyncStorage.setItem('sliderState', 'shown');
-    this.setState({ sliderState: 'shown' })
-  }
-
-  _renderNextButton = () => {
-    return (
-      <View style={styles.buttonCircle}>
-        <Icon
-          name="ios-arrow-dropright"
-          color="#000000"
-          size={40}
-          style={{ backgroundColor: 'transparent' }}
-        />
-      </View>
-    );
-  }
-  _renderDoneButton = () => {
-    return (
-      <View style={styles.buttonCircle}>
-        <Icon
-          name="check"
-          color="#000000"
-          size={40}
-          style={{ backgroundColor: 'transparent' }}
-        />
-      </View>
-    );
   }
 
   render() {
 
-    const { emailAddress, pictureUrl, refreshing, firstName, lastName, summary, id, headline, location } = this.state;
-    console.log('sliderstate is ' + this.state.sliderState);
-      if (!this.state.fonts_loaded) {
-          return (
-              <View style={{flex: 1, paddingTop: 20}}>
-                  <ActivityIndicator/>
-              </View>
-          );
-      }
-    else if (this.state.loggedInStatus === 'loggedIn') {
-      this.props.navigation.navigate("HomeFeedStack")
-    }
-    else if (!this.state.sliderState) {
+    const { emailAddress, refreshing } = this.state;
+
+    // Show activity indicator until fonts have been loaded, and the tutorial if not completed.
+    if (!this.state.fonts_loaded) {
+        return (
+            <View style={{flex: 1, paddingTop: 20}}>
+                <ActivityIndicator/>
+            </View>
+        );
+    } else if (!this.state.tutorialCompleted) {
       return <AppIntro
         slides={slides}
-        // dotStyle={styles.allDotStyle}
-        // activeDotStyle={styles.activeDot}
-        renderDoneButton={this._renderDoneButton}
-        renderNextButton={this._renderNextButton}
-        onDone={this._onDone} />;
+        onDone={this.completedTutorial}
+        bottomButton
+      />;
     }
+
+    // If no other special condition is true, render login screen
     return (
       <View style={styles.container}>
         <View style={styles.responsiveBox}>
