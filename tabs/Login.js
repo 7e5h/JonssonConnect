@@ -269,20 +269,21 @@ export default class Login extends React.Component {
     })
 
     // Check if the user has a picture url from LinkedIn
-    let picUrl = this.state.pictureUrl
-    if (picUrl === null) {
-      await AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png')
+    let picUrl = this.state.pictureUrl;
+
+    if (picUrl != null) {
+      await AsyncStorage.setItem('userPhoto', picUrl);
     } else {
-      await AsyncStorage.setItem('userPhoto', picUrl)
+      await AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png');
     }
 
-    await AsyncStorage.setItem('lastName', this.state.lastName)
-    await AsyncStorage.setItem('firstName', this.state.firstName)
-    await AsyncStorage.setItem('headline', this.state.headline)
-    await AsyncStorage.setItem('userID', this.state.id)
-    await AsyncStorage.setItem('location', JSON.stringify(this.state.location))
-    await AsyncStorage.setItem('industry', this.state.industry)
-    await AsyncStorage.setItem(IS_LOGGED_IN_KEY, "loggedIn")
+    await AsyncStorage.setItem('lastName', this.state.lastName);
+    await AsyncStorage.setItem('firstName', this.state.firstName);
+    await AsyncStorage.setItem('headline', this.state.headline);
+    await AsyncStorage.setItem('userID', this.state.id);
+    await AsyncStorage.setItem('location', JSON.stringify(this.state.location));
+    await AsyncStorage.setItem('industry', this.state.industry);
+    await AsyncStorage.setItem(IS_LOGGED_IN_KEY, "loggedIn");
   }
 
   userLoggedInSuccessfully() {
