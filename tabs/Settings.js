@@ -64,7 +64,7 @@ export default class Settings extends Component {
         {text: 'Student', onPress: () => this.updateClassification("student") },
         {text: 'Alumnus', onPress: () => this.updateClassification("alumni") },
       ],
-      { cancelable: false }
+      { cancelable: true }
     )
   }
 
