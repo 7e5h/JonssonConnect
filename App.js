@@ -19,6 +19,7 @@ import Help from './tabs/Help';
 import Agenda from './tabs/Agenda';
 import Qrcode from './tabs/Qrcode';
 import Redeem from './tabs/Redeem';
+import Settings from './tabs/Settings';
 import CodeDisplayScreen from './tabs/CodeDisplay';
 
 import * as firebase from 'firebase';
@@ -72,6 +73,12 @@ const HomeFeedStack = createStackNavigator(
         screen: Help,
         navigationOptions: {
           title: 'Help',
+        }
+      },
+      Settings: {
+        screen: Settings,
+        navigationOptions: {
+          title: 'Settings'
         }
       },
     },
@@ -184,4 +191,3 @@ const AppNavigator = createSwitchNavigator ({
 });
 
 export default App = createAppContainer(AppNavigator);
-

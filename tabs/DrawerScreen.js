@@ -30,10 +30,6 @@ export default class DrawerScreen extends Component {
     }
   }
 
-  navigateToScreen = (route) => () => {
-    console.log('DrawerScreen has been fired');
-  }
-
   navigateToRewardsPage = () => {
     console.log('navigateToRewardsPage has been executed');
     this.props.navigation.navigate("Rewards");
@@ -42,13 +38,24 @@ export default class DrawerScreen extends Component {
     console.log('navigateToHelpPage has been executed');
     this.props.navigation.navigate("Help");
   }
+  navigateToQrcodePage = () => {
+    console.log('navigateToQrcodePage has been executed');
+    let userID = this.state.userID;
+    let isAdminCheck = this.state.isAdminCheck;
+    this.props.navigation.navigate("Qrcode", {userID, isAdminCheck});
+    //this.props.navigation.navigate("Qrcode", {this.state.userID, this.state.isAdminCheck});
+  }
+  navigateToSettingsPage = () => {
+    console.log('navigateToSettingsPage has been executed');
+    this.props.navigation.navigate("Settings");
+  }
 
   async logout() {
     await AsyncStorage.clear();
     await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
 
     // Must clear cookies in web browser to be able to login with different account
-    clearCookies()
+    clearCookies();
 
     this.props.navigation.navigate('Login');
   }
@@ -97,7 +104,7 @@ export default class DrawerScreen extends Component {
     console.log('The updated token is ' + token);
 
     let userID = await AsyncStorage.getItem('userID');
-    
+
     // get firstname and lastname from state
     let firstName = await AsyncStorage.getItem('firstName');
     let lastName = await AsyncStorage.getItem('lastName');
@@ -128,7 +135,7 @@ export default class DrawerScreen extends Component {
     this.state.isAdminCheck = data.val()
     // console.log("@@@@@@@@@@ The admin  is " + this.state.isAdminCheck)
     //this.state.isAdminCheck = isAdmin;
-    
+
   }
 
   isAdminerrData = (err) => {
@@ -161,10 +168,6 @@ export default class DrawerScreen extends Component {
     let day = days[date.getDay()]
     var month = monthNames[date.getMonth()]
     var dateNum = date.getDate()
-    //console.log(month + ' ' + dateNum);
-    var theUserID = this.state.userID;
-
-    var kaiser = this.state.isAdminCheck;
 
     return (
       <View>
@@ -197,61 +200,50 @@ export default class DrawerScreen extends Component {
                 </ImageBackground>
               </View>
             <View style={styles.sidebarDay}>
-              <Text style={styles.day} onPress={this.navigateToScreen()}>
+              <Text style={styles.day}>
                 {day + ','}
               </Text>
             </View>
             <View style={styles.sidebarDate}>
-            <Text style={styles.date} onPress={this.navigateToScreen()}>
+            <Text style={styles.date}>
                 {month + ' ' + dateNum}
               </Text>
             </View>
 
-            <TouchableOpacity style={styles.sidebar}>
-              {/* <Icon type="FontAwesome" name='gift' size={5} /> */}
-                <Icon type="FontAwesome" name='gift'  style={{color: '#c75b12'}} onPress={this.navigateToRewardsPage}/>
-              <Text style={styles.settingsStyle} onPress={() => this.navigateToRewardsPage()}>
+            <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToRewardsPage()}>
+              <Icon type="FontAwesome" name='gift'  style={{color: '#c75b12'}} />
+              <Text style={styles.settingsStyle}>
                 Rewards
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebar}
-              onPress={() => { Linking.openURL('https://giving.utdallas.edu/ECS') }}>
-                <Icon type="FontAwesome" name='dollar' style={{color: '#c75b12'}} onPress={this.navigateToScreen()}/>
-              <Text style={styles.settingsStyle} onPress={this.navigateToScreen()}>
+            <TouchableOpacity style={styles.sidebar} onPress={() => { Linking.openURL('https://giving.utdallas.edu/ECS') }}>
+              <Icon type="FontAwesome" name='dollar' style={{color: '#c75b12'}} />
+              <Text style={styles.settingsStyle}>
                 Donate Now
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebar}>
-                <Icon type="FontAwesome" name='question'  style={{color: '#c75b12'}}/>
-              <Text style={styles.settingsStyle} onPress={() => this.navigateToHelpPage()}>
+            <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToHelpPage()}>
+              <Icon type="FontAwesome" name='question'  style={{color: '#c75b12'}}/>
+              <Text style={styles.settingsStyle}>
                 Help & Feedback
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebar}>
+            <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToQrcodePage()}>
               <Icon type="FontAwesome" name='qrcode'  style={{color: '#c75b12'}}/>
-              <Text style={styles.settingsStyle} onPress={() => this.props.navigation.navigate('Qrcode', {theUserID, kaiser})}>
+              <Text style={styles.settingsStyle}>
                 Scan QR Code
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebar}>
-              <Icon type='FontAwesome' name='arrow-circle-o-left' style={{color: '#c75b12'}}/>
-              <Text style={styles.settingsStyle} onPress = {() => this.logout()}>
-                Logout
+            <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToSettingsPage()}>
+              <Icon type='FontAwesome' name='cog' style={{color: '#c75b12'}}/>
+              <Text style={styles.settingsStyle}>
+                Settings
               </Text>
             </TouchableOpacity>
-
-            {/* <TouchableOpacity style={styles.sidebar}
-              transparent onPress={() => navigation.navigate('Profile')
-              }>
-              <Icon style={styles.logOut} type="Ionicons" name='ios-log-out' size={10} />
-              <Text style={styles.logOutText} onPress={this.navigateToScreen()}>
-                Log Out
-              </Text>
-            </TouchableOpacity> */}
           </View>
         </ScrollView>
       </View>
@@ -263,7 +255,7 @@ export default class DrawerScreen extends Component {
 
 DrawerScreen.propTypes = {
   navigation: PropTypes.object
-  
+
 };
 
 const styles = {

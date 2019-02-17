@@ -257,7 +257,7 @@ export default class Help extends Component {
                             <Label>Email ID (@utdallas.edu is preferred!)</Label>
                             <Input value={this.state.email} onChangeText={(e)=>{this.handleEmailChange(e)}} name="email"/>
                         </Item> */}
-                        
+
                         <Item stackedLabel>
                             <Label>How can we improve?</Label>
                             <Input value={this.state.message} onChangeText={(e) => { this.handleMessageChange(e) }} name="message" />
