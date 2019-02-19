@@ -274,7 +274,7 @@ export default class Help extends Component {
 
                     </Form>
                     <View style={styles.bottom}>
-                        <Text style={styles.buildStyle}>Build Number: 2.1.10</Text>
+                        <Text style={styles.buildStyle}>Build Number: 3.0.0</Text>
                     </View>
                 </ScrollView>
             );
