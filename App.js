@@ -169,7 +169,7 @@ const AppScreenNavigator = createMaterialTopTabNavigator({
           backgroundColor: '#008542', // UTD Color
         },
         tabStyle: {
-          padding: 10, margin:10,
+          padding: 5, margin:5,
         },
       }
     }
