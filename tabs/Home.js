@@ -4,105 +4,27 @@
  */
 
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, AsyncStorage, FlatList, Image, Linking, ImageBackground, RefreshControl, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
-import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Item, Icon, Input, Tab, Tabs, Text, Title, Button, Left, Body, Right, H1, H2, H3, } from 'native-base';
+import { Alert, ActivityIndicator, AsyncStorage, FlatList, ImageBackground, StyleSheet, View } from 'react-native';
+import { Card, CardItem, Icon, Text, Body } from 'native-base';
 import * as firebase from 'firebase';
+import moment from "moment";
 
 export default class Home extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       isLoading: true,
       refreshing: false,
       loadingFonts: true,
     };
-
-    this._monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
   }
-
-  studentUser = () =>
-  {
-    console.log('Current Student Pressed!')
-    var fName = this.state.firstName
-    var lName = this.state.lastName
-    let userRef = firebase.database().ref('Users/' + this.state.userID + '/');
-    console.log("USER ID FROM STUDENT USER FUNC IN HOME.JS: " + this.state.userID)
-    userRef.update({
-      classification: "student",
-      userStatus: "approved",
-      isAdmin: "false",
-      numOfEvents: 0,
-      points: 0,
-      firstName: fName,
-      lastName: lName
-    }).then(function () {
-      console.log('STUDENT CLASSIFICATION SUCCEEDED');
-    })
-    .catch(function (error) {
-      console.log('STUDENT CLASSIFICATION FAILED' + error);
-    });
-  }
-
-  alumniUser = () =>
-  {
-    console.log('Alumni Pressed!')
-    var fName = this.state.firstName
-    var lName = this.state.lastName
-    let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
-    console.log("USER ID FROM ALUMNI USER FUNC IN HOME.JS: " + this.state.userID)
-      userRef.update({
-        classification: "student",
-        userStatus: "waiting",
-        isAdmin: "false",
-        numOfEvents: 0,
-        points: 0,
-        firstName: fName,
-        lastName: lName
-      }).then(function () {
-        console.log('ALUMNI CLASSIFICATION SUCCEEDED');
-      })
-        .catch(function (error) {
-          console.log('ALUMNI CLASSIFICATION FAILED' + error);
-        });
-  }
-
-      gotData = (data) => {
-        var studentClassification = data.val()
-        console.log("The classification is " + studentClassification)
-
-        if(studentClassification === null)
-        {
-          Alert.alert(
-            'I am a ...',
-            'Please choose one of the options below. It will help us provide you with the most relevant news, events, & jobs!',
-            [
-              {text: 'Current Student', onPress: () => this.studentUser() },
-              {text: 'Alumnus', onPress: () => this.alumniUser()},
-            ],
-            { cancelable: false }
-          )
-        }
-        console.log("The classification is " + studentClassification)
-
-    }
-
-    errData = (err) => {
-        console.log(err);
-    }
 
   async componentDidMount() {
 
     this.setState({
       userID: await AsyncStorage.getItem('userID'),
-    });
-
-    var classificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
-    classificationRef.on('value', this.gotData, this.errData);
-
-    this.setState({
       firstName: await AsyncStorage.getItem('firstName'),
       lastName: await AsyncStorage.getItem('lastName'),
       userPhoto: await AsyncStorage.getItem('userPhoto'),
@@ -111,7 +33,63 @@ export default class Home extends Component {
       industry: await AsyncStorage.getItem('industry'),
     });
 
+    this.updateClassification()
     this._downloadNews();
+  }
+
+  updateClassification = () => {
+    let userClassificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
+    userClassificationRef.on('value', this.loadedClassification, this.handleError);
+  }
+
+  loadedClassification = (data) => {
+    let studentClassification = data.val()
+
+    if(studentClassification === null)
+    {
+      this.askUserClassification()
+    }
+  }
+
+  handleError = (err) => {
+    console.log(err);
+  }
+
+  askUserClassification = () => {
+    Alert.alert(
+        'I am a ...',
+        'Please choose one of the options below. It will help us provide you with the most relevant news, events, & jobs!',
+        [
+          {text: 'Current Student', onPress: () => this.saveUser('student') },
+          {text: 'Alumnus', onPress: () => this.saveUser('alumni') },
+        ],
+        { cancelable: false }
+    )
+  }
+
+  saveUser = (classification) => {
+
+    if (classification !== 'student' && classification !== 'alumni') {
+      console.log("ERROR: Classification not recognized");
+      return;
+    }
+
+    let firstName = this.state.firstName
+    let lastName = this.state.lastName
+
+    let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
+
+    userRef.update({
+      classification: classification,
+      userStatus: (classification === 'student') ? 'approved' : 'waiting',
+      isAdmin: "false",
+      numOfEvents: 0,
+      points: 0,
+      firstName: firstName,
+      lastName: lastName
+    }).catch(function (error) {
+      console.log(error);
+    });
   }
 
   _onRefresh() {
@@ -124,6 +102,7 @@ export default class Home extends Component {
       .then((response) => {
         return response.json();
       }).then((responseJson) => {
+
         let dataArray = [];
         for(let article in responseJson) {
           dataArray.push([article, responseJson[article]]);
@@ -145,9 +124,10 @@ export default class Home extends Component {
             refreshing: false
           });
         }
+
       })
       .catch((error) => {
-        //console.error(error);
+        console.error(error);
         this.setState({
           isLoading: false,
           networkFailed: true,
@@ -158,8 +138,9 @@ export default class Home extends Component {
   _keyExtractor = (item, index) => item[0];
 
   _renderArticle = ({item}) => {
-    let datePosted = new Date(item[1].postedOn);
-    let dateStr = "  " + this._monthNames[datePosted.getMonth()] + " " + datePosted.getDate() + ", " + datePosted.getFullYear();
+
+    let dateString = moment().format('  MMMM D, YYYY');
+
     return (
       <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF'}}>
         <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
@@ -170,7 +151,7 @@ export default class Home extends Component {
         </Text>
         <Text style={styles.dateStyle}>
           <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
-          { dateStr }
+          { dateString }
         </Text>
       </View>
     );
@@ -201,6 +182,7 @@ export default class Home extends Component {
   };
 
   render() {
+
     if (this.state.isLoading) {
       return (
         <View style={{ flex: 1, paddingTop: 20 }}>
