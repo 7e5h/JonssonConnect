@@ -43,20 +43,19 @@ export default class DrawerScreen extends Component {
       isLoading: false
     })
 
-    const { permissionStatus } = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-    );
+    const { permissionStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalPermissionsStatus = permissionStatus;
 
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.
     if (permissionStatus !== 'granted') {
       // Android remote notification permissions are granted during the app
       // install, so this will only ask on iOS
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalPermissionsStatus = await Permissions.askAsync(Permissions.NOTIFICATIONS);
     }
 
     // User has rejected notifications permission
-    if (permissionStatus !== 'granted') {
+    if (finalPermissionsStatus !== 'granted') {
       return;
     }
 
