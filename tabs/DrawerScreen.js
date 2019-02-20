@@ -5,20 +5,12 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, Text, View, Linking, TouchableOpacity, ActivityIndicator, AsyncStorage, ImageBackground, Image } from 'react-native';
+import { ScrollView, Text, View, Linking, TouchableOpacity, ActivityIndicator, AsyncStorage, ImageBackground } from 'react-native';
 import RF from 'react-native-responsive-fontsize';
-import { Container, Header, Content, Card, CardItem, Thumbnail, List, Icon, ListItem, Item, Input, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
+import { Thumbnail, Icon } from 'native-base';
 import { Permissions, Notifications } from 'expo';
 import * as firebase from 'firebase';
-
-const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
-
-const RCTNetworking = require("RCTNetworking");
-function clearCookies() {
-  RCTNetworking.clearCookies((cleared) => {
-    console.log('Cookies cleared, had cookies=' + cleared.toString());
-  })
-}
+import moment from "moment";
 
 export default class DrawerScreen extends Component {
 
@@ -26,41 +18,9 @@ export default class DrawerScreen extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      isAdminCheck: false,
+      isAdmin: false,
     }
   }
-
-  navigateToRewardsPage = () => {
-    console.log('navigateToRewardsPage has been executed');
-    this.props.navigation.navigate("Rewards");
-  }
-  navigateToHelpPage = () => {
-    console.log('navigateToHelpPage has been executed');
-    this.props.navigation.navigate("Help");
-  }
-  navigateToQrcodePage = () => {
-    console.log('navigateToQrcodePage has been executed');
-    let userID = this.state.userID;
-    let isAdminCheck = this.state.isAdminCheck;
-    this.props.navigation.navigate("Qrcode", {userID, isAdminCheck});
-    //this.props.navigation.navigate("Qrcode", {this.state.userID, this.state.isAdminCheck});
-  }
-  navigateToSettingsPage = () => {
-    console.log('navigateToSettingsPage has been executed');
-    this.props.navigation.navigate("Settings");
-  }
-
-  async logout() {
-    await AsyncStorage.clear();
-    await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
-
-    // Must clear cookies in web browser to be able to login with different account
-    clearCookies();
-
-    this.props.navigation.navigate('Login');
-  }
-
-
 
   async componentWillMount() {
 
@@ -79,75 +39,84 @@ export default class DrawerScreen extends Component {
       userID: await AsyncStorage.getItem('userID')
     });
 
-    const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
-    );
+    this.setState( {
+      isLoading: false
+    })
 
-    let finalStatus = existingStatus;
+    const { permissionStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+    );
 
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.
-    if (existingStatus !== 'granted') {
+    if (permissionStatus !== 'granted') {
       // Android remote notification permissions are granted during the app
       // install, so this will only ask on iOS
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      finalStatus = status;
     }
 
-    // Stop here if the user did not grant permissions
-    if (finalStatus !== 'granted') {
+    // User has rejected notifications permission
+    if (permissionStatus !== 'granted') {
       return;
     }
 
     // Get the token that uniquely identifies this device
     let token = await Notifications.getExpoPushTokenAsync();
-    console.log('The updated token is ' + token);
 
     let userID = await AsyncStorage.getItem('userID');
-
-    // get firstname and lastname from state
     let firstName = await AsyncStorage.getItem('firstName');
     let lastName = await AsyncStorage.getItem('lastName');
 
-    // Writing user's firstname, lastname, and notification token to firebase
     let userRef = firebase.database().ref('Users/' + userID);
     userRef.update({
       notificationToken: token,
-    }).then(function () {
-      console.log('Notification Token Assigned!');
-    })
-      .catch(function (error) {
-        console.log('NOTIFICATION TOKEN WAS NOT ASSIGNED!' + error);
-      });
-
-    userRef.update({
       firstName: firstName,
       lastName: lastName,
-    }).then(function () {
-      console.log('User\'s First Name & Last Name set successfully!');
-    })
-      .catch(function (error) {
-        console.log('FIRST NAME & LAST NAME NOT SET!' + error);
-      });
+    }).catch(this.handleError(error));
   }
 
-  isAdminData = (data) => {
-    this.state.isAdminCheck = data.val()
-    // console.log("@@@@@@@@@@ The admin  is " + this.state.isAdminCheck)
-    //this.state.isAdminCheck = isAdmin;
-
+  checkIsAdmin = () => {
+    let isAdminRef = firebase.database().ref("Users/" + this.state.userID + "/isAdmin/");
+    isAdminRef.on('value', this.handleIsAdmin, this.handleError);
   }
 
-  isAdminerrData = (err) => {
+
+  handleIsAdmin = (data) => {
+    this.state.isAdmin = data.val()
+  }
+
+  handleError = (err) => {
     console.log(err);
   }
 
+  /*
+  *
+  *  Navigation to other pages
+  *
+  */
+  navigateToRewardsPage = () => {
+    this.props.navigation.navigate("Rewards");
+  }
+
+  navigateToHelpPage = () => {
+    this.props.navigation.navigate("Help");
+  }
+
+  navigateToQrcodePage = () => {
+    let userID = this.state.userID;
+    let isAdmin = this.state.isAdmin;
+    this.props.navigation.navigate("Qrcode", {userID, isAdmin});
+  }
+
+  navigateToSettingsPage = () => {
+    console.log('navigateToSettingsPage has been executed');
+    this.props.navigation.navigate("Settings");
+  }
+
+
   render() {
 
-    var isAdminRef = firebase.database().ref("Users/" + this.state.userID + "/isAdmin/");
-    isAdminRef.on('value', this.isAdminData, this.isAdminerrData);
-
-    if (!this.state.firstName) {
+    if (this.state.isLoading) {
       return (
         <View style={{ flex: 1, paddingTop: 20 }}>
           <ActivityIndicator />
@@ -155,19 +124,8 @@ export default class DrawerScreen extends Component {
       );
     }
 
-   // console.log('These are all the state values' + this.state.firstName + this.state.lastName);
-
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ]
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-      "Saturday"
-    ]
-
-    const date = new Date();
-    let day = days[date.getDay()]
-    var month = monthNames[date.getMonth()]
-    var dateNum = date.getDate()
+    let day = moment().format('dddd,');
+    let monthPlusDate =  moment().format('MMMM D');
 
     return (
       <View>
@@ -201,12 +159,12 @@ export default class DrawerScreen extends Component {
               </View>
             <View style={styles.sidebarDay}>
               <Text style={styles.day}>
-                {day + ','}
+                {day}
               </Text>
             </View>
             <View style={styles.sidebarDate}>
             <Text style={styles.date}>
-                {month + ' ' + dateNum}
+                {monthPlusDate}
               </Text>
             </View>
 
@@ -255,7 +213,6 @@ export default class DrawerScreen extends Component {
 
 DrawerScreen.propTypes = {
   navigation: PropTypes.object
-
 };
 
 const styles = {
