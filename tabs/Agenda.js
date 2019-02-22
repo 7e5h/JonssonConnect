@@ -109,8 +109,8 @@ console.log("OBJECT TESTERERE:"+ JSON.stringify(filteredObjects));
   qrCodePressed = () => {
     console.log('qrcode button pressed');
     var theUserID = this.state.userID;
-    var kaiser = this.state.isAdminCheck;
-    this.props.navigation.navigate('Qrcode', { theUserID, kaiser });
+    var isAdmin = this.state.isAdminCheck;
+    this.props.navigation.navigate('Qrcode', { theUserID, isAdmin });
   }
   
   tConvert = (time) => {
@@ -148,9 +148,6 @@ console.log("OBJECT TESTERERE:"+ JSON.stringify(filteredObjects));
 
   isAdminData = (data) => {
     this.state.isAdminCheck = data.val()
-    // console.log("@@@@@@@@@@ The admin  is " + this.state.isAdminCheck)
-    //this.state.isAdminCheck = isAdmin;
-    
   }
 
   isAdminerrData = (err) => {
