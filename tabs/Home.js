@@ -139,7 +139,7 @@ export default class Home extends Component {
 
   _renderArticle = ({item}) => {
 
-    let dateString = moment().format('  MMMM D, YYYY');
+    let dateString = moment(item[1].postedOn).format('  MMMM D, YYYY');
 
     return (
       <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF'}}>
