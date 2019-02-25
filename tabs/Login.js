@@ -175,7 +175,7 @@ export default class Login extends React.Component {
     await this.loadFontsAndIcons();
     this.checkIfUserHasCompletedTutorial();
   }
-  
+
   async loadFontsAndIcons() {
 
     // DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
@@ -283,6 +283,7 @@ export default class Login extends React.Component {
     await AsyncStorage.setItem('userID', this.state.id);
     await AsyncStorage.setItem('location', JSON.stringify(this.state.location));
     await AsyncStorage.setItem('industry', this.state.industry);
+    await AsyncStorage.setItem('email', this.state.emailAddress);
     await AsyncStorage.setItem(IS_LOGGED_IN_KEY, "loggedIn");
   }
 
