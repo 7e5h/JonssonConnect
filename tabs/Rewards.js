@@ -31,7 +31,7 @@ export default class Rewards extends Component {
         var eventsAttendedValue = data.val();
         console.log("REWARDS PAGE # EVENTS ATTENDED: " + eventsAttendedValue);
         this.state.numOfEvents = eventsAttendedValue
-    }
+    };
 
     getPointsValues(){
         fetch('https://jonssonconnect.firebaseio.com/Users/' + this.state.userID + '/points.json')
