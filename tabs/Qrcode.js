@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { Text, View, StyleSheet, Alert, AsyncStorage, Camera } from 'react-native';
-import { Constants, BarCodeScanner, Permissions, Location } from 'expo';
+import React, {Component} from 'react';
+import {Alert, AsyncStorage, Camera, StyleSheet, Text, View} from 'react-native';
+import {BarCodeScanner, Permissions,Location} from 'expo';
 import * as firebase from 'firebase';
-import Geocoder from 'react-native-geocoding';
 
 export default class Qrcode extends Component {
 
@@ -22,6 +21,7 @@ export default class Qrcode extends Component {
 
   async componentDidMount() {
     this._requestCameraPermission();
+    this._getLocationAsync();
     this.setState({
       userID: await AsyncStorage.getItem('userID'),
       emailID: await AsyncStorage.getItem('email'),
@@ -36,14 +36,23 @@ export default class Qrcode extends Component {
     });
   };
 
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    this.setState({hasLocationPermission:(status !== 'granted')})
+
+    let location = await Location.getCurrentPositionAsync({});
+    this.setState({location: { latitude: location.coords.latitude, longitude: location.coords.longitude }});
+  };
+
   checkBarcodeRead = (data) => {
-    this._handleBarCodeRead(data)
+    if (!this.state.codeRead) {
+      this.state.codeRead = true
+      this._handleBarCodeRead(data)
+    }
   };
 
   secretKeyData = (data) => {
     var secretKey = data.val();
-    console.log("The secrey KEY is " + secretKey);
-
     this.state.isValidSecretKey = secretKey
   };
 
@@ -59,19 +68,14 @@ export default class Qrcode extends Component {
     console.log(err);
   };
 
-  // Get user's location
-  getUserLocation = (options = {}) => {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, options);
-    });
-  };
-
-
   // Given user's and event's location, calculate and return the distance
   distance = (userlat, userlng, eventlat, eventlng) => {
-    return new Promise((resolve, reject) => {
-      if ((userlat === eventlat) && (userlng === eventlng)) {
+      //If there's no location requirement accept anything
+      if(!eventlat || !eventlng)
         return 0;
+      else if (!userlng || !userlng) {
+        //This is the case where a location is required AND the user's permissions hasn't allowed for reading location
+        return 100;
       }
       else {
         var raduserlat = Math.PI * userlat / 180;
@@ -85,9 +89,8 @@ export default class Qrcode extends Component {
         dist = Math.acos(dist);
         dist = dist * 180 / Math.PI;
         dist = dist * 60 * 1.1515;
-        resolve(dist);
+        return(dist);
       }
-    })
   };
 
   calculateUserHasEnoughWhooshBits = async (ourUserID, whooshBitsRequest) => {
@@ -110,7 +113,7 @@ export default class Qrcode extends Component {
     this.state.mode = splitData[0];
 
     this.state.usrLinkedInID = this.state.userID;
-    if(this.state.isAdmin && this.state.mode === 'app'){
+    if( this.state.mode && this.state.isAdmin && this.state.mode === 'app'){
       this.state.ourEventID = null;
       this.state.usrLinkedInID = splitData[1];
       this.state.whooshBits = splitData[2];
@@ -119,7 +122,7 @@ export default class Qrcode extends Component {
       this.handleUserRedeemQRScan(userHasEnoughWhooshBits)
 
     }
-    else if (this.state.mode ==='web'){
+    else if ( this.state.mode && this.state.mode ==='web'){
       this.state.ourEventID = splitData[1];
       this.state.secretKey = splitData[2];
       this.state.whooshBits = splitData[3];
@@ -130,11 +133,11 @@ export default class Qrcode extends Component {
         'Oh No!',
         "We don't seem to recognize that code. We'd recommend ensuring you're scanning the right kind of QR code.",
         [
-          { text: 'Dismiss' },
+          { text: 'Dismiss',onPress: ()=> this.props.navigation.goBack(null)},
         ],
         { cancelable: false }
       );
-      this.props.navigation.goBack(null);
+
     }
 
   }
@@ -162,90 +165,59 @@ export default class Qrcode extends Component {
             'Error Redeeming!',
             'It looks like this user has insufficient Whoosh Bits to complete transaction',
             [
-              { text: 'Ok'},
+              { text: 'Dismiss',onPress: () => this.props.navigation.goBack(null)},
             ],
             { cancelable: false }
         );
-        this.props.navigation.goBack(null);
       }
   }
 
   handleEventQRScan(){
-    let userID = this.state.userID.toString();
-    var userHasAttended;
 
-    console.log("RAP SONG USER ID: " + this.state.userID.toString());
+    //Check if user has already attended
+    let userHasAttended;
     let userHasAttendedRef = firebase.database().ref('Events/' + this.state.ourEventID + '/usersAttended/');
-
-    userHasAttendedRef.child(userID).on('value', function (snapshot) {
-      var exists = (snapshot.val() !== null);
-      console.log("Has User Already Attended?:" + exists);
-      userHasAttended = exists;
+    userHasAttendedRef.child(this.state.userID).on('value', function (snapshot) {
+      userHasAttended = (snapshot.val() !== null);
+      console.log("Has User Already Attended?:" + userHasAttended);
     });
 
-    let eventLatitude;
-    let eventLongitude;
+    //Check if the qr code's key matches the event key
     var secretKeyRef = firebase.database().ref("Events/" + this.state.ourEventID + "/eventSecretKey/");
     secretKeyRef.on('value', this.secretKeyData, this.errData);
+    var isValidSecretKeyCheck = this.state.secretKey === this.state.isValidSecretKey
+
+    //get the event's lat and long
+    let eventLatitude = 0;
+    let eventLongitude = 0;
+    let locationRequired = false;
     let eventRef = firebase.database().ref('Events/' + this.state.ourEventID + "/");
     eventRef.once('value', snapshot => {
       let data = snapshot.val();
       eventLatitude = data.eventLatitude;
       eventLongitude = data.eventLongitude;
+      if (eventLatitude && eventLongitude)
+        locationRequired = true
     });
 
-    console.log("IS VALID SECRET KEY:" + this.state.isValidSecretKey);
+    //This ensures we have the user's location, but only if it's required for the event
+    const missingRequiredUserLocation = !this.state.location && locationRequired
 
-    var isValidSecretKeyCheck = false;
+    //Check if user is at the location
+    //this is 0 if the event has no location
+    let distance = 0
+    if (!missingRequiredUserLocation)
+      distance = this.distance(this.state.location.latitude, this.state.location.longitude, eventLatitude, eventLongitude);
 
-    if (this.state.secretKey === this.state.isValidSecretKey) {
-      isValidSecretKeyCheck = true;
-    }
-    else {
-      isValidSecretKeyCheck = false;
-    }
-
-    var finalAttendedCheck = true;
-    var finalGeoLocationCheck = true;
-    var finalValidSecretKeyCheck = true;
-    var finalRSVPCheck = true;
-    var finalAlumniCheck = true;
-
-    //Get User's location
-    try {
-      var userPosition =  this.getUserLocation();
-      // var eventPosition = await this.getEventLocation(); // gets event's location
-
-      var userlat = userPosition.coords.latitude;
-      var userlng = userPosition.coords.longitude;
-      var eventlat = eventLatitude;
-      var eventlng = eventLongitude;
-
-      // get the distance between userPosition and eventPosition
-      var distance =  this.distance(userlat, userlng, eventlat, eventlng);
-
-      console.log('User Position: ' + userlat + ', ' + userlng);
-      console.log('Event position: ' + eventlat + ',' + eventlng);
-      console.log('Distance: ' + distance);
-
-    } catch (error) {
-      console.log(error);
-    }
-
-    var isUserAlumni = null;
-    var userAlumniCheck = firebase.database().ref("Users/" + this.state.usrLinkedInID + '/classification/');
+    //check if user is alumni
+    let isUserAlumni = null;
+    const userAlumniCheck = firebase.database().ref("Users/" + this.state.usrLinkedInID + '/classification/');
     userAlumniCheck.on('value', function (snapshot) {
-      if (snapshot.val() == 'alumni')
-      {
-        isUserAlumni = true;
-      }
-      else if (snapshot.val() == 'student'){
-        isUserAlumni = false;
-      }
+      isUserAlumni = snapshot.val() === 'alumni'
       console.log("Is User an Alumni?:" + isUserAlumni)
     });
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
+    //Check if user has RSVPd
     var userHasRSVPd = false;
     var rsvpCheckRef = firebase.database().ref("Events/" + this.state.ourEventID + "/usersRsvp/" + this.state.usrLinkedInID + '/');
     rsvpCheckRef.on('value', function (snapshot) {
@@ -253,92 +225,87 @@ export default class Qrcode extends Component {
       console.log("Has User RSVP'd?:" + exists);
       userHasRSVPd = exists;
     });
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //Check if event us alumni only
     var isAlumniEvent = null;
     var alumniEventRef = firebase.database().ref("Events/" + this.state.ourEventID + "/eventClassification/");
     alumniEventRef.on('value', function (snapshot) {
-      if (snapshot.val() === 'alumni')
-      {
-        isAlumniEvent = true;
-      }
-      else if (snapshot.val() === 'student'){
-        isAlumniEvent = false;
-      }
+      isAlumniEvent = snapshot.val() === 'alumni'
       console.log("Is the event open to Alumni Only?:" + isAlumniEvent)
     });
 
-    if (isAlumniEvent && !isUserAlumni) {
+
+    //The series of checks to see if whooshbits should be redeemed
+    if (userHasAttended) {
+      Alert.alert(
+          'Oops!',
+          "Looks like you've already scanned this QR code. If you have an issue, please leave us a feedback!",
+          [
+            { text: 'Dismiss', onPress: () => this.props.navigation.goBack(null) },
+          ],
+          { cancelable: false }
+      );
+    }
+    else if (isAlumniEvent && !isUserAlumni) {
       Alert.alert(
           'Oops!',
           "This event is open to Alumni only. If you are an Alumnus but are unable to scan the QR code, please speak to an event coordinator.",
           [
-            { text: 'Oh Ok', onPress: () => console.log('User tried to cheat the system') },
+            { text: 'Dismiss', onPress: () => this.props.navigation.goBack(null) },
           ],
           { cancelable: false }
       );
-      finalAlumniCheck = false;
-
-      this.props.navigation.goBack(null);
     }
-  else if (!userHasRSVPd) {
+    else if (!userHasRSVPd) {
       Alert.alert(
           'Oops!',
           "Looks like you haven't RSVP'd for this event. Try to RSVP and scan again!",
           [
-            { text: 'Oh Ok', onPress: () => console.log('User tried to cheat the system') },
+            { text: 'Dismiss', onPress: () => this.props.navigation.goBack(null) },
           ],
           { cancelable: false }
       );
-      finalRSVPCheck = false;
-      this.props.navigation.goBack(null);
+    }
+    else if (missingRequiredUserLocation) {
+      Alert.alert(
+          'Location Error',
+          "This event requires you to be at a certain location, please ensure you've given adequate permission for this app to use your location.",
+          [
+            { text: 'Dismiss', onPress: () => this.props.navigation.goBack(null) },
+          ],
+          { cancelable: false }
+      );
     }
     else if (distance > 0.0852273) { //150 YARDS
       Alert.alert(
           'Oops!',
           "Looks like you're more than 150 yards away from the event. Maybe try getting closer and scanning again?",
           [
-            { text: 'Alright', onPress: () => console.log('User tried to cheat the system') },
+            { text: 'Dismiss', onPress: () => this.props.navigation.goBack(null) },
           ],
           { cancelable: false }
       );
-      finalGeoLocationCheck = false;
-      this.props.navigation.goBack(null);
-    }
-    else if (userHasAttended) {
-      Alert.alert(
-          'Oops!',
-          "Looks like you've already scanned this QR code. If you have an issue, please leave us a feedback!",
-          [
-            { text: 'Cool!', onPress: () => console.log('User tried to cheat the system') },
-          ],
-          { cancelable: false }
-      );
-      finalAttendedCheck = false;
-      this.props.navigation.goBack(null);
     }
     else if (!isValidSecretKeyCheck) {
       Alert.alert(
           'Uh Oh',
           "This QR code isn't what we're expecting!. Try scanning again or talk to an event coordinator.",
           [
-            { text: 'Ok', onPress: () => console.log('User tried to cheat the system') },
+            { text: 'Ok', onPress: () => this.props.navigation.goBack(null) },
           ],
           { cancelable: false }
       );
-      finalValidSecretKeyCheck = false;
-      this.props.navigation.goBack(null);
     }
-    else if (finalAttendedCheck && finalValidSecretKeyCheck && finalGeoLocationCheck && finalRSVPCheck && finalAlumniCheck) {
+    else{
+      this.addWhooshBitsToUser()
       Alert.alert(
           this.state.whooshBits + ' Whoosh Bits Redeemed!',
           'Thanks for attending! \n \nWe look forward to seeing you again!',
           [
-            { text: 'Thanks!', onPress: () => this.addWhooshBitsToUser() },
+            { text: 'Dismiss', onPress: () => this.props.navigation.goBack(null)},
           ],
           { cancelable: false }
       );
-      this.props.navigation.goBack(null);
     }
   }
 
@@ -360,11 +327,10 @@ export default class Qrcode extends Component {
       'Yay!',
       "Whoosh Bits Redeemed!",
       [
-        { text: 'Cool!' },
+        { text: 'Dismiss',onPress: () => this.props.navigation.goBack(null) },
       ],
       { cancelable: false }
     );
-    this.props.navigation.goBack(null);
   }
 
   denyWhooshBitsRedeem() {
@@ -374,13 +340,12 @@ export default class Qrcode extends Component {
       'DENIED!',
       "The redeem request has been denied!",
       [
-        { text: 'Thanks!' },
+        { text: 'Dismiss',onPress: () => this.props.navigation.goBack(null) },
       ],
       { cancelable: false }
     );
-    this.props.navigation.goBack(null);
-
   }
+
 
   getEventData = (data) => {
     var eventsObject = data.val();
@@ -417,11 +382,13 @@ export default class Qrcode extends Component {
       .catch(function (error) {
         console.log('NUMBER OF EVENTS NOT UPDATED: ' + error);
       });
+
     console.log('WHOOSH BITS TRANSACTION: ' + this.state.whooshBits);
     console.log('POINTS TRANSACTION TYPE: ' + typeof (parseInt(this.state.whooshBits)));
-    var jack = parseInt(this.state.whooshBits);
+
+    var pointsToAdd = parseInt(this.state.whooshBits);
     pointsRef.transaction(function (points) {
-      return (points || 0) + jack;
+      return (points || 0) + pointsToAdd;
     }).then(function () {
       console.log('POINTS UPDATED IN FIREBASE!');
     })
@@ -452,7 +419,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    //paddingTop: Constants.statusBarHeight,
     backgroundColor: '#000000',
   },
   titleText: {
