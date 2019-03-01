@@ -185,6 +185,7 @@ export default class Login extends React.Component {
   completedTutorial = () => {
     AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
     this.setState({ tutorialCompleted: true });
+    this.checkUserLogin(); 
   }
 
   /*
@@ -221,6 +222,16 @@ export default class Login extends React.Component {
 
     await this.saveUserData(payload)
     this.userLoggedInSuccessfully()
+  }
+
+  async checkUserLogin() {
+
+    // This will see if the login token already exists - If it does, go to Main App Screen. If not, go to Login Screen
+    let loginToken = await AsyncStorage.getItem(IS_LOGGED_IN_KEY);
+
+    if (loginToken != null) {
+      this.props.navigation.navigate("DrawerNavigator");
+    }
   }
 
   async saveUserData(data) {
