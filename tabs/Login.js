@@ -12,7 +12,6 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import RF from 'react-native-responsive-fontsize';
 import { Icon, Text, Button, } from 'native-base';
 import AppIntro from 'rn-app-intro-screen';
-import Expo from 'expo';
 
 import LinkedInModal from 'react-native-linkedin'
 const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
@@ -166,63 +165,26 @@ export default class Login extends React.Component {
       access_token: undefined,
       expires_in: undefined,
       refreshing: false,
-      fonts_loaded: false,
       tutorialCompleted: false,
     };
   }
 
   async componentDidMount() {
-    await this.loadFontsAndIcons();
     this.checkIfUserHasCompletedTutorial();
-  }
-
-  async loadFontsAndIcons() {
-
-    // DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
-    // Segment.setEnabledAsync(false);
-    // This needs to happen here as the fonts only need to be loaded once,
-    await Expo.Font.loadAsync({
-      'Roboto': require('native-base/Fonts/Roboto.ttf'),
-      'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-      'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
-      'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-      'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-      'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-      'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-      'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
-      'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
-      'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
-      'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
-    });
-
-    this.setState({ fonts_loaded: true });
   }
 
   async checkIfUserHasCompletedTutorial() {
     let hasCompletedTutorial = await AsyncStorage.getItem(TUTORIAL_COMPLETED_KEY);
     if (hasCompletedTutorial === 'true') {
       this.setState({ tutorialCompleted: true});
-      this.checkUserLogin()
     } else {
       this.setState({ tutorialCompleted: false});
-    }
-  }
-
-  async checkUserLogin() {
-
-    // This will see if the login token already exists - If it does, go to Main App Screen
-    let loginToken = await AsyncStorage.getItem(IS_LOGGED_IN_KEY);
-
-    if (loginToken != null) {
-      // Login token found, continue to main app
-      this.props.navigation.navigate("DrawerNavigator");
     }
   }
 
   completedTutorial = () => {
     AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
     this.setState({ tutorialCompleted: true });
-    this.checkUserLogin()
   }
 
   /*
@@ -296,14 +258,8 @@ export default class Login extends React.Component {
 
     const { emailAddress, refreshing } = this.state;
 
-    // Show activity indicator until fonts have been loaded, and the tutorial if not completed.
-    if (!this.state.fonts_loaded) {
-        return (
-            <View style={{flex: 1, paddingTop: 20}}>
-                <ActivityIndicator/>
-            </View>
-        );
-    } else if (!this.state.tutorialCompleted) {
+    // Show activity indicator until the tutorial is completed
+    if (!this.state.tutorialCompleted) {
       return <AppIntro
         slides={slides}
         onDone={this.completedTutorial}
@@ -350,6 +306,7 @@ export default class Login extends React.Component {
                 />
               </View>
             )}
+
           <View style={styles.container}>
             <TouchableHighlight onPress={() => this.modal.open()}>
               <Button transparent onPress={() => this.modal.open()} style={{ width: 500 }} full light >

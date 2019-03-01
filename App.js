@@ -6,6 +6,7 @@
 import React from 'react';
 import { createAppContainer, createMaterialTopTabNavigator, createStackNavigator, createSwitchNavigator, createDrawerNavigator } from "react-navigation";
 
+import AppLoading from './tabs/AppLoading';
 import HomeScreen from './tabs/Home';
 import Jobs from './tabs/Jobs';
 import Login from './tabs/Login';
@@ -186,8 +187,15 @@ const DrawerNavigator = createDrawerNavigator(
     });
 
 const AppNavigator = createSwitchNavigator ({
+  AppLoading: AppLoading,
   Login: Login,
   DrawerNavigator: DrawerNavigator
 });
 
-export default App = createAppContainer(AppNavigator);
+const AppContainer = createAppContainer(AppNavigator);
+
+export default class App extends React.Component {
+  render() {
+    return <AppContainer />;
+  }
+}
