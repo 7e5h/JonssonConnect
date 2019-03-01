@@ -198,4 +198,4 @@ const AppNavigator = createSwitchNavigator ({
   DrawerNavigator: DrawerNavigator
 });
 
-export const AppContainer = createAppContainer(AppNavigator);
+export default AppContainer = createAppContainer(AppNavigator);
