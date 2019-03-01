@@ -31,10 +31,7 @@ import Redeem from './tabs/Redeem';
 import Settings from './tabs/Settings';
 import CodeDisplayScreen from './tabs/CodeDisplay';
 
-
 console.disableYellowBox = true
-
-console.log(Keys.API_Key);
 
 // Initialize Firebase
 export var config = {
