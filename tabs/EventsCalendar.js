@@ -5,7 +5,7 @@
 
 import { CalendarList } from 'react-native-calendars';
 import React, { Component } from 'react';
-import { View, AsyncStorage } from 'react-native';
+import {ScrollView, AsyncStorage, FlatList, Text, TouchableOpacity, Image, View,StyleSheet} from 'react-native';
 import * as firebase from 'firebase';
 
 //The below 3 imports were used to fix the iterator error
@@ -13,8 +13,9 @@ import 'core-js/es6/map'
 import 'core-js/es6/symbol'
 import 'core-js/fn/symbol/iterator'
 import moment from "moment";
+import {Body, Card, CardItem, Content, Icon, Left, List, ListItem} from "native-base";
 
-const dot_color = { color: 'white' };
+const dot_color = { color: '#c75b12' };
 
 export default class EventsCalendar extends Component {
 
@@ -24,7 +25,10 @@ export default class EventsCalendar extends Component {
         this.state = {
             userClassification: '',
             markedDates: {},
-            eventDates: []
+            eventDates: [],
+            selectedDayEvents: [],
+            eventData:[],
+            currentSelectedDate:''
         }
     }
 
@@ -58,8 +62,11 @@ export default class EventsCalendar extends Component {
         }
 
         let eventData = data.val();
+
         let currentDate  = moment().toISOString(true).slice(0, 10);
-        let events = [];
+        let dates = [];
+        let validEvents = [];
+        let earliestDate = ''
         for (let key in eventData) {
             let dateOfEvent = eventData[key]['modifiedDate'];
             let eventClassification = eventData[key]['eventClassification'];
@@ -67,14 +74,21 @@ export default class EventsCalendar extends Component {
             // check if event has already passed
             if (moment(dateOfEvent).isBefore(currentDate)) { continue }
 
-            // Only include events that the user should see here
-            if (userType == 'admin' || eventClassification == 'both' || eventClassification == userType) {
-                events.push(dateOfEvent);
+            // Only include dates that the user should see here
+            if (userType === 'admin' || eventClassification === 'both' || eventClassification === userType) {
+
+                if (earliestDate === '' || moment(dateOfEvent).isBefore(earliestDate)){
+                    earliestDate = dateOfEvent
+                }
+                dates.push(dateOfEvent);
+                validEvents.push(eventData[key])
             }
         }
 
-        this.setState({eventDates: events});
-        this.setState({markedDates: this.getMarkedDatesForCalendar(events)});
+        this.setState({eventData: validEvents});
+        this.setState({eventDates: dates});
+        this.setState({currentSelectedDate:earliestDate},()=>this.updateSelectedDayEvents())
+        this.setState({markedDates: this.getMarkedDatesForCalendar(dates)});
     }
 
     loadedClassification = (newClassification) => {
@@ -95,6 +109,17 @@ export default class EventsCalendar extends Component {
         console.log(err);
     }
 
+    updateSelectedDayEvents(){
+        let selectedDayEvents = []
+        var length = this.state.eventData.length
+        for (let i = 0;i<length;i++){
+            if(this.state.eventData[i].modifiedDate === this.state.currentSelectedDate)
+                selectedDayEvents.push(this.state.eventData[i])
+        }
+        this.setState({selectedDayEvents: selectedDayEvents});
+    }
+
+
     getMarkedDatesForCalendar = (arr) => {
         arr.sort()
         let dotColorArray = [dot_color]
@@ -103,26 +128,62 @@ export default class EventsCalendar extends Component {
     }
 
     handleDayClick = (day) => {
-        for (let date in this.state.markedDates) {
-            if (day.dateString === date) {
-                this.props.navigation.navigate("Agenda", { day });
-                return;
-            }
-        }
-        alert('Aw Snap! We don\'t have any events to show for this date. Sorry!');
+        this.setState({currentSelectedDate:day.dateString},()=>this.updateSelectedDayEvents())
+    }
+
+    eventsList = () => {
+        return(<List>
+            <FlatList
+                data={this.state.selectedDayEvents}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => {this.navigateToEventPage(item)}} style={styles.event} >
+                        <Text style={{ fontWeight: '800', fontSize: 16, flex:1, paddingBottom:3}}>{item.eventTitle}</Text>
+                        <View style={styles.eventData}>
+                            <View style = {styles.leftItems}>
+                                <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}>
+                                    <Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} /> {item.eventLocation}
+                                </Text>
+                                <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46' }}>
+                                    {item.rsvpCount? item.rsvpCount:0} {item.rsvpCount === 1?'person':'people'} attending{'   '}
+                                    <Icon name='ios-flame' style={{ fontSize: 14, color: '#f37735' }} />
+                                </Text>
+                            </View>
+                            <View style={styles.rightItems}>
+                                <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 ,textAlign: 'right'}}>
+                                    <Icon name='clock' style={{ fontSize: 12, color: '#5d5d5d', paddingRight:2}} />
+                                    {moment(item.eventDate).format('  h:mm a')}
+                                </Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+            />
+        </List>)
+    }
+
+    noEvents = () =>{
+        return (
+            <View style={styles.noEvents}>
+                <Text style={{ fontWeight: '100', fontSize: 20, color: '#1d1d1d', paddingTop: 30,textAlign:'center' }}>No events for that date, please try another</Text>
+            </View>
+        )
     }
 
     render() {
-
         let currentDate  = moment().toISOString(true).slice(0, 10);
-
         return (
-            <View>
+            <ScrollView>
                 <CalendarList
                     // Max amount of months allowed to scroll to the past. Default = 50
                     pastScrollRange={0}
                     // Max amount of months allowed to scroll to the future. Default = 50
                     futureScrollRange={6}
+                    //Selected current date
+                    current={this.state.currentSelectedDate}
+                    horizontal={true}
+                    hideArrows={false}
+                    pagingEnabled={true}
                     // Enable or disable scrolling of calendar list
                     scrollEnabled={true}
                     // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
@@ -136,7 +197,46 @@ export default class EventsCalendar extends Component {
                         this.handleDayClick(day)
                     }}
                 />
-            </View>
+                <Content>
+                    <Card>
+                        <CardItem>
+                            <Body style={{flex:1,flexDirection: 'row', alignItems: 'center',}}>
+                            <Text style={{ color: '#c75b12', fontSize: 22, fontWeight: '800'}}><Icon name='calendar-o' type='FontAwesome' style={{ fontSize: 22, color: '#c75b12'}}/> {" "}{moment(this.state.currentSelectedDate).format('MMMM Do, YYYY')}</Text>
+                            </Body>
+                        </CardItem>
+                    </Card>
+                </Content>
+                {this.state.selectedDayEvents.length !== 0 ?<this.eventsList/>:<this.noEvents/>}
+            </ScrollView>
         )
     }
+
+    navigateToEventPage(passedEvent) {
+        this.props.navigation.navigate("EventDetails", {event:passedEvent});
+    };
+
 }
+
+const styles = StyleSheet.create({
+    event:{
+        padding:10,
+        flexDirection: 'column',
+    },
+    leftItems: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        flex:1,
+
+    },
+    rightItems: {
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        flex:1,
+    },
+    eventData: {
+        flexDirection: 'row',
+        flex:1,
+    }
+});

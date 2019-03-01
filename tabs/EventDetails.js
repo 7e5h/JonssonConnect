@@ -5,7 +5,6 @@
 
 import React, { Component } from 'react';
 import { ActivityIndicator, AsyncStorage, Image, ListView, FlatList, StyleSheet, View } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator } from "react-navigation";
 import { Container, Header, Content, Card, Col, CardItem, Grid, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, Row, H1, H2, H3 } from 'native-base';
 import * as firebase from 'firebase';
 import { Linking } from 'react-native';
@@ -32,90 +31,68 @@ export default class EventDetails extends Component {
     });
 
     let eventKey;
-    var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.rowData.eventTitle);
+    var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.event.eventTitle);
     query.once('value', data => {
       data.forEach(userSnapshot => {
         var eventData = userSnapshot.val();
         eventKey = userSnapshot.key;
         var stringifiedEvent = JSON.stringify(eventData);
         var parsedEvent = JSON.parse(stringifiedEvent);
-        console.log('updated query result is ' + stringifiedEvent);
-        console.log('event key is' + eventKey);
 
         var usersRsvp = parsedEvent.usersRsvp;
         for (var userId in usersRsvp) {
-          if (userId == this.state.userID) {
+          if (userId === this.state.userID) {
             this.setState({ rsvpState: true });
           }
         }
-
-        //console.log('The users are ' + parsedEvent.usersRsvp);
       });
     });
   }
 
-  static navigationOptions = {
-    tabBarLabel: 'Events',
-    tabBarIcon: ({ tintcolor }) => (
-      <Image
-        source={require('../images/eventsicon.png')}
-        style={{ width: 22, height: 22 }}>
-      </Image>
-    )
-  }
 
   // Checks state to see if user has already RSVP'd and returns "RSVP" or "Cancel RSVP" based on that.
   rsvpButton = () => {
-    if (this.state.rsvpState == true) {
       return (
-        <Button full style={styles.cancelRsvpButtonStyle}
+        <Button full style={this.state.rsvpState? styles.cancelRsvpButtonStyle : styles.rsvpButtonStyle}
           onPress={() => {
-            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.rowData.eventTitle);
+            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.event.eventTitle);
             query.once('value', data => {
               data.forEach(userSnapshot => {
                 let key = userSnapshot.key;
-                eventKey = key;
-                eventDetails = userSnapshot;
-                var userID = this.state.userID.toString();
-                var userEmail = this.state.userEmail.toString();
-                this.eventsRef = firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).remove();
-                var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
-                interestedCountRef.transaction(function (current_value) {
-                  return (current_value || 0) - 1;
-                });
+                var userID = this.state.userID;
+                var userEmail = this.state.userEmail;
+                if(this.state.rsvpState){
+                  firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).remove();
+                  var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
+                  interestedCountRef.transaction(function (current_value) {
+                    return (current_value || 0) - 1;
+                  });
+                }
+                else{
+                  firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).set(userEmail);
+                  var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
+                  interestedCountRef.transaction(function (current_value) {
+                    return (current_value || 0) + 1;
+                  });
+                }
               });
             });
-            this.setState({ rsvpState: false });
+            this.setState({ rsvpState: !this.state.rsvpState });
           }}>
-          <Text style={{ fontSize: 14, fontWeight: '500' }}> <Icon name='ios-close-circle' style={{ fontSize: 14, color: '#ffffff' }} />{"  "} Cancel RSVP </Text>
+          {
+            this.state.rsvpState ?
+                <Text style={{fontSize: 14, fontWeight: '500'}}> <Icon name='ios-close-circle' style={{
+                  fontSize: 14,
+                  color: '#ffffff'
+                }}/>{"  "} Cancel RSVP </Text>
+                :
+                <Text style={{fontSize: 14, fontWeight: '500'}}><Icon name='ios-checkmark-circle' style={{
+                  fontSize: 14,
+                  color: '#ffffff'
+                }}/>{"  "} RSVP </Text>
+          }
         </Button>
       )
-    } else {
-      return (
-        <Button full style={styles.rsvpButtonStyle}
-          onPress={() => {
-            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.rowData.eventTitle);
-            query.once('value', data => {
-              data.forEach(userSnapshot => {
-                let key = userSnapshot.key;
-                eventKey = key;
-                eventDetails = userSnapshot;
-                var userID = this.state.userID.toString();
-                var userEmail = this.state.userEmail.toString();
-                this.eventsRef = firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).set(userEmail);
-                var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
-                interestedCountRef.transaction(function (current_value) {
-                  return (current_value || 0) + 1;
-                });
-              });
-            });
-            this.setState({ rsvpState: true });
-          }}>
-          <Text style={{ fontSize: 14, fontWeight: '500' }}>
-            <Icon name='ios-checkmark-circle' style={{ fontSize: 14, color: '#ffffff' }} />{"  "} RSVP </Text>
-        </Button>
-      )
-    }
   }
   // This is the method for map url
   _handlePress = (url) => {
@@ -123,19 +100,8 @@ export default class EventDetails extends Component {
     Linking.openURL("https://www.google.com/maps/search/?api=1&query=" + url);
   };
 
-  // utcToLocal = (time) => {
-  //   var localTime = moment(time).local().format("dddd, MMMM Do YYYY, h:mm a");
-  //   var splitTime = localTime.split(',');
-  //   console.log(splitTime[2]);
-  //   return splitTime[2];
-  // }
 
   render() {
-
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
-
     if (this.state.isLoading) {
       return (
         <View style={{ flex: 1, paddingTop: 20 }}>
@@ -146,32 +112,32 @@ export default class EventDetails extends Component {
     return (
       <Container>
         <Content>
-          <Image source={{ uri: this.props.navigation.state.params.rowData.eventImageURL }} style={{ height: 200, width: null, resizeMode: 'stretch' }}>
-          </Image>
+          {this.props.navigation.state.params.event.eventImageURL &&<Image source={{ uri: this.props.navigation.state.params.event.eventImageURL }} style={{ height: 200, width: null, resizeMode: 'stretch' }}>
+          </Image>}
           <Card style={{ flex: 0 }}>
             <CardItem>
               <Body>
-                <Text style={styles.nameStyle}>{this.props.navigation.state.params.rowData.eventTitle}</Text>
-                <Text style={styles.hostStyle}>{this.props.navigation.state.params.rowData.hostedBy}</Text>
+                <Text style={styles.nameStyle}>{this.props.navigation.state.params.event.eventTitle}</Text>
               </Body>
             </CardItem>
+            <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}><Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} />{'  '}{this.props.navigation.state.params.event.eventLocation}</Text>
             <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}>
-              <Icon name='ios-calendar' style={{ fontSize: 12, color: '#5d5d5d' }} /> {this.props.navigation.state.params.eventDay.toString()}
+              <Icon name='ios-calendar' style={{ fontSize: 12, color: '#5d5d5d' }} /> {moment(this.props.navigation.state.params.event.eventDate).format('  ll')}
             </Text>
             <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}>
-              <Icon name='md-time' style={{ fontSize: 12, color: '#5d5d5d' }} /> {this.props.navigation.state.params.eventTime.toString()}
+              <Icon name='md-time' style={{ fontSize: 12, color: '#5d5d5d' }} /> {moment(this.props.navigation.state.params.event.eventDate).format('  h:mm a')}
             </Text>
             <CardItem>
               <Body>
                 <Text style={{ fontSize: 18, fontWeight: '800' }}>Details</Text>
                 <Text style={{ fontSize: 14, fontWeight: '100' }}></Text>
-                <Text style={styles.descriptionStyle}>{this.props.navigation.state.params.rowData.eventDescription}</Text>
+                <Text style={styles.descriptionStyle}>{this.props.navigation.state.params.event.eventDescription}</Text>
               </Body>
             </CardItem>
             <CardItem>
               <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: 8, backgroundColor: "#c75b12" }}>
                 <Text style={{ fontWeight: "bold", fontSize: 14, color: '#FFFFFF' }}
-                  onPress={(yourData) => this._handlePress(this.props.navigation.state.params.rowData.eventLocation)}>
+                  onPress={(yourData) => this._handlePress(this.props.navigation.state.params.event.eventLocation)}>
                   <Icon type="Entypo" name='location' style={{ fontSize: 20, color: '#FFFFFF' }} />
                   {"  "} OPEN IN MAPS!
             </Text>
@@ -179,7 +145,6 @@ export default class EventDetails extends Component {
             </CardItem>
             <CardItem>
               <Body>
-                <Text style={{ fontSize: 14, fontWeight: '800' }}></Text>
                 <this.rsvpButton />
               </Body>
             </CardItem>

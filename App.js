@@ -25,7 +25,6 @@ import EventsCalendar from './tabs/EventsCalendar';
 import DrawerScreen from './tabs/DrawerScreen';
 import Rewards from './tabs/Rewards';
 import Help from './tabs/Help';
-import Agenda from './tabs/Agenda';
 import Qrcode from './tabs/Qrcode';
 import Redeem from './tabs/Redeem';
 import Settings from './tabs/Settings';
@@ -134,12 +133,6 @@ const EventsFeedStack = createStackNavigator(
         screen: EventDetails,
         navigationOptions: {
           title: 'Event Details',
-        }
-      },
-      Agenda: {
-        screen: Agenda,
-        navigationOptions: {
-          title: 'Event List',
         }
       },
       Qrcode: {
