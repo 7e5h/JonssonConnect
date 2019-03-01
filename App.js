@@ -4,7 +4,15 @@
  */
 
 import React from 'react';
-import { createAppContainer, createMaterialTopTabNavigator, createStackNavigator, createSwitchNavigator, createDrawerNavigator } from "react-navigation";
+import * as firebase from 'firebase';
+import { 
+  createAppContainer,
+  createMaterialTopTabNavigator,
+  createStackNavigator,
+  createSwitchNavigator,
+  createDrawerNavigator 
+} from "react-navigation";
+import { FIREBASE_API_KEY } from './Keys';
 
 import AppLoading from './tabs/AppLoading';
 import HomeScreen from './tabs/Home';
@@ -23,13 +31,14 @@ import Redeem from './tabs/Redeem';
 import Settings from './tabs/Settings';
 import CodeDisplayScreen from './tabs/CodeDisplay';
 
-import * as firebase from 'firebase';
 
 console.disableYellowBox = true
 
+console.log(Keys.API_Key);
+
 // Initialize Firebase
 export var config = {
-  apiKey: "AIzaSyAt7rZyHL1GNFonaUquH0p4QyQFXi1lz6U",
+  apiKey: FIREBASE_API_KEY,
   authDomain: "jonssonconnect.firebaseapp.com",
   databaseURL: "https://jonssonconnect.firebaseio.com",
   projectId: "jonssonconnect",
@@ -193,9 +202,3 @@ const AppNavigator = createSwitchNavigator ({
 });
 
 const AppContainer = createAppContainer(AppNavigator);
-
-export default class App extends React.Component {
-  render() {
-    return <AppContainer />;
-  }
-}
