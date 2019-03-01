@@ -3,7 +3,7 @@
  * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
  */
 
-import { Calendar } from 'react-native-calendars';
+import { CalendarList } from 'react-native-calendars';
 import React, { Component } from 'react';
 import {ScrollView, AsyncStorage, FlatList, Text, TouchableOpacity, Image, View,StyleSheet} from 'react-native';
 import * as firebase from 'firebase';
@@ -15,7 +15,7 @@ import 'core-js/fn/symbol/iterator'
 import moment from "moment";
 import {Body, Card, CardItem, Content, Icon, Left, List, ListItem} from "native-base";
 
-const dot_color = { color: 'white' };
+const dot_color = { color: '#c75b12' };
 
 export default class EventsCalendar extends Component {
 
@@ -131,19 +131,59 @@ export default class EventsCalendar extends Component {
         this.setState({currentSelectedDate:day.dateString},()=>this.updateSelectedDayEvents())
     }
 
+    eventsList = () => {
+        return(<List>
+            <FlatList
+                data={this.state.selectedDayEvents}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => {this.navigateToEventPage(item)}} style={styles.event} >
+                        <Text style={{ fontWeight: '800', fontSize: 16, flex:1, paddingBottom:3}}>{item.eventTitle}</Text>
+                        <View style={styles.eventData}>
+                            <View style = {styles.leftItems}>
+                                <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}>
+                                    <Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} /> {item.eventLocation}
+                                </Text>
+                                <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46' }}>
+                                    {item.rsvpCount? item.rsvpCount:0} {item.rsvpCount === 1?'person':'people'} attending{'   '}
+                                    <Icon name='ios-flame' style={{ fontSize: 14, color: '#f37735' }} />
+                                </Text>
+                            </View>
+                            <View style={styles.rightItems}>
+                                <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 ,textAlign: 'right'}}>
+                                    <Icon name='clock' style={{ fontSize: 12, color: '#5d5d5d', paddingRight:2}} />
+                                    {moment(item.eventDate).format('  h:mm a')}
+                                </Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+            />
+        </List>)
+    }
 
+    noEvents = () =>{
+        return (
+            <View style={styles.noEvents}>
+                <Text style={{ fontWeight: '100', fontSize: 20, color: '#1d1d1d', paddingTop: 30,textAlign:'center' }}>No events for that date, please try another</Text>
+            </View>
+        )
+    }
 
     render() {
         let currentDate  = moment().toISOString(true).slice(0, 10);
         return (
             <ScrollView>
-                <Calendar
+                <CalendarList
                     // Max amount of months allowed to scroll to the past. Default = 50
                     pastScrollRange={0}
                     // Max amount of months allowed to scroll to the future. Default = 50
                     futureScrollRange={6}
                     //Selected current date
                     current={this.state.currentSelectedDate}
+                    horizontal={true}
+                    hideArrows={false}
+                    pagingEnabled={true}
                     // Enable or disable scrolling of calendar list
                     scrollEnabled={true}
                     // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
@@ -166,33 +206,7 @@ export default class EventsCalendar extends Component {
                         </CardItem>
                     </Card>
                 </Content>
-                <List>
-                    <FlatList
-                        data={this.state.selectedDayEvents}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity onPress={() => {this.navigateToEventPage(item)}} style={styles.event} >
-                                <Text style={{ fontWeight: '800', fontSize: 16, flex:1, paddingBottom:3}}>{item.eventTitle}</Text>
-                                <View style={styles.eventData}>
-                                    <View style = {styles.leftItems}>
-                                        <Text style={{ fontWeight: '100', fontSize: 12, color: '#757575', paddingTop: 5 }}>
-                                            <Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} /> {item.eventLocation}
-                                        </Text>
-                                        <Text style={{ fontSize: 12, fontWeight: '100', paddingBottom: 5, paddingTop: 5, paddingLeft: 2, color: '#343d46' }}>
-                                            {item.rsvpCount? item.rsvpCount:0} {item.rsvpCount === 1?'person':'people'} attending{'   '}
-                                            <Icon name='ios-flame' style={{ fontSize: 14, color: '#f37735' }} />
-                                        </Text>
-                                    </View>
-                                    <View style={styles.rightItems}>
-                                        <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 ,textAlign: 'right'}}>
-                                            <Icon name='clock' style={{ fontSize: 12, color: '#5d5d5d', paddingRight:2}} />
-                                            {moment(item.eventDate).format('  h:mm a')}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        )}
-                    />
-                </List>
+                {this.state.selectedDayEvents.length !== 0 ?<this.eventsList/>:<this.noEvents/>}
             </ScrollView>
         )
     }

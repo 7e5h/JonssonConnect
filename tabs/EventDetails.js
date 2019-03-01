@@ -120,7 +120,7 @@ export default class EventDetails extends Component {
                 <Text style={styles.nameStyle}>{this.props.navigation.state.params.event.eventTitle}</Text>
               </Body>
             </CardItem>
-            <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}>{this.props.navigation.state.params.event.eventLocation}</Text>
+            <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}><Icon type='SimpleLineIcons' name='location-pin' style={{ fontSize: 12, color: '#5d5d5d' }} />{'  '}{this.props.navigation.state.params.event.eventLocation}</Text>
             <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5, paddingLeft: 20 }}>
               <Icon name='ios-calendar' style={{ fontSize: 12, color: '#5d5d5d' }} /> {moment(this.props.navigation.state.params.event.eventDate).format('  ll')}
             </Text>
