@@ -104,7 +104,7 @@ export default class Settings extends Component {
           </View>
 
           <View style={[styles.row, styles.logoutRow]}>
-            <Button onPress={this.logout} title="Log Out" color="#841584" />
+            <Button onPress={this.logout} title="Log Out" color="#008542" />
           </View>
         </View>
       </ScrollView>
