@@ -210,7 +210,7 @@ export default class Help extends Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView style={styles.masterView} enableOnAndroid={true} extraHeight={-250}>
+      <KeyboardAwareScrollView style={styles.masterView} enableOnAndroid={true}>
         <Text style={styles.headerText}>PRIVACY POLICY</Text>
         <Text style={styles.bodyText}>
           We take your privacy very seriously.
