@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React from 'react';
 import Expo from 'expo';
 import {
     AsyncStorage,
@@ -15,12 +15,12 @@ export default class AppLoading extends React.Component {
 
         this.state = {
             fonts_loaded: false,
-        }; 
+        };
     }
 
     async componentDidMount() {
         await this.loadFontsAndIcons();
-        await this.checkUserLogin(); 
+        await this.checkUserLogin();
     }
 
     async loadFontsAndIcons() {
@@ -32,6 +32,7 @@ export default class AppLoading extends React.Component {
           'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
           'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
           'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+          'MaterialIcons': require('native-base/Fonts/MaterialIcons.ttf'),
           'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
           'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
           'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
@@ -40,7 +41,7 @@ export default class AppLoading extends React.Component {
           'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
           'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
         });
-    
+
         this.setState({ fonts_loaded: true });
     }
 
