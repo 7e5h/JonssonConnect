@@ -4,10 +4,13 @@
  */
 
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, AsyncStorage, FlatList, ImageBackground, StyleSheet, View } from 'react-native';
+import { Alert, ActivityIndicator, AsyncStorage, FlatList, ImageBackground, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Card, CardItem, Icon, Text, Body } from 'native-base';
 import * as firebase from 'firebase';
-import moment from "moment";
+import moment from 'moment';
+import * as xml2js from 'react-native-xml2js';
+
+const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
 
 export default class Home extends Component {
 
@@ -93,38 +96,51 @@ export default class Home extends Component {
   }
 
   _onRefresh() {
-    this.setState({ refreshing: true });
     this._downloadNews(true);
   }
 
-  _downloadNews(refresh) {
+  _addArticle(id, article) {
+    let isDuplicate = false;
+
+    //Check if article title is already included in newDataSource
+    for(let item in this.state.newDataSource) {
+      if(this.state.newDataSource[item][1].articleName === article.articleName) {
+        isDuplicate = true;
+        break;
+      }
+    }
+
+    if(!isDuplicate)
+      this.state.newDataSource.push([id, article]);
+  }
+
+  _downloadNewsFromFirebase() {
     fetch(firebase.database().ref('Articles') + ".json")
       .then((response) => {
         return response.json();
       }).then((responseJson) => {
-
-        let dataArray = [];
         for(let article in responseJson) {
-          dataArray.push([article, responseJson[article]]);
+          this._addArticle(article, responseJson[article]);
         }
 
-        dataArray.sort(function(a, b) {
+        this.state.newDataSource.sort(function(a, b) {
           let date1 = new Date(a[1].postedOn);
           let date2 = new Date(b[1].postedOn);
           return -1*(date1 - date2);
         });
 
+        console.log("Finished loading news articles from Firebase");
         this.setState({
-          isLoading: false,
-          dataSource: dataArray,
+          loadingFirebase: true
         });
 
-        if(refresh) {
+        if(this.state.loadingUTD && this.state.loadingFirebase) {
           this.setState({
-            refreshing: false
+            isLoading: false,
+            refreshing: false,
+            dataSource: this.state.newDataSource
           });
         }
-
       })
       .catch((error) => {
         console.error(error);
@@ -135,6 +151,95 @@ export default class Home extends Component {
       });
   }
 
+  _downloadNewsFromUTD() {
+    //Downloads news from the UTD ECS News Center
+    //These articles will open in a web browser
+    fetch(ECS_NEWS)
+      .then((response) => {
+        //Return the text version
+        return response.text();
+      }).then((responseText) => {
+        //Parse XML into a JS object
+        return new Promise((resolve, reject) => {
+          xml2js.parseString(responseText, (err, result) => {
+            if(err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+        });
+      }).then((responseObj) => {
+        //articles is an array objects. Each object has the following properties:
+        //title, link, description, enclosure, pubDate
+        let articles = responseObj.rss.channel[0].item;
+
+        for(let obj in articles) {
+          let article = {
+            articleAuthor: "",
+            articleColor: "#000000",
+            articleContent: "Testing",
+            articleImageURL: "",
+            articleName: articles[obj].title[0],
+            articleSummary: "",
+
+            //Note: If you change the text here then you also need to change it in ArticleDetails.js
+            articleType: "News Center",
+
+            newsCenterURL: articles[obj].link[0],
+            postedOn: moment(articles[obj].pubDate[0]).toDate().toISOString(),
+          };
+
+          this._addArticle("UTDNews" + obj, article);
+        }
+
+        this.state.newDataSource.sort(function(a, b) {
+          let date1 = new Date(a[1].postedOn);
+          let date2 = new Date(b[1].postedOn);
+          return -1*(date1 - date2);
+        });
+
+        console.log("Finished loading news articles from UTD News Center");
+        this.setState({
+          loadingUTD: true
+        });
+
+        if(this.state.loadingUTD && this.state.loadingFirebase) {
+          this.setState({
+            isLoading: false,
+            refreshing: false,
+            dataSource: this.state.newDataSource
+          });
+        }
+      }).catch((error) => {
+        console.error(error);
+        this.setState({
+          isLoading: false,
+          networkFailed: true,
+        });
+      });
+  }
+
+  _downloadNews(refresh) {
+    if(refresh) {
+      this.setState({
+        refreshing: true
+      });
+    }
+
+    //newDataSource is where all the new articles will go
+    //It will get moved to dataSource once both loadingFirebase
+    //and loadingUTD are set to true
+    this.setState({
+      newDataSource: [],
+      loadingFirebase: false,
+      loadingUTD: false
+    });
+
+    this._downloadNewsFromFirebase();
+    this._downloadNewsFromUTD();
+  }
+
   _keyExtractor = (item, index) => item[0];
 
   _renderArticle = ({item}) => {
@@ -142,18 +247,20 @@ export default class Home extends Component {
     let dateString = moment(item[1].postedOn).format('  MMMM D, YYYY');
 
     return (
-      <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF'}}>
-        <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
-          <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
-        </Text>
-        <Text onPress={() => this.props.navigation.push("ArticleDetails", { item })} style={styles.nameStyle}>
-          { item[1].articleName }
-        </Text>
-        <Text style={styles.dateStyle}>
-          <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
-          { dateString }
-        </Text>
-      </View>
+      <TouchableOpacity onPress={() => this.props.navigation.push("ArticleDetails", { item })}>
+        <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF'}}>
+          <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
+            <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
+          </Text>
+          <Text style={styles.nameStyle}>
+            { item[1].articleName }
+          </Text>
+          <Text style={styles.dateStyle}>
+            <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
+            { dateString }
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -185,7 +292,7 @@ export default class Home extends Component {
 
     if (this.state.isLoading) {
       return (
-        <View style={{ flex: 1, paddingTop: 20 }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator />
         </View>
       );

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, Alert, AsyncStorage, Button, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, AsyncStorage, Button, Linking, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Accordion, Form, Icon } from "native-base";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as firebase from 'firebase';
 
 
@@ -209,7 +210,7 @@ export default class Help extends Component {
 
   render() {
     return (
-      <ScrollView style={styles.masterView}>
+      <KeyboardAwareScrollView style={styles.masterView} enableOnAndroid={true}>
         <Text style={styles.headerText}>PRIVACY POLICY</Text>
         <Text style={styles.bodyText}>
           We take your privacy very seriously.
@@ -258,7 +259,7 @@ export default class Help extends Component {
         <Text style={styles.bodyText}>
           Build Number: {this._getBuildNumber()}
         </Text>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 }
