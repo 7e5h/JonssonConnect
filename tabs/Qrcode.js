@@ -113,7 +113,7 @@ export default class Qrcode extends Component {
     this.state.mode = splitData[0];
 
     this.state.usrLinkedInID = this.state.userID;
-    if( this.state.mode && this.state.isAdmin && this.state.mode === 'app'){
+    if( this.state.mode && this.state.isAdmin === 'true' && this.state.mode === 'app'){
       this.state.ourEventID = null;
       this.state.usrLinkedInID = splitData[1];
       this.state.whooshBits = splitData[2];
