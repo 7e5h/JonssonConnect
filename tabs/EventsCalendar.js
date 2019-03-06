@@ -5,7 +5,7 @@
 
 import { CalendarList } from 'react-native-calendars';
 import React, { Component } from 'react';
-import {ScrollView, AsyncStorage, FlatList, Text, TouchableOpacity, Image, View,StyleSheet} from 'react-native';
+import {ScrollView, AsyncStorage, FlatList, Text, TouchableOpacity, View,StyleSheet} from 'react-native';
 import * as firebase from 'firebase';
 
 //The below 3 imports were used to fix the iterator error
@@ -13,9 +13,8 @@ import 'core-js/es6/map'
 import 'core-js/es6/symbol'
 import 'core-js/fn/symbol/iterator'
 import moment from "moment";
-import {Body, Card, CardItem, Content, Icon, Left, List, ListItem} from "native-base";
+import {Body, Card, CardItem, Content, Icon, List} from "native-base";
 
-const dot_color = { color: '#c75b12' };
 
 export default class EventsCalendar extends Component {
 
@@ -28,11 +27,11 @@ export default class EventsCalendar extends Component {
             eventDates: [],
             selectedDayEvents: [],
             eventData:[],
-            currentSelectedDate:''
+            currentSelectedDate: (moment().toISOString(true).slice(0, 10))
         }
     }
 
-    async componentWillMount() {
+    async componentDidMount() {
 
         this.setState({
             userID: await AsyncStorage.getItem('userID'),
@@ -57,7 +56,7 @@ export default class EventsCalendar extends Component {
 
         let userType = this.state.userClassification;
         if (userType !== "student" && userType !== "alumni" && userType !== "admin") {
-            console.log("EventsCalendar: User classification type not recognized");
+            console.log("EventsCalendar: User classification type not recognized: "+userType);
             return;
         }
 
@@ -87,27 +86,38 @@ export default class EventsCalendar extends Component {
 
         this.setState({eventData: validEvents});
         this.setState({eventDates: dates});
-        this.setState({currentSelectedDate:earliestDate},()=>this.updateSelectedDayEvents())
-        this.setState({markedDates: this.getMarkedDatesForCalendar(dates)});
+        this.setState({currentSelectedDate:earliestDate},()=>{
+            this.updateSelectedDayEvents()
+            this.setState({markedDates: this.getMarkedDatesForCalendar(dates,earliestDate)});
+        })
+
     }
 
     loadedClassification = (newClassification) => {
+        var classification;
+        let isAdminRef = firebase.database().ref("Users/" + this.state.userID + "/isAdmin/");
+        isAdminRef.on('value', (data)=>{
+            if(data.val() === 'true') {
+                this.state.userClassification = 'admin'
+                classification = 'admin'
+            }
+            else{
+                classification = newClassification.val();
 
-        let value = newClassification.val();
+                if (classification === null) {
+                    console.log("EventsCalendar: newClassification === null");
+                    return;
+                }
+            }
+            console.log("user class: "+classification)
+            AsyncStorage.setItem('userClassification', classification);
+            this.setState({ userClassification: classification});
+            this.loadEvents();
+        }, (err)=>console.log("Error checking admin status\n"+err));
 
-        if (value === null) {
-            console.log("EventsCalendar: newClassification === null");
-            return;
-        }
-
-        AsyncStorage.setItem('userClassification', value);
-        this.setState({ userClassification: value });
-        this.loadEvents();
     }
 
-    printError = (err) => {
-        console.log(err);
-    }
+    printError = (err) => {console.log(err);}
 
     updateSelectedDayEvents(){
         let selectedDayEvents = []
@@ -116,19 +126,34 @@ export default class EventsCalendar extends Component {
             if(this.state.eventData[i].modifiedDate === this.state.currentSelectedDate)
                 selectedDayEvents.push(this.state.eventData[i])
         }
+        selectedDayEvents.sort(function (a,b) {
+            return moment(a.eventDate).diff(moment(b.eventDate), 'minutes')
+            
+        })
         this.setState({selectedDayEvents: selectedDayEvents});
     }
 
 
-    getMarkedDatesForCalendar = (arr) => {
-        arr.sort()
-        let dotColorArray = [dot_color]
-        let obj = arr.reduce((c, v) => Object.assign(c, { [v]: { dots: dotColorArray, selected: true, selectedColor: '#c75b12'} }), {});
-        return obj
+    getMarkedDatesForCalendar = (eventList,selectedDate) => {
+        eventList.sort()
+        let dates = {}
+        const dot_color = { color: '#c75b12' };
+        eventList.forEach(function (date) {
+            var markedDate = {selected: true, marked: true, selectedColor: '#c75b12',dotColor:"#FFFFFF"}
+            if(date === selectedDate){
+                markedDate.selectedColor = '#008542'
+            }
+            dates[date] = markedDate
+        })
+        return dates
     }
 
     handleDayClick = (day) => {
-        this.setState({currentSelectedDate:day.dateString},()=>this.updateSelectedDayEvents())
+        this.setState({currentSelectedDate:day.dateString},()=>{
+            this.updateSelectedDayEvents()
+            this.state.markedDates = this.getMarkedDatesForCalendar(this.state.eventDates,day.dateString)
+
+        })
     }
 
     eventsList = () => {
@@ -191,7 +216,7 @@ export default class EventsCalendar extends Component {
                     // By default, agenda dates are marked if they have at least one item, but you can override this if needed
                     markedDates={this.state.markedDates}
                     //This attribute enables multiple dots on a single date
-                    markingType={'multi-dot'}
+                    // markingType={'multi-dot'}
                     // callback that gets called on day press
                     onDayPress={(day) => {
                         this.handleDayClick(day)
