@@ -14,6 +14,8 @@ const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
 
 export default class Home extends Component {
 
+
+
   constructor(props) {
     super(props);
 
