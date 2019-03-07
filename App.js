@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { View, Icon } from 'native-base';
 import { createAppContainer, createMaterialTopTabNavigator, createStackNavigator, createSwitchNavigator, createDrawerNavigator } from "react-navigation";
 
 import HomeScreen from './tabs/Home';
@@ -39,11 +40,16 @@ export const firebaseApp = firebase.initializeApp(config);
 
 const HomeFeedStack = createStackNavigator(
     {
-      Home: {
-        screen: HomeScreen,
-        navigationOptions: {
-          title: 'News Feed',
-        }
+    Home: {
+      screen: HomeScreen,
+      navigationOptions: ({ navigation }) => ({
+      title: 'News Feed',
+      headerLeft: <Icon type='FontAwesome'
+         name='bars'
+          style={{ fontSize: 34, color: '#ffffff', paddingLeft: 16 }}
+          onPress={() => navigation.openDrawer()} />
+        }),
+
       },
       ArticleDetails: {
         screen: ArticleDetails,
@@ -95,9 +101,13 @@ const JobsFeedStack = createStackNavigator(
     {
       Jobs: {
         screen: Jobs,
-        navigationOptions: {
-          title: 'Job Listings',
-        }
+          navigationOptions: ({ navigation }) => ({
+              title: 'Jobs Feed',
+              headerLeft: <Icon type='FontAwesome'
+                name='bars'
+                style={{ fontSize: 34, color: '#ffffff', paddingLeft: 16 }}
+                onPress={() => navigation.openDrawer()} />
+          }),
       },
       JobsDetails: {
         screen: JobsDetails,
@@ -119,9 +129,13 @@ const EventsFeedStack = createStackNavigator(
     {
       EventsCalendar: {
         screen: EventsCalendar,
-        navigationOptions: {
-          title: 'Events Calendar',
-        }
+        navigationOptions: ({ navigation }) => ({
+          title: 'News Feed',
+          headerLeft: <Icon type='FontAwesome'
+            name='bars'
+            style={{ fontSize: 34, color: '#ffffff', paddingLeft: 16 }}
+            onPress={() => navigation.openDrawer()} />
+          }),
       },
       EventDetails: {
         screen: EventDetails,
