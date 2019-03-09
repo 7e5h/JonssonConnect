@@ -9,12 +9,11 @@ import { Card, CardItem, Icon, Text, Body } from 'native-base';
 import * as firebase from 'firebase';
 import moment from 'moment';
 import * as xml2js from 'react-native-xml2js';
+import {Image} from 'react-native'; 
 
 const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
 
 export default class Home extends Component {
-
-
 
   constructor(props) {
     super(props);
@@ -180,8 +179,8 @@ export default class Home extends Component {
           let article = {
             articleAuthor: "",
             articleColor: "#000000",
-            articleContent: "Testing",
-            articleImageURL: "",
+            articleContent: "",
+            articleImageURL: articles[obj].enclosure[0].$["url"],
             articleName: articles[obj].title[0],
             articleSummary: "",
 
@@ -250,17 +249,22 @@ export default class Home extends Component {
 
     return (
       <TouchableOpacity onPress={() => this.props.navigation.push("ArticleDetails", { item })}>
-        <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF'}}>
-          <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 10, paddingBottom: 10}}>
-            <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
-          </Text>
-          <Text style={styles.nameStyle}>
-            { item[1].articleName }
-          </Text>
-          <Text style={styles.dateStyle}>
-            <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
-            { dateString }
-          </Text>
+        <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF', flexDirection: 'row'}}>
+          <View >
+            <Image source={{uri: item[1].articleImageURL}}  style={{ width: 100, height: 100, marginLeft: 5}} ></Image>
+          </View>
+          <View style={{height: 100, flex:1}}>
+            <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 5, paddingBottom: 10}}>
+              <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
+            </Text>
+            <Text style={styles.nameStyle}>
+              { item[1].articleName }
+            </Text>
+            <Text style={styles.dateStyle}>
+              <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
+              { dateString }
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
