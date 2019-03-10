@@ -140,7 +140,7 @@ const EventsFeedStack = createStackNavigator(
       EventsCalendar: {
         screen: EventsCalendar,
         navigationOptions: ({ navigation }) => ({
-          title: 'News Feed',
+          title: 'Events Feed',
           headerLeft: <Icon type='FontAwesome'
             name='bars'
             style={{ fontSize: 34, color: '#ffffff', paddingLeft: 16 }}

@@ -251,7 +251,7 @@ export default class Home extends Component {
       <TouchableOpacity onPress={() => this.props.navigation.push("ArticleDetails", { item })}>
         <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF', flexDirection: 'row'}}>
           <View >
-            <Image source={{uri: item[1].articleImageURL}}  style={{ width: 100, height: 100, marginLeft: 5}} ></Image>
+            <Image source={{uri: item[1].articleImageURL}}  style={styles.thumbnailImage} ></Image>
           </View>
           <View style={{height: 100, flex:1}}>
             <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 5, paddingBottom: 10}}>
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     width: null,
-    height: 180
+    height: 180,
   },
   backdropView: {
     paddingTop: 10,
@@ -385,6 +385,12 @@ const styles = StyleSheet.create({
   },
   eventDescriptionStyle: {
     fontSize: 10,
+  },
+  thumbnailImage: {
+    width: 100,
+    height: 100,
+    marginLeft: 5,
+    borderRadius: 3
   },
   typeStyle: {
     fontSize: 14,
