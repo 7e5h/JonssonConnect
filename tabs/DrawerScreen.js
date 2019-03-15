@@ -62,6 +62,8 @@ export default class DrawerScreen extends Component {
     // Get the token that uniquely identifies this device
     let token = await Notifications.getExpoPushTokenAsync();
 
+    console.log(token); 
+
     let userID = await AsyncStorage.getItem('userID');
     let firstName = await AsyncStorage.getItem('firstName');
     let lastName = await AsyncStorage.getItem('lastName');

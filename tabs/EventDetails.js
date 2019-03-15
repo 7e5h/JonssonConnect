@@ -10,6 +10,8 @@ import * as firebase from 'firebase';
 import { Linking } from 'react-native';
 import moment from 'moment';
 
+import UsersAttendingList from '../components/UsersAttendingList'; 
+
 
 export default class EventDetails extends Component {
 
@@ -19,7 +21,7 @@ export default class EventDetails extends Component {
       isLoading: true,
       buttonColor: '#40E0D0',
       rsvpState: false,
-
+      userRsvpList: [], 
     }
   }
 
@@ -35,50 +37,36 @@ export default class EventDetails extends Component {
     query.once('value', data => {
       data.forEach(userSnapshot => {
         var eventData = userSnapshot.val();
+
         eventKey = userSnapshot.key;
         var stringifiedEvent = JSON.stringify(eventData);
         var parsedEvent = JSON.parse(stringifiedEvent);
 
+        // Get list of user's that are RSVPd
         var usersRsvp = parsedEvent.usersRsvp;
+
+
+        let userList = []; 
+
+        // Check if this user is RSVPd
         for (var userId in usersRsvp) {
+          userList.push(userId); 
           if (userId === this.state.userID) {
             this.setState({ rsvpState: true });
           }
         }
+
+        // Get all the user profiles for users that are RSVPd
+        this.setState({userRsvpList: userList})
       });
     });
   }
-
 
   // Checks state to see if user has already RSVP'd and returns "RSVP" or "Cancel RSVP" based on that.
   rsvpButton = () => {
       return (
         <Button full style={this.state.rsvpState? styles.cancelRsvpButtonStyle : styles.rsvpButtonStyle}
-          onPress={() => {
-            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.event.eventTitle);
-            query.once('value', data => {
-              data.forEach(userSnapshot => {
-                let key = userSnapshot.key;
-                var userID = this.state.userID;
-                var userEmail = this.state.userEmail;
-                if(this.state.rsvpState){
-                  firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).remove();
-                  var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
-                  interestedCountRef.transaction(function (current_value) {
-                    return (current_value || 0) - 1;
-                  });
-                }
-                else{
-                  firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).set(userEmail);
-                  var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
-                  interestedCountRef.transaction(function (current_value) {
-                    return (current_value || 0) + 1;
-                  });
-                }
-              });
-            });
-            this.setState({ rsvpState: !this.state.rsvpState });
-          }}>
+          onPress={() => this._rsvpButtonPressed()}>
           {
             this.state.rsvpState ?
                 <Text style={{fontSize: 14, fontWeight: '500'}}> <Icon name='ios-close-circle' style={{
@@ -94,12 +82,38 @@ export default class EventDetails extends Component {
         </Button>
       )
   }
+
   // This is the method for map url
-  _handlePress = (url) => {
+  _openMaps = (url) => {
     console.log("THE URL IS:" + url)
     Linking.openURL("https://www.google.com/maps/search/?api=1&query=" + url);
   };
 
+  _rsvpButtonPressed = () => {
+    var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.event.eventTitle);
+    query.once('value', data => {
+      data.forEach(userSnapshot => {
+        let key = userSnapshot.key;
+        var userID = this.state.userID;
+        var userEmail = this.state.userEmail;
+        if (this.state.rsvpState) {
+          firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).remove();
+          var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
+          interestedCountRef.transaction(function (current_value) {
+            return (current_value || 0) - 1;
+          });
+        }
+        else {
+          firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).set(userEmail);
+          var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
+          interestedCountRef.transaction(function (current_value) {
+            return (current_value || 0) + 1;
+          });
+        }
+      });
+    });
+    this.setState({ rsvpState: !this.state.rsvpState });
+  }
 
   render() {
     if (this.state.isLoading) {
@@ -136,7 +150,7 @@ export default class EventDetails extends Component {
             <CardItem>
               <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: 8, backgroundColor: "#c75b12" }}>
                 <Text style={{ fontWeight: "bold", fontSize: 14, color: '#FFFFFF' }}
-                  onPress={(yourData) => this._handlePress(this.props.navigation.state.params.event.eventLocation)}>
+                  onPress={() => this._openMaps(this.props.navigation.state.params.event.eventLocation)}>
                   <Icon type="Entypo" name='location' style={{ fontSize: 20, color: '#FFFFFF' }} />
                   {"  "} OPEN IN MAPS!
             </Text>
@@ -148,11 +162,11 @@ export default class EventDetails extends Component {
               </Body>
             </CardItem>
           </Card>
+
+          <UsersAttendingList usersRsvpList={this.state.userRsvpList}></UsersAttendingList>
         </Content>
       </Container>
     )
-
-
   }
 }
 
