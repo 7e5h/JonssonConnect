@@ -53,7 +53,6 @@ export default class EventsCalendar extends Component {
     }
 
     eventsLoaded = (data) => {
-
         let userType = this.state.userClassification;
         if (userType !== "student" && userType !== "alumni" && userType !== "admin") {
             console.log("EventsCalendar: User classification type not recognized: "+userType);
@@ -80,7 +79,11 @@ export default class EventsCalendar extends Component {
                     earliestDate = dateOfEvent
                 }
                 dates.push(dateOfEvent);
-                validEvents.push(eventData[key])
+                let eventObj = {
+                  ...eventData[key],
+                  key: key
+                };
+                validEvents.push(eventObj);
             }
         }
 
@@ -109,7 +112,6 @@ export default class EventsCalendar extends Component {
                     return;
                 }
             }
-            console.log("user class: "+classification)
             AsyncStorage.setItem('userClassification', classification);
             this.setState({ userClassification: classification});
             this.loadEvents();
@@ -119,16 +121,17 @@ export default class EventsCalendar extends Component {
 
     printError = (err) => {console.log(err);}
 
-    updateSelectedDayEvents(){
+    updateSelectedDayEvents() {
         let selectedDayEvents = []
         var length = this.state.eventData.length
         for (let i = 0;i<length;i++){
-            if(this.state.eventData[i].modifiedDate === this.state.currentSelectedDate)
-                selectedDayEvents.push(this.state.eventData[i])
+            if(this.state.eventData[i].modifiedDate === this.state.currentSelectedDate) {
+                selectedDayEvents.push(this.state.eventData[i]);
+            }
         }
         selectedDayEvents.sort(function (a,b) {
             return moment(a.eventDate).diff(moment(b.eventDate), 'minutes')
-            
+
         })
         this.setState({selectedDayEvents: selectedDayEvents});
     }

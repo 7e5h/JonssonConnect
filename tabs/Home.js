@@ -116,41 +116,41 @@ export default class Home extends Component {
       this.state.newDataSource.push([id, article]);
   }
 
-  _downloadNewsFromFirebase() {
-    fetch(firebase.database().ref('Articles') + ".json")
-      .then((response) => {
-        return response.json();
-      }).then((responseJson) => {
-        for(let article in responseJson) {
-          this._addArticle(article, responseJson[article]);
-        }
+  _sortNews() {
+    //Sorts news in descending order based on posted date
 
-        this.state.newDataSource.sort(function(a, b) {
-          let date1 = new Date(a[1].postedOn);
-          let date2 = new Date(b[1].postedOn);
-          return -1*(date1 - date2);
-        });
+    this.state.newDataSource.sort(function(a, b) {
+      let date1 = new Date(a[1].postedOn);
+      let date2 = new Date(b[1].postedOn);
+      return -1*(date1 - date2);
+    });
+  }
 
-        console.log("Finished loading news articles from Firebase");
-        this.setState({
-          loadingFirebase: true
-        });
-
-        if(this.state.loadingUTD && this.state.loadingFirebase) {
-          this.setState({
-            isLoading: false,
-            refreshing: false,
-            dataSource: this.state.newDataSource
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({
-          isLoading: false,
-          networkFailed: true,
-        });
+  _finishNews() {
+    if(this.state.loadingFirebase && this.state.loadingUTD) {
+      this.setState({
+        isLoading: false,
+        refreshing: false,
+        dataSource: this.state.newDataSource
       });
+    }
+  }
+
+  _downloadNewsFromFirebase() {
+    let articlesRef = firebase.database().ref('Articles');
+    articlesRef.once('value', (snapshot) => {
+      snapshot.forEach((article) => {
+        this._addArticle(article.key, article.val());
+      });
+
+      this._sortNews();
+
+      this.setState({
+        loadingFirebase: true
+      });
+
+      this._finishNews();
+    });
   }
 
   _downloadNewsFromUTD() {
@@ -195,24 +195,13 @@ export default class Home extends Component {
           this._addArticle("UTDNews" + obj, article);
         }
 
-        this.state.newDataSource.sort(function(a, b) {
-          let date1 = new Date(a[1].postedOn);
-          let date2 = new Date(b[1].postedOn);
-          return -1*(date1 - date2);
-        });
+        this._sortNews();
 
-        console.log("Finished loading news articles from UTD News Center");
         this.setState({
           loadingUTD: true
         });
 
-        if(this.state.loadingUTD && this.state.loadingFirebase) {
-          this.setState({
-            isLoading: false,
-            refreshing: false,
-            dataSource: this.state.newDataSource
-          });
-        }
+        this._finishNews();
       }).catch((error) => {
         console.error(error);
         this.setState({
