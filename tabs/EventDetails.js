@@ -61,6 +61,8 @@ export default class EventDetails extends Component {
 
   // Checks state to see if user has already RSVP'd and returns "RSVP" or "Cancel RSVP" based on that.
   rsvpButton = () => {
+    let event = this.props.navigation.state.params.event;
+
     if(!this.state.rsvpState && this.state.rsvpCount >= this.state.maxRsvps) {
       return (
         <Button full style={styles.fullRsvpButtonStyle} onPress={() => {
@@ -96,6 +98,10 @@ export default class EventDetails extends Component {
               });
             });
             this.setState({ rsvpState: !this.state.rsvpState });
+
+            if(!this.state.rsvpState && event.rsvpUrl) {
+              Linking.openURL(event.rsvpUrl);
+            }
           }}>
           {
             this.state.rsvpState ?

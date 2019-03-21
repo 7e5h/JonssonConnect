@@ -64,7 +64,7 @@ export default class EventsCalendar extends Component {
         let currentDate  = moment().toISOString(true).slice(0, 10);
         let dates = [];
         let validEvents = [];
-        let earliestDate = ''
+        let earliestDate = '';
         for (let key in eventData) {
             let dateOfEvent = eventData[key]['modifiedDate'];
             let eventClassification = eventData[key]['eventClassification'];
