@@ -11,6 +11,7 @@ import moment from 'moment';
 import * as xml2js from 'react-native-xml2js';
 
 const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
+const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
 
 export default class Home extends Component {
 
@@ -27,7 +28,6 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
-
     this.setState({
       userID: await AsyncStorage.getItem('userID'),
       firstName: await AsyncStorage.getItem('firstName'),
@@ -36,10 +36,23 @@ export default class Home extends Component {
       headline: await AsyncStorage.getItem('headline'),
       location: await AsyncStorage.getItem('location'),
       industry: await AsyncStorage.getItem('industry'),
+      email: await AsyncStorage.getItem('email')
     });
 
-    this.updateClassification()
-    this._downloadNews();
+    //Make sure that all of the properties that we need are available - otherwise log out
+    if(!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
+      await this.logout();
+    } else {
+      this.updateClassification()
+      this._downloadNews();
+    }
+  }
+
+  async logout () {
+    await AsyncStorage.clear();
+    await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
+
+    this.props.navigation.navigate('Login');
   }
 
   updateClassification = () => {
@@ -50,10 +63,23 @@ export default class Home extends Component {
   loadedClassification = (data) => {
     let studentClassification = data.val()
 
-    if(studentClassification === null)
-    {
+    if(studentClassification === null) {
       this.askUserClassification()
+    } else {
+      this.updateUser();
     }
+  }
+
+  updateUser = () => {
+    let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
+
+    userRef.update({
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      userPhoto: this.state.userPhoto
+    }).catch(function (error) {
+      console.log(error);
+    });
   }
 
   handleError = (err) => {
@@ -79,19 +105,20 @@ export default class Home extends Component {
       return;
     }
 
-    let firstName = this.state.firstName
-    let lastName = this.state.lastName
+    let firstName = this.state.firstName;
+    let lastName = this.state.lastName;
+    let userPhoto = this.state.userPhoto;
 
     let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
 
     userRef.update({
       classification: classification,
-      userStatus: (classification === 'student') ? 'approved' : 'waiting',
       isAdmin: "false",
       numOfEvents: 0,
       points: 0,
       firstName: firstName,
-      lastName: lastName
+      lastName: lastName,
+      userPhoto: userPhoto
     }).catch(function (error) {
       console.log(error);
     });
