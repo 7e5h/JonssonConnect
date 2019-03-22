@@ -18,6 +18,7 @@ export default class EventDetails extends Component {
       isLoading: true,
       buttonColor: '#40E0D0',
       rsvpState: false,
+      volunteerState: false,
       event: this.props.navigation.state.params.event
     }
   }
@@ -54,6 +55,14 @@ export default class EventDetails extends Component {
           });
         }
       }
+
+      for(let id in eventData.usersVolunteer) {
+        if(this.state.userID === id) {
+          this.setState({
+            volunteerState: true
+          });
+        }
+      }
     }).catch(error => {
       console.log(error.message);
     });
@@ -61,7 +70,7 @@ export default class EventDetails extends Component {
 
   // Checks state to see if user has already RSVP'd and returns "RSVP" or "Cancel RSVP" based on that.
   rsvpButton = () => {
-    let event = this.props.navigation.state.params.event;
+    let event = this.state.event;
 
     if(!this.state.rsvpState && this.state.rsvpCount >= this.state.maxRsvps) {
       return (
@@ -75,7 +84,7 @@ export default class EventDetails extends Component {
       return (
         <Button full style={this.state.rsvpState? styles.cancelRsvpButtonStyle : styles.rsvpButtonStyle}
           onPress={() => {
-            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(this.props.navigation.state.params.event.eventTitle);
+            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(event.eventTitle);
             query.once('value', data => {
               data.forEach(userSnapshot => {
                 let key = userSnapshot.key;
@@ -119,6 +128,52 @@ export default class EventDetails extends Component {
       );
     }
   }
+
+  volunteerButton = () => {
+    let event = this.state.event;
+
+    if(event.needsVolunteers) {
+      return (
+        <Button full style={this.state.volunteerState ? styles.cancelRsvpButtonStyle : styles.rsvpButtonStyle}
+          onPress={() => {
+            var query = firebase.database().ref('/Events').orderByChild('eventTitle').equalTo(event.eventTitle);
+            query.once('value', data => {
+              data.forEach(userSnapshot => {
+                let key = userSnapshot.key;
+                var userID = this.state.userID;
+                var userEmail = this.state.userEmail;
+                if(this.state.volunteerState){
+                  firebase.database().ref('Events/' + key).child('usersVolunteer').child(userID).remove();
+                } else {
+                  firebase.database().ref('Events/' + key).child('usersVolunteer').child(userID).set(userEmail);
+                }
+              });
+            });
+            this.setState({ volunteerState: !this.state.volunteerState });
+
+            if(!this.state.volunteerState && event.volunteerUrl) {
+              Linking.openURL(event.volunteerUrl);
+            }
+          }}>
+          {
+            this.state.volunteerState ?
+                <Text style={{fontSize: 14, fontWeight: '500'}}> <Icon name='ios-close-circle' style={{
+                  fontSize: 14,
+                  color: '#ffffff'
+                }}/>{"  "} Cancel Volunteering </Text>
+                :
+                <Text style={{fontSize: 14, fontWeight: '500'}}><Icon name='ios-checkmark-circle' style={{
+                  fontSize: 14,
+                  color: '#ffffff'
+                }}/>{"  "} Volunteer For Event </Text>
+          }
+        </Button>
+      );
+    } else {
+      return null;
+    }
+  }
+
   // This is the method for map url
   _handlePress = (url) => {
     console.log("THE URL IS:" + url)
@@ -173,6 +228,11 @@ export default class EventDetails extends Component {
             <CardItem>
               <Body>
                 <this.rsvpButton />
+              </Body>
+            </CardItem>
+            <CardItem>
+              <Body>
+                <this.volunteerButton />
               </Body>
             </CardItem>
           </Card>
