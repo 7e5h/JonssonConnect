@@ -60,7 +60,6 @@ export default class EventsCalendar extends Component {
         }
 
         let eventData = data.val();
-
         let currentDate  = moment().toISOString(true).slice(0, 10);
         let dates = [];
         let validEvents = [];
@@ -179,7 +178,7 @@ export default class EventsCalendar extends Component {
                             <View style={styles.rightItems}>
                                 <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 ,textAlign: 'right'}}>
                                     <Icon name='clock' style={{ fontSize: 12, color: '#5d5d5d', paddingRight:2}} />
-                                    {moment(item.eventDate).format('  h:mm a')}
+                                    {moment(item.eventDate).format('  h:mm a')}{item.eventDateEnd?" - "+moment(item.eventDateEnd).format('h:mm a'):""}
                                 </Text>
                             </View>
                         </View>
