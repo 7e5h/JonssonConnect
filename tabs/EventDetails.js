@@ -114,12 +114,12 @@ export default class EventDetails extends Component {
           }}>
           {
             this.state.rsvpState ?
-                <Text style={{fontSize: 14, fontWeight: '500'}}> <Icon name='ios-close-circle' style={{
+                <Text style={{fontSize: 14, fontWeight: '500'}}> <Icon type="FontAwesome"  name='remove' style={{
                   fontSize: 14,
                   color: '#ffffff'
                 }}/>{"  "} Cancel RSVP </Text>
                 :
-                <Text style={{fontSize: 14, fontWeight: '500'}}><Icon name='ios-checkmark-circle' style={{
+                <Text style={{fontSize: 14, fontWeight: '500'}}><Icon type="FontAwesome"  name='check' style={{
                   fontSize: 14,
                   color: '#ffffff'
                 }}/>{"  "} RSVP </Text>
@@ -174,6 +174,27 @@ export default class EventDetails extends Component {
     }
   }
 
+  openLinkButton = () =>{
+    if(this.state.event.eventUrl) {
+      return (
+          <CardItem>
+            <Body>
+              <Button full style={styles.linkButtonStyle}
+                      onPress={() => {
+                        Linking.openURL(this.state.event.eventUrl)
+                      }}>
+                <Text style={{fontSize: 14, fontWeight: '500'}}>
+                  <Icon type="FontAwesome" name='link' style={{fontSize: 20, color: '#FFFFFF'}}/>
+                  {"  "} Open event URL </Text>
+            </Button>
+            </Body>
+          </CardItem>
+      )
+    }
+    else{
+      return null
+    }
+  }
   // This is the method for map url
   _handlePress = (url) => {
     console.log("THE URL IS:" + url)
@@ -217,14 +238,15 @@ export default class EventDetails extends Component {
               </Body>
             </CardItem>
             <CardItem>
-              <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingVertical: 8, backgroundColor: "#c75b12" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 14, color: '#FFFFFF' }}
+              <View style={ styles.linkButtonStyle}>
+                <Text style={{ fontSize: 14, color: '#FFFFFF' }}
                   onPress={(yourData) => this._handlePress(event.eventLocation)}>
-                  <Icon type="Entypo" name='location' style={{ fontSize: 20, color: '#FFFFFF' }} />
-                  {"  "} OPEN IN MAPS!
-            </Text>
+                  <Icon type="FontAwesome" name='map' style={{ fontSize: 20, color: '#FFFFFF' }} />
+                  {"  "} Open in maps
+                </Text>
               </View>
             </CardItem>
+            <this.openLinkButton />
             <CardItem>
               <Body>
                 <this.rsvpButton />
@@ -248,6 +270,14 @@ const styles = StyleSheet.create({
   nameStyle: {
     fontWeight: '800',
     fontSize: 20,
+  },
+  linkButtonStyle:{
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 8,
+    backgroundColor: "#c75b12",
+    height: 40,
   },
   rsvpButtonStyle: {
     backgroundColor: '#69BE28',
@@ -280,9 +310,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 1,
-  },
-  searchbarColor: {
-    backgroundColor: '#0039A6',
   },
   searchButton: {
     fontSize: 12,
