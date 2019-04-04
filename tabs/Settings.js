@@ -1,18 +1,30 @@
 import React, { Component } from 'react';
-import { Picker, Text, View, StyleSheet, ScrollView, Button, TouchableOpacity, Alert, AsyncStorage, Linking } from 'react-native';
-import { Container, Header, Content, Accordion, Form, Icon, Item, Input, Label } from "native-base";
+import { Text, View, StyleSheet, ScrollView, Button, TouchableOpacity, Alert, AsyncStorage } from 'react-native';
+import { Icon} from "native-base";
 import * as firebase from 'firebase';
 
 const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
 const RCTNetworking = require("RCTNetworking");
 
 export default class Settings extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       userID: '',
       userClassification: '',
     };
+  }
+
+  async componentDidMount() {
+    this.setState({
+      userID: await AsyncStorage.getItem('userID'),
+      userClassification: await AsyncStorage.getItem('userClassification'),
+    });
+
+    //Update classification
+    let classificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
+    classificationRef.on('value', this.loadedClassification, (err) => console.log(err));
   }
 
   loadedClassification = (newClassification) => {
@@ -73,19 +85,9 @@ export default class Settings extends Component {
       console.log('Cookies cleared, had cookies=' + cleared.toString());
     });
   }
-
-  async componentDidMount() {
-    this.setState({
-      userID: await AsyncStorage.getItem('userID'),
-      userClassification: await AsyncStorage.getItem('userClassification'),
-    });
-
-    //Update classification
-    let classificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
-    classificationRef.on('value', this.loadedClassification, (err) => console.log(err));
-  }
-
+  
   render() {
+
     //Get the classification with the first letter capitalized
     let capitalized = this.state.userClassification;
     capitalized = capitalized.substring(0, 1).toUpperCase() + capitalized.substring(1);
