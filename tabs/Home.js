@@ -10,12 +10,11 @@ import * as firebase from 'firebase';
 import moment from 'moment';
 import * as xml2js from 'react-native-xml2js';
 
+
 const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
 
 export default class Home extends Component {
-
-
-
+  
   constructor(props) {
     super(props);
 
