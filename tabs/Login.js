@@ -188,7 +188,7 @@ export default class Login extends React.Component {
   completedTutorial = () => {
     AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
     this.setState({ tutorialCompleted: true });
-    this.checkUserLogin(); 
+    this.checkUserLogin();
   }
 
   /*

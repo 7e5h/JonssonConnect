@@ -53,7 +53,6 @@ export default class EventsCalendar extends Component {
     }
 
     eventsLoaded = (data) => {
-
         let userType = this.state.userClassification;
         if (userType !== "student" && userType !== "alumni" && userType !== "admin") {
             console.log("EventsCalendar: User classification type not recognized: "+userType);
@@ -61,11 +60,10 @@ export default class EventsCalendar extends Component {
         }
 
         let eventData = data.val();
-
         let currentDate  = moment().toISOString(true).slice(0, 10);
         let dates = [];
         let validEvents = [];
-        let earliestDate = ''
+        let earliestDate = '';
         for (let key in eventData) {
             let dateOfEvent = eventData[key]['modifiedDate'];
             let eventClassification = eventData[key]['eventClassification'];
@@ -80,7 +78,11 @@ export default class EventsCalendar extends Component {
                     earliestDate = dateOfEvent
                 }
                 dates.push(dateOfEvent);
-                validEvents.push(eventData[key])
+                let eventObj = {
+                  ...eventData[key],
+                  key: key
+                };
+                validEvents.push(eventObj);
             }
         }
 
@@ -109,7 +111,6 @@ export default class EventsCalendar extends Component {
                     return;
                 }
             }
-            console.log("user class: "+classification)
             AsyncStorage.setItem('userClassification', classification);
             this.setState({ userClassification: classification});
             this.loadEvents();
@@ -119,16 +120,17 @@ export default class EventsCalendar extends Component {
 
     printError = (err) => {console.log(err);}
 
-    updateSelectedDayEvents(){
+    updateSelectedDayEvents() {
         let selectedDayEvents = []
         var length = this.state.eventData.length
         for (let i = 0;i<length;i++){
-            if(this.state.eventData[i].modifiedDate === this.state.currentSelectedDate)
-                selectedDayEvents.push(this.state.eventData[i])
+            if(this.state.eventData[i].modifiedDate === this.state.currentSelectedDate) {
+                selectedDayEvents.push(this.state.eventData[i]);
+            }
         }
         selectedDayEvents.sort(function (a,b) {
             return moment(a.eventDate).diff(moment(b.eventDate), 'minutes')
-            
+
         })
         this.setState({selectedDayEvents: selectedDayEvents});
     }
@@ -176,7 +178,7 @@ export default class EventsCalendar extends Component {
                             <View style={styles.rightItems}>
                                 <Text style={{ fontWeight: '200', fontSize: 12, paddingTop: 5 ,textAlign: 'right'}}>
                                     <Icon name='clock' style={{ fontSize: 12, color: '#5d5d5d', paddingRight:2}} />
-                                    {moment(item.eventDate).format('  h:mm a')}
+                                    {moment(item.eventDate).format('  h:mm a')}{item.eventDateEnd?" - "+moment(item.eventDateEnd).format('h:mm a'):""}
                                 </Text>
                             </View>
                         </View>

@@ -12,6 +12,7 @@ import * as xml2js from 'react-native-xml2js';
 
 
 const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
+const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
 
 export default class Home extends Component {
   
@@ -26,7 +27,6 @@ export default class Home extends Component {
   }
 
   async componentDidMount() {
-
     this.setState({
       userID: await AsyncStorage.getItem('userID'),
       firstName: await AsyncStorage.getItem('firstName'),
@@ -35,10 +35,23 @@ export default class Home extends Component {
       headline: await AsyncStorage.getItem('headline'),
       location: await AsyncStorage.getItem('location'),
       industry: await AsyncStorage.getItem('industry'),
+      email: await AsyncStorage.getItem('email')
     });
 
-    this.updateClassification()
-    this._downloadNews();
+    //Make sure that all of the properties that we need are available - otherwise log out
+    if(!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
+      await this.logout();
+    } else {
+      this.updateClassification()
+      this._downloadNews();
+    }
+  }
+
+  async logout () {
+    await AsyncStorage.clear();
+    await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
+
+    this.props.navigation.navigate('Login');
   }
 
   updateClassification = () => {
@@ -49,10 +62,23 @@ export default class Home extends Component {
   loadedClassification = (data) => {
     let studentClassification = data.val()
 
-    if(studentClassification === null)
-    {
+    if(studentClassification === null) {
       this.askUserClassification()
+    } else {
+      this.updateUser();
     }
+  }
+
+  updateUser = () => {
+    let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
+
+    userRef.update({
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      userPhoto: this.state.userPhoto
+    }).catch(function (error) {
+      console.log(error);
+    });
   }
 
   handleError = (err) => {
@@ -78,19 +104,20 @@ export default class Home extends Component {
       return;
     }
 
-    let firstName = this.state.firstName
-    let lastName = this.state.lastName
+    let firstName = this.state.firstName;
+    let lastName = this.state.lastName;
+    let userPhoto = this.state.userPhoto;
 
     let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
 
     userRef.update({
       classification: classification,
-      userStatus: (classification === 'student') ? 'approved' : 'waiting',
       isAdmin: "false",
       numOfEvents: 0,
       points: 0,
       firstName: firstName,
-      lastName: lastName
+      lastName: lastName,
+      userPhoto: userPhoto
     }).catch(function (error) {
       console.log(error);
     });
@@ -115,41 +142,41 @@ export default class Home extends Component {
       this.state.newDataSource.push([id, article]);
   }
 
-  _downloadNewsFromFirebase() {
-    fetch(firebase.database().ref('Articles') + ".json")
-      .then((response) => {
-        return response.json();
-      }).then((responseJson) => {
-        for(let article in responseJson) {
-          this._addArticle(article, responseJson[article]);
-        }
+  _sortNews() {
+    //Sorts news in descending order based on posted date
 
-        this.state.newDataSource.sort(function(a, b) {
-          let date1 = new Date(a[1].postedOn);
-          let date2 = new Date(b[1].postedOn);
-          return -1*(date1 - date2);
-        });
+    this.state.newDataSource.sort(function(a, b) {
+      let date1 = new Date(a[1].postedOn);
+      let date2 = new Date(b[1].postedOn);
+      return -1*(date1 - date2);
+    });
+  }
 
-        console.log("Finished loading news articles from Firebase");
-        this.setState({
-          loadingFirebase: true
-        });
-
-        if(this.state.loadingUTD && this.state.loadingFirebase) {
-          this.setState({
-            isLoading: false,
-            refreshing: false,
-            dataSource: this.state.newDataSource
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        this.setState({
-          isLoading: false,
-          networkFailed: true,
-        });
+  _finishNews() {
+    if(this.state.loadingFirebase && this.state.loadingUTD) {
+      this.setState({
+        isLoading: false,
+        refreshing: false,
+        dataSource: this.state.newDataSource
       });
+    }
+  }
+
+  _downloadNewsFromFirebase() {
+    let articlesRef = firebase.database().ref('Articles');
+    articlesRef.once('value', (snapshot) => {
+      snapshot.forEach((article) => {
+        this._addArticle(article.key, article.val());
+      });
+
+      this._sortNews();
+
+      this.setState({
+        loadingFirebase: true
+      });
+
+      this._finishNews();
+    });
   }
 
   _downloadNewsFromUTD() {
@@ -194,24 +221,13 @@ export default class Home extends Component {
           this._addArticle("UTDNews" + obj, article);
         }
 
-        this.state.newDataSource.sort(function(a, b) {
-          let date1 = new Date(a[1].postedOn);
-          let date2 = new Date(b[1].postedOn);
-          return -1*(date1 - date2);
-        });
+        this._sortNews();
 
-        console.log("Finished loading news articles from UTD News Center");
         this.setState({
           loadingUTD: true
         });
 
-        if(this.state.loadingUTD && this.state.loadingFirebase) {
-          this.setState({
-            isLoading: false,
-            refreshing: false,
-            dataSource: this.state.newDataSource
-          });
-        }
+        this._finishNews();
       }).catch((error) => {
         console.error(error);
         this.setState({
