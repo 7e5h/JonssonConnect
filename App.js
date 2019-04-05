@@ -8,7 +8,7 @@ import { createAppContainer } from "react-navigation";
 import * as firebase from 'firebase';
 import { FIREBASE_API_KEY } from './Keys';
 
-import AppNavigator from './navigation/AppNavigator.js';
+import AppNavigator from './Navigation/AppNavigator.js';
 console.disableYellowBox = true
 
 //
