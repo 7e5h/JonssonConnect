@@ -1,22 +1,22 @@
 import React from 'react';
 import { Platform} from 'react-native';
-import { createStackNavigator, createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation';
+import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import { Icon } from 'native-base';
 
 import TabBarIcon from '../TabBarIcon';
-import HomeScreen from '../tabs/Home';
-import Jobs from '../tabs/Jobs';
-import EventDetails from '../tabs/EventDetails';
-import JobsDetails from '../tabs/JobsDetails';
-import ArticleDetails from '../tabs/ArticleDetails';
-import EventsCalendar from '../tabs/EventsCalendar';
-import Rewards from '../tabs/Rewards';
-import Help from '../tabs/Help';
-import Qrcode from '../tabs/Qrcode';
-import Redeem from '../tabs/Redeem';
-import Settings from '../tabs/Settings';
-import CodeDisplayScreen from '../tabs/CodeDisplay';
+import HomeScreen from '../screens/Home';
+import Jobs from '../screens/Jobs';
+import EventDetails from '../screens/EventDetails';
+import JobsDetails from '../screens/JobsDetails';
+import ArticleDetails from '../screens/ArticleDetails';
+import EventsCalendar from '../screens/EventsCalendar';
+import Rewards from '../screens/Rewards';
+import Help from '../screens/Help';
+import Qrcode from '../screens/Qrcode';
+import Redeem from '../screens/Redeem';
+import Settings from '../screens/Settings';
+import CodeDisplayScreen from '../screens/CodeDisplay';
 
 const HomeFeedStack = createStackNavigator(
     {
@@ -157,7 +157,7 @@ const EventsFeedStack = createStackNavigator(
 //         style: {
 //           backgroundColor: '#008542', // UTD Color
 //         },
-//         tabStyle: {
+//         screenstyle: {
 //           padding: 8, margin:8,
 //         },
 //       }
@@ -195,7 +195,7 @@ EventsFeedStack.navigationOptions = {
     ),
 };
 
-export default createBottomTabNavigator({
+export default TabNavigator = createBottomTabNavigator({
     HomeFeedStack,
     JobsFeedStack,
     EventsFeedStack,
@@ -206,13 +206,8 @@ export default createBottomTabNavigator({
             inactiveTintColor: '#D3D3D3', 
             labelStyle: {
                 fontSize: 16,
-                // flex: 1, 
-                // justifyContent: 'center', 
-                // alignItems: 'center', 
-                // textAlign: 'center',
-                // textAlignVertical: 'center',
             },
-            tabStyle: {
+            screenstyle: {
                 alignItems: 'center', 
                 justifyContent: 'center', 
             },

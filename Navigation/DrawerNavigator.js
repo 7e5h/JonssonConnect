@@ -1,10 +1,7 @@
-import React from 'react';
-import { Platform } from 'react-native';
-import { createDrawerNavigator, createStackNavigator, createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation';
+import { createDrawerNavigator } from 'react-navigation';
 
 import AppScreenNavigator from './AppScreenNavigator';
-
-import DrawerScreen from '../tabs/DrawerScreen';
+import DrawerScreen from '../screens/DrawerScreen';
 
 export default DrawerNavigator = createDrawerNavigator(
     {
