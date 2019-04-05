@@ -271,16 +271,20 @@ export default class Home extends Component {
             <Image source={{uri: item[1].articleImageURL}}  style={styles.thumbnailImage} ></Image>
           </View>
           <View style={{height: 100, flex:1}}>
-            <Text style={{ color: item[1].articleColor, fontSize: 10, fontWeight: '100', paddingLeft: 15, paddingRight: 10, paddingTop: 5, paddingBottom: 10}}>
-              <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
-            </Text>
-            <Text style={styles.nameStyle}>
+            
+            <Text style={styles.articleTitle} ellipsizeMode='tail' numberOfLines={3}>
               { item[1].articleName }
             </Text>
-            <Text style={styles.dateStyle}>
+
+            <Text style={[styles.articleCategory, {color: item[1].articleColor,}]}>
+              <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
+            </Text>
+            
+            <Text style={styles.articleDate}>
               <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
               { dateString }
             </Text>
+
           </View>
         </View>
       </TouchableOpacity>
@@ -366,19 +370,30 @@ const styles = StyleSheet.create({
     color: '#D3D3D3',
     paddingLeft: 10,
   },
-  nameStyle: {
+  articleTitle: {
+    flex: 4,
     fontSize: 16,
     fontWeight: '400',
+  
     paddingTop: 5,
     paddingLeft: 15,
     paddingRight: 5,
   },
-  dateStyle: {
+  articleCategory: { 
+    flex: 1, 
+    fontSize: 10, fontWeight: '100', 
+    paddingLeft: 15, 
+    // paddingRight: 10, 
+    // paddingTop: 5, 
+    // paddingBottom: 10
+  },
+  articleDate: {
+    flex: 1,
     fontSize: 10,
     fontWeight: '100',
-    paddingTop: 10,
+    // paddingTop: 10,
     paddingLeft: 15,
-    paddingRight: 5,
+    // paddingRight: 5,
     color: '#878787',
   },
   bigHeader: {
