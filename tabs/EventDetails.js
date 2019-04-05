@@ -216,7 +216,7 @@ export default class EventDetails extends Component {
     return (
       <Container>
         <Content>
-          {this.props.navigation.state.params.event.eventImageURL ? <Image source={{ uri: this.props.navigation.state.params.event.eventImageURL }} style={{ height: 200, width: null, resizeMode: 'contain' }} /> : null}
+          {this.props.navigation.state.params.event.eventImageURL ? <Image source={{ uri: this.props.navigation.state.params.event.eventImageURL }} style={{ height: 200, width: null, resizeMode: 'cover' }} /> : null}
           <Card style={{ flex: 0 }}>
             <CardItem>
               <Body>
