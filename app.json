@@ -6,16 +6,16 @@
     },
     "icon": "./images/appicon.png",
     "orientation": "portrait",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "slug": "jonsson",
     "sdkVersion": "27.0.0",
     "ios": {
       "bundleIdentifier": "edu.utdallas.jonsson.connect",
-      "buildNumber": "7"
+      "buildNumber": "8"
     },
     "android": {
       "package": "edu.utdallas.jonsson.connect",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": []
     },
     "description": "The Jonsson Connect App will connect students, alumni, and potential employers with each other and with the Erik Jonsson School of Engineering and Computer Science (ECS). The app will inform its users of the latest news, jobs, and events tied to the Jonsson School. Although a UT Dallas application is available on Google’s Playstore and Apple’s Appstore, no such application exists specifically for the Erik Jonsson School. We plan to complete development of the Jonsson Connect app by November 19th and we plan to have this app available in the Android and Apple app stores by December 3rd, 2018. The app is currently in Phase 2 of its development.",
