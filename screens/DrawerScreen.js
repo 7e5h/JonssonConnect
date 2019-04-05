@@ -79,7 +79,6 @@ export default class DrawerScreen extends Component {
     isAdminRef.on('value', this.handleIsAdmin, this.handleError);
   }
 
-
   handleIsAdmin = (data) => {
     this.state.isAdmin = data.val()
   }

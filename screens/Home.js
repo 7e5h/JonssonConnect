@@ -11,11 +11,12 @@ import moment from 'moment';
 import * as xml2js from 'react-native-xml2js';
 import {Image} from 'react-native'; 
 
+
 const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
 const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
 
 export default class Home extends Component {
-
+  
   constructor(props) {
     super(props);
 
