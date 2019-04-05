@@ -3,7 +3,7 @@
  * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
  */
 
-import { CalendarList } from 'react-native-calendars';
+import {Calendar } from 'react-native-calendars';
 import React, { Component } from 'react';
 import {ScrollView, AsyncStorage, FlatList, Text, TouchableOpacity, View,StyleSheet} from 'react-native';
 import * as firebase from 'firebase';
@@ -62,6 +62,7 @@ export default class EventsCalendar extends Component {
         let eventData = data.val();
         let currentDate  = moment().toISOString(true).slice(0, 10);
         let dates = [];
+        let multiDateEvents = [];
         let validEvents = [];
         let earliestDate = '';
         for (let key in eventData) {
@@ -73,7 +74,6 @@ export default class EventsCalendar extends Component {
 
             // Only include dates that the user should see here
             if (userType === 'admin' || eventClassification === 'both' || eventClassification === userType) {
-
                 if (earliestDate === '' || moment(dateOfEvent).isBefore(earliestDate)){
                     earliestDate = dateOfEvent
                 }
@@ -83,14 +83,21 @@ export default class EventsCalendar extends Component {
                   key: key
                 };
                 validEvents.push(eventObj);
+
+                //This is the case where events last more than one day
+                if(moment(eventData[key]['eventDateEnd']).format('L') !== moment(dateOfEvent).format('L')) {
+                    multiDateEvents.push({end: moment(eventData[key]['eventDateEnd']), start: dateOfEvent})
+                }
+
             }
         }
 
         this.setState({eventData: validEvents});
+        this.setState({multiDateEvents: multiDateEvents});
         this.setState({eventDates: dates});
         this.setState({currentSelectedDate:earliestDate},()=>{
             this.updateSelectedDayEvents()
-            this.setState({markedDates: this.getMarkedDatesForCalendar(dates,earliestDate)});
+            this.setState({markedDates: this.getMarkedDatesForCalendar(dates,multiDateEvents,earliestDate)});
         })
 
     }
@@ -136,24 +143,36 @@ export default class EventsCalendar extends Component {
     }
 
 
-    getMarkedDatesForCalendar = (eventList,selectedDate) => {
+    getMarkedDatesForCalendar = (eventList,multiDateEvents,selectedDate) => {
         eventList.sort()
         let dates = {}
-        const dot_color = { color: '#c75b12' };
         eventList.forEach(function (date) {
-            var markedDate = {selected: true, marked: true, selectedColor: '#c75b12',dotColor:"#FFFFFF"}
-            if(date === selectedDate){
-                markedDate.selectedColor = '#008542'
-            }
-            dates[date] = markedDate
+            dates[date] = {startingDay: true,endingDay: true,selected: true, marked: true, color: (date === selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF"};
         })
+        multiDateEvents.forEach(function (date) {
+            var start = moment( date.start)
+            var end = moment( date.end)
+
+            //Mark the first day in the collection to be the starting date
+            dates[start.format('YYYY-MM-DD')] = {startingDay: true,endingDay:false, marked: true, color:(start.format('YYYY-MM-DD')===selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF",textColor: "white"}
+            start.add(1, 'days')
+            end.subtract(1,'days')
+
+            console.log(start.format('YYYY-MM-DD')+" "+end.format('YYYY-MM-DD'))
+            for (var m = moment(start); m.isBefore(end); m.add(1, 'days')) {
+                dates[m.format('YYYY-MM-DD')] = {startingDay: false,endingDay:false, marked: true,selectable:false,color:(m.format('YYYY-MM-DD')===selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF",textColor: "white"}
+            }
+
+            dates[end.format('YYYY-MM-DD')] = {startingDay: false,endingDay:true, marked: true,selectable:false, color:(end.format('YYYY-MM-DD')===selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF",textColor: "white"}
+        })
+
         return dates
     }
 
     handleDayClick = (day) => {
         this.setState({currentSelectedDate:day.dateString},()=>{
             this.updateSelectedDayEvents()
-            this.state.markedDates = this.getMarkedDatesForCalendar(this.state.eventDates,day.dateString)
+            this.state.markedDates = this.getMarkedDatesForCalendar(this.state.eventDates,this.state.multiDateEvents,day.dateString)
 
         })
     }
@@ -201,7 +220,8 @@ export default class EventsCalendar extends Component {
         let currentDate  = moment().toISOString(true).slice(0, 10);
         return (
             <ScrollView>
-                <CalendarList
+                <Calendar
+                    markingType={'period'}
                     // Max amount of months allowed to scroll to the past. Default = 50
                     pastScrollRange={0}
                     // Max amount of months allowed to scroll to the future. Default = 50
