@@ -9,8 +9,6 @@ import {
   TouchableHighlight,
   StatusBar,
 } from 'react-native'
-StatusBar.setBarStyle('dark-content');
-StatusBar.setTranslucent(false);
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import RF from 'react-native-responsive-fontsize';
 import { Icon, Text, Button, } from 'native-base';

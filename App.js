@@ -3,16 +3,12 @@
  * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
  */
 
-import { StatusBar } from 'react-native';
 import { createAppContainer } from "react-navigation";
 
 import * as firebase from 'firebase';
 import { FIREBASE_API_KEY } from './Keys';
 
 import AppNavigator from './navigation/AppNavigator.js';
-
-StatusBar.setBarStyle("light-content")
-StatusBar.setTranslucent(true)
 console.disableYellowBox = true
 
 //

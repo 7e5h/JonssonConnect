@@ -5,6 +5,7 @@ import {
     View,
     ActivityIndicator,
 } from 'react-native';
+import { Icon } from 'native-base';
 
 const IS_LOGGED_IN_KEY = "isLoggedIn";
 
@@ -24,8 +25,6 @@ export default class AppLoading extends React.Component {
     }
 
     async loadFontsAndIcons() {
-        // DISABLING DATA COLLECTION Ref: https://docs.expo.io/versions/latest/sdk/segment.html
-        // Segment.setEnabledAsync(false);
         // This needs to happen here as the fonts only need to be loaded once,
         await Expo.Font.loadAsync({
           'Roboto': require('native-base/Fonts/Roboto.ttf'),
