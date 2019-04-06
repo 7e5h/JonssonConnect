@@ -4,7 +4,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 
 import { Icon } from 'native-base';
 
-import TabBarIcon from '../TabBarIcon';
+import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/Home';
 import Jobs from '../screens/Jobs';
 import EventDetails from '../screens/EventDetails';
