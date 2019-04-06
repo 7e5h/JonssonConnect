@@ -8,7 +8,7 @@ import { createAppContainer } from "react-navigation";
 import * as firebase from 'firebase';
 import { FIREBASE_API_KEY } from './Keys';
 
-import AppNavigator from './Navigation/AppNavigator.js';
+import MainAppSwitchNavigator from './Navigation/MainAppSwitchNavigator';
 console.disableYellowBox = true
 
 //
@@ -26,4 +26,4 @@ export const firebaseApp = firebase.initializeApp(config);
 //
 //  Export App
 //
-export default App = createAppContainer(AppNavigator);
+export default App = createAppContainer(MainAppSwitchNavigator);

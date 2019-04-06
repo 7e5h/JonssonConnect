@@ -140,31 +140,6 @@ const EventsFeedStack = createStackNavigator(
     }
 );
 
-// export default AppScreenNavigator = createMaterialTopTabNavigator({
-//   Home: { screen: HomeFeedStack },
-//   Jobs: { screen: JobsFeedStack },
-//   Events: { screen: EventsFeedStack },
-// },
-//     {
-//       tabBarPosition: 'bottom',
-//       swipeEnabled: false,
-//       animationEnabled: true,
-//       tabBarOptions: {
-//         activeTintColor: '#FFFFFF',
-//         labelStyle: {
-//           fontSize: 15,
-//         },
-//         style: {
-//           backgroundColor: '#008542', // UTD Color
-//         },
-//         screenstyle: {
-//           padding: 8, margin:8,
-//         },
-//       }
-//     }
-//     );
-
-
 HomeFeedStack.navigationOptions = {
     tabBarLabel: 'HOME', 
     tabBarIcon: ({ focused }) => (
