@@ -19,14 +19,6 @@ export default class DrawerScreen extends Component {
     this.state = {
       isLoading: true,
       isAdmin: false,
-
-      firstName: null,
-      lastName: null,
-      userPhoto: null,
-      headline: null,
-      location: null,
-      industry: null,
-      userID: null,
     }
   }
 
@@ -133,9 +125,6 @@ export default class DrawerScreen extends Component {
     let day = moment().format('dddd,');
     let monthPlusDate =  moment().format('MMMM D');
 
-    //
-    //  TODO: - Implement user photo using react-native Image tag with defaultSource rather than using native-base
-    //
     let userImageUrl = this.state.userPhoto;
     let userPhotoSource = (userImageUrl == null || userImageUrl.toString() == '') ? require('../images/default_user_photo.png') : {uri: userImageUrl.toString()}; 
 
