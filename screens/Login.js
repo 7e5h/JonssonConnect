@@ -247,8 +247,6 @@ export default class Login extends React.Component {
 
     if (picUrl != null) {
       await AsyncStorage.setItem('userPhoto', picUrl);
-    } else {
-      await AsyncStorage.setItem('userPhoto', 'https://www.utdallas.edu/brand/files/Temoc_Orange.png');
     }
 
     await AsyncStorage.setItem('lastName', this.state.lastName);
