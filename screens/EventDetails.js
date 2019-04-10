@@ -4,7 +4,7 @@
  */
 
 import React, { Component } from 'react';
-import { Alert, ActivityIndicator, AsyncStorage, Image, Linking, ListView, FlatList, StyleSheet, View } from 'react-native';
+import { Alert, ActivityIndicator, AsyncStorage, Image, Linking, ListView, FlatList, StyleSheet, View, Modal, TouchableHighlight } from 'react-native';
 import { Container, Header, Content, Card, Col, CardItem, Grid, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, Row, H1, H2, H3 } from 'native-base';
 import * as firebase from 'firebase';
 import moment from 'moment';
@@ -19,8 +19,15 @@ export default class EventDetails extends Component {
       buttonColor: '#40E0D0',
       rsvpState: false,
       volunteerState: false,
-      event: this.props.navigation.state.params.event
+      event: this.props.navigation.state.params.event,
+      pickerDisplayed: false,
     }
+  }
+
+  togglePicker(){
+    this.setState({
+      pickerDisplayed:!this.state.pickerDisplayed
+       })
   }
 
   async componentDidMount() {
@@ -90,6 +97,8 @@ export default class EventDetails extends Component {
                 let key = userSnapshot.key;
                 var userID = this.state.userID;
                 var userEmail = this.state.userEmail;
+
+                //Cancel RSVP
                 if(this.state.rsvpState){
                   firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).remove();
                   var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
@@ -97,9 +106,12 @@ export default class EventDetails extends Component {
                     return (current_value || 0) - 1;
                   });
                 }
+
+                //To RSVP
                 else{
                   firebase.database().ref('Events/' + key).child('usersRsvp').child(userID).set(userEmail);
                   var interestedCountRef = firebase.database().ref('Events/' + key).child('rsvpCount');
+                  this.togglePicker();
                   interestedCountRef.transaction(function (current_value) {
                     return (current_value || 0) + 1;
                   });
@@ -171,6 +183,64 @@ export default class EventDetails extends Component {
       );
     } else {
       return null;
+    }
+  }
+
+  reminderModalDisplayed = () =>{
+    const pickerValues=[
+      {
+        title: '30 Min',
+        value: '30min'
+      },
+      {
+        title: '2 Hours',
+        value: '2hours'
+      },
+      {
+        title: '4 Hours',
+        value: "4hours"
+      },
+      {
+        title: '1 Day',
+        value: "1day"
+      },
+      {
+        title: '2 Days',
+        value: '2days'
+      }
+    ]
+
+    if(this.state.pickerDisplayed){
+      return(
+        <View style = {styles.container}>
+              <Modal animationType = {"slide"} transparent={true}>
+                <View 
+                  style = {{
+                  margin: 20,
+                  padding: 20,
+                  backgroundColor: '#efefef',
+                  bottom: 20,
+                  right: 20,
+                  left: 20,
+                  position: 'absolute',
+                  alignItems: 'center'}}>
+                  <Text style={{fontWeight: 'bold', marginBottom: 10}}>Set a Reminder For: </Text>
+                  { pickerValues.map((value, index) => { 
+                    return <TouchableHighlight key={index} /*onPress = {()=> )}*/ style = {{paddingTop: 4, paddingBottom: 4 }}>
+                        <Text>{value.title}</Text>
+                    </TouchableHighlight>
+                  })}
+
+                    <TouchableHighlight onPress={() => this.togglePicker()} style={{paddingTop: 4, paddingBottom: 4}}>
+                      <Text style={{color: '#999'}}>Cancel</Text>
+                    </TouchableHighlight>
+                </View>
+              </Modal>
+          </View> 
+      )
+    }
+    else{
+      return null
     }
   }
 
@@ -258,11 +328,10 @@ export default class EventDetails extends Component {
               </Body>
             </CardItem>
           </Card>
+          <this.reminderModalDisplayed/>
         </Content>
       </Container>
     )
-
-
   }
 }
 
