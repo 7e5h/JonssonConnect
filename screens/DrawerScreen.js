@@ -125,6 +125,9 @@ export default class DrawerScreen extends Component {
     let day = moment().format('dddd,');
     let monthPlusDate =  moment().format('MMMM D');
 
+    let userImageUrl = this.state.userPhoto;
+    let userPhotoSource = (userImageUrl == null || userImageUrl.toString() == '') ? require('../images/default_user_photo.png') : {uri: userImageUrl.toString()}; 
+
     return (
       <View>
         <ScrollView>
@@ -132,7 +135,7 @@ export default class DrawerScreen extends Component {
               <View>
                 <ImageBackground style={styles.backdrop} source={require('../images/image7.jpg')} blurRadius={1.5}>
                 <View style={styles.photo} >
-                  <Thumbnail large source={{ uri: this.state.userPhoto.toString() }} />
+                  <Thumbnail large source={userPhotoSource} />
                 </View>
 
                 <View style={styles.userInfo}>
