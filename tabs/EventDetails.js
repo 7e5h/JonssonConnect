@@ -106,11 +106,15 @@ export default class EventDetails extends Component {
                 }
               });
             });
-            this.setState({ rsvpState: !this.state.rsvpState });
+
+            let rsvpListRef = firebase.database().ref('/Users/' + this.state.userID + '/rsvpList/' + this.state.event.key);
+            rsvpListRef.set(!this.state.rsvpState);
 
             if(!this.state.rsvpState && event.rsvpUrl) {
               Linking.openURL(event.rsvpUrl);
             }
+
+            this.setState({ rsvpState: !this.state.rsvpState });
           }}>
           {
             this.state.rsvpState ?

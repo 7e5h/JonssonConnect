@@ -1,43 +1,64 @@
+const { Expo } = require('expo-server-sdk')
 const functions = require('firebase-functions');
-var fetch = require('node-fetch')
-
 const admin = require('firebase-admin')
 admin.initializeApp(functions.config().firebase);
 
 exports.sendPushNotification = functions.database.ref('Events/{id}').onCreate(event => {
+  let expo = new Expo();
+  const messages = [];
 
-    const root = event.data.ref.root
-    var messages = []
+  return admin.database().ref('Users').once('value').then(snapshot => {
+    snapshot.forEach((childSnapshot) => {
+      const expoToken = childSnapshot.val().notificationToken;
+      if(expoToken && childSnapshot.val().firstName === "Connor" && childSnapshot.val().lastName === "McDonald") {
+        let title = event.data.val().eventTitle;
 
-    //return the main promise
-    return root.child('/Users').once('value').then(function (snapshot) {
+        messages.push({
+          to: expoToken,
+          title: "New Event Added",
+          body: title
+        });
+      }
+    });
 
-        snapshot.forEach(function (childSnapshot) {
+    let chunks = expo.chunkPushNotifications(messages);
+    for (let chunk of chunks) {
+      try {
+        expo.sendPushNotificationsAsync(chunk);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  });
+});
 
-            var expoToken = childSnapshot.val().notificationToken;
+exports.getEventData = functions.https.onRequest((req, res) => {
+  let events = req.query.events;
+  if(events) {
+    if(!Array.isArray(events)) {
+      let eventID = events;
+      events = [];
+      events.push(eventID);
+    }
 
-            if (expoToken) {
+    let eventData = [];
 
-                messages.push({
-                    "to": expoToken,
-                    "body": "New Event Added"
-                })
-            }
-        })
-
-        return Promise.all(messages)
-
-    }).then(messages => {
-
-        fetch('https://exp.host/--/api/v2/push/send', {
-
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(messages)
-        })
-        return true;
-    })
-})
+    for(let event in events) {
+      admin.database().ref("Events/" + events[event]).once('value').then((snapshot) => {
+        if(snapshot.exists() && snapshot.val().eventTitle && snapshot.val().whooshBits && snapshot.val().eventDate) {
+          let data = {
+            eventTitle: snapshot.val().eventTitle,
+            whooshBits: snapshot.val().whooshBits,
+            eventDate: snapshot.val().eventDate
+          }
+          eventData.push(data);
+          if(event == events.length - 1) {
+            res.send(eventData);
+          }
+        }
+      });
+    }
+  } else {
+    res.send([]);
+  }
+});
