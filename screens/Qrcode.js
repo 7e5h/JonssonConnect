@@ -297,7 +297,10 @@ export default class Qrcode extends Component {
       );
     }
     else{
-      this.addWhooshBitsToUser()
+      this.addWhooshBitsToUser();
+
+      firebase.database().ref('Users/' + this.state.userID + '/attendedList/' + this.state.ourEventID).set(true);
+
       Alert.alert(
           this.state.whooshBits + ' Whoosh Bits Redeemed!',
           'Thanks for attending! \n \nWe look forward to seeing you again!',
@@ -355,6 +358,23 @@ export default class Qrcode extends Component {
   };
 
   addWhooshBitsToUser() {
+    //Update list of attended events in user table
+
+    let eventsAttended = firebase.database.ref('Users/' + this.state.usrLinkedInID + '/eventsAttended');
+    eventsAttended.once('value').then((snapshot) => {
+      let eventList = snapshot.val();
+      if(!eventList) {
+        eventList = [];
+      }
+
+      if(!eventList.includes(this.state.ourEventID)) {
+        eventList.push(this.state.ourEventID);
+      }
+
+      eventsAttended.set(eventList);
+    });
+
+
     console.log("ADDING WHOOSH BITS TO USER & ATTDING USER TO ATTENDED LIST");
 
     let userHasAttendedRef = firebase.database().ref('Events/' + this.state.ourEventID + '/usersAttended/');
