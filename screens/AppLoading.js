@@ -27,18 +27,18 @@ export default class AppLoading extends React.Component {
     async loadFontsAndIcons() {
         // This needs to happen here as the fonts only need to be loaded once,
         await Expo.Font.loadAsync({
-          'Roboto': require('native-base/Fonts/Roboto.ttf'),
-          'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-          'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
-          'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-          'MaterialIcons': require('native-base/Fonts/MaterialIcons.ttf'),
-          'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
-          'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-          'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
-          'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
-          'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
-          'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
-          'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
+            'Roboto': require('native-base/Fonts/Roboto.ttf'),
+            'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
+            'Ionicons': require('native-base/Fonts/Ionicons.ttf'),
+            'Material Design Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+            'MaterialIcons': require('native-base/Fonts/MaterialIcons.ttf'),
+            'Material Icons': require('native-base/Fonts/MaterialIcons.ttf'),
+            'Material Community Icons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+            'MaterialCommunityIcons': require('native-base/Fonts/MaterialCommunityIcons.ttf'),
+            'FontAwesome': require('native-base/Fonts/FontAwesome.ttf'),
+            'Entypo': require('native-base/Fonts/FontAwesome.ttf'),
+            'simple-line-icons': require('native-base/Fonts/SimpleLineIcons.ttf'),
+            'SimpleLineIcons': require('native-base/Fonts/SimpleLineIcons.ttf'),
         });
 
         this.setState({ fonts_loaded: true });
@@ -48,6 +48,8 @@ export default class AppLoading extends React.Component {
 
         // This will see if the login token already exists - If it does, go to Main App Screen. If not, go to Login Screen
         let loginToken = await AsyncStorage.getItem(IS_LOGGED_IN_KEY);
+
+        console.log('LoggedINKEY: ' + loginToken);
 
         if (loginToken == null) {
             this.props.navigation.navigate("Login");

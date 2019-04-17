@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, WebView } from 'react-native';
-const RCTNetworking = require("RCTNetworking");
-
-const IS_LOGGED_IN_KEY = "isLoggedIn";
+import { View, Text, StyleSheet, WebView, AsyncStorage } from 'react-native';
 
 const jsCode = 'window.postMessage(document.documentElement.innerHTML.toString())';
 const UTD_SSO_LOGIN_URL = 'https://wwwdev.utdallas.edu/oit/mobileapps/JonssonConnect/webauth.php';
@@ -15,13 +12,9 @@ export default class WebSSOLogin extends Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-
-        };
     }
 
-    handleMessage = (event) => {
+    handleMessage = async (event) => {
 
         console.log(event.nativeEvent.url);
 
@@ -37,9 +30,6 @@ export default class WebSSOLogin extends Component {
         let firstIndex = dataString.indexOf("{");
         let lastIndex = dataString.lastIndexOf("}") + 1;
 
-        console.log(`First: ${firstIndex}`);
-        console.log(`Last: ${lastIndex}`);
-
         if (firstIndex <= 0 || lastIndex <= 0) {
             console.log("ERROR");
             return;
@@ -51,8 +41,10 @@ export default class WebSSOLogin extends Component {
         // TODO: - Parse out the values needed from the json
         let userInfo = this.getUserValues(response);
 
+        console.log(userInfo);
+
         // TODO: - User Logged in successfully (save info and login)
-        this.saveUserData(userInfo);
+        await this.saveUserData(userInfo);
         this.userLoggedInSuccessfully();
     }
 
@@ -98,10 +90,13 @@ export default class WebSSOLogin extends Component {
         await AsyncStorage.setItem('email', userInfo.email);
         await AsyncStorage.setItem('major', userInfo.major);
         await AsyncStorage.setItem('schoolClass', userInfo.schoolClass);
-        await AsyncStorage.setItem(IS_LOGGED_IN_KEY, "loggedIn");
+        await AsyncStorage.setItem('isLoggedIn', "loggedIn");
     }
 
     userLoggedInSuccessfully = () => {
+
+        console.log("USER LOGGED IN WITH SSO");
+
         this.setState({ loggedInStatus: 'loggedIn' });
         this.props.navigation.navigate('DrawerNavigator');
     }
