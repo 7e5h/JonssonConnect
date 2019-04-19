@@ -1,15 +1,13 @@
 /**
- * JonssonConnect Redeem Page
- * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
+ This page is for when the user has whoosh bits and wants to exchange them for rewards
  */
 
 import React, { Component } from 'react';
 
-import { View, StyleSheet, ScrollView, Button, TouchableOpacity, Alert, AsyncStorage, ImageBackground, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, AsyncStorage, ImageBackground, Image } from 'react-native';
 
-import { Container, Header, Content, Accordion, Form, Item, Input, Label, Card, CardItem, Body, Icon, Text } from "native-base";
+import { Content, Form, Item, Input, Card, CardItem, Body, Icon, Text } from "native-base";
 import CodeDisplay from './CodeDisplay';
-import * as firebase from 'firebase';
 
 
 export default class Redeem extends Component {

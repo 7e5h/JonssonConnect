@@ -102,6 +102,7 @@ export default class EventsCalendar extends Component {
 
     }
 
+
     loadedClassification = (newClassification) => {
         var classification;
         let isAdminRef = firebase.database().ref("Users/" + this.state.userID + "/isAdmin/");
@@ -127,6 +128,7 @@ export default class EventsCalendar extends Component {
 
     printError = (err) => {console.log(err);}
 
+    //This is invoked whenever the selected day is changed
     updateSelectedDayEvents() {
         let selectedDayEvents = []
         var length = this.state.eventData.length
@@ -150,15 +152,13 @@ export default class EventsCalendar extends Component {
             dates[date] = {startingDay: true,endingDay: true,selected: true, marked: true, color: (date === selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF"};
         })
         multiDateEvents.forEach(function (date) {
-            var start = moment( date.start)
-            var end = moment( date.end)
+            const start = moment(date.start);
+            const end = moment(date.end);
 
             //Mark the first day in the collection to be the starting date
             dates[start.format('YYYY-MM-DD')] = {startingDay: true,endingDay:false, marked: true, color:(start.format('YYYY-MM-DD')===selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF",textColor: "white"}
             start.add(1, 'days')
-            end.subtract(1,'days')
 
-            console.log(start.format('YYYY-MM-DD')+" "+end.format('YYYY-MM-DD'))
             for (var m = moment(start); m.isBefore(end); m.add(1, 'days')) {
                 dates[m.format('YYYY-MM-DD')] = {startingDay: false,endingDay:false, marked: true,selectable:false,color:(m.format('YYYY-MM-DD')===selectedDate?'#008542':'#c75b12'), dotColor: "#FFFFFF",textColor: "white"}
             }

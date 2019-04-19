@@ -360,7 +360,7 @@ export default class Qrcode extends Component {
   addWhooshBitsToUser() {
     //Update list of attended events in user table
 
-    let eventsAttended = firebase.database.ref('Users/' + this.state.usrLinkedInID + '/eventsAttended');
+    let eventsAttended = firebase.database().ref('Users/' + this.state.usrLinkedInID + '/eventsAttended');
     eventsAttended.once('value').then((snapshot) => {
       let eventList = snapshot.val();
       if(!eventList) {
