@@ -205,3 +205,14 @@ There are a few steps you may want to take to troubleshoot these kinds of errors
 If you're not able to scan the QR code, make sure your phone's camera is focusing correctly, and also make sure that the contrast on the two colors in your terminal is high enough. For example, WebStorm's default themes may [not have enough contrast](https://github.com/react-community/create-react-native-app/issues/49) for terminal QR codes to be scannable with the system barcode scanners that the Expo app uses.
 
 If this causes problems for you, you may want to try changing your terminal's color theme to have more contrast, or running Create React Native App from a different terminal. You can also manually enter the URL printed by the packager script in the Expo app's search bar to load it manually.
+
+### Organization of the JS files 
+
+For the navigation in the application, there is a folder with the following files:
+  - AppScreenNavigation.js
+  - DrawerNavigation.js
+The above files take care of all the navigation related to the applicaiton.
+
+Each individual screen on the app has it's own JS file located in the Screens folder on the repo.
+The App.JS file is located in the Root folder itself as well as the test files.
+The assets used in the app are also located in its own folder, called images and are to be imported into any file as needed.
