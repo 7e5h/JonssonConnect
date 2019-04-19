@@ -71,6 +71,9 @@ export default class WebSSOLogin extends Component {
 
         // TODO: - Validate all information is returned
 
+        // TODO: - Correct any values 
+        uid = uid.replace('@utdallas.edu', '');
+
         let userInfo = {
             uid: uid,
             firstName: firstName,

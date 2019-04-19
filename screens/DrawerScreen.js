@@ -24,19 +24,28 @@ export default class DrawerScreen extends Component {
 
     async componentWillMount() {
 
+
+
         await Expo.Font.loadAsync({
             'Roboto': require('native-base/Fonts/Roboto.ttf'),
             'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
         });
 
         this.setState({
+            userID: await AsyncStorage.getItem('userID'),
             firstName: await AsyncStorage.getItem('firstName'),
             lastName: await AsyncStorage.getItem('lastName'),
+            email: await AsyncStorage.getItem('email'),
+
+            // LinkedIn
             userPhoto: await AsyncStorage.getItem('userPhoto'),
             headline: await AsyncStorage.getItem('headline'),
             location: await AsyncStorage.getItem('location'),
             industry: await AsyncStorage.getItem('industry'),
-            userID: await AsyncStorage.getItem('userID')
+
+            // UTD SSO
+            majorName: await AsyncStorage.getItem('major'),
+            schoolClass: await AsyncStorage.getItem('schoolClass'),
         });
 
         this.setState({
@@ -111,6 +120,93 @@ export default class DrawerScreen extends Component {
         this.props.navigation.navigate("Settings");
     }
 
+    /*
+    *   Logic for displaying location/headline for linkedin users or major/class for sso users
+    */
+    isLinkedinUser = () => {
+        if ((this.state.industry == null || this.state.industry == '') || (this.state.location == null || this.state.location == '')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    isSSOUser = () => {
+        if ((this.state.majorName == null || this.state.majorName == '') || (this.state.schoolClass == null || this.state.schoolClass == '')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    classNameFromToken = (token) => {
+        switch (token) {
+            case 'SR':
+                return 'Senior';
+            case 'JR':
+                return 'Junior';
+            case 'SOPH':
+                return 'Sophomore';
+            case 'FR':
+                return 'Freshman';
+            default:
+                return token;
+        }
+    }
+
+    renderUserHeader = () => {
+
+        let userImageUrl = this.state.userPhoto;
+        let userPhotoSource = (userImageUrl == null || userImageUrl.toString() == '') ? require('../images/default_user_photo.png') : { uri: userImageUrl.toString() };
+
+        let infoText1 = ''
+        let infoIconName1 = ''
+        let infoText2 = ''
+        let infoIconName2 = ''
+
+        if (this.isLinkedinUser()) {
+
+            infoText1 = this.state.location.toString().replace(/{"name":"/g, '').replace(/"}/g, '');
+            infoIconName1 = 'ios-pin';
+
+            infoText2 = this.state.industry.toString()
+            infoIconName2 = 'ios-globe';
+
+        } else if (this.isSSOUser()) {
+
+            infoText1 = this.state.majorName.toString();
+            infoIconName1 = 'school';
+
+            infoText2 = this.classNameFromToken(this.state.schoolClass.toString());
+            infoIconName2 = 'school';
+
+        }
+
+        return (
+            <ImageBackground style={styles.backdrop} source={require('../images/image7.jpg')} blurRadius={1.5}>
+
+                <View style={styles.photo} >
+                    <Thumbnail large source={userPhotoSource} />
+                </View>
+
+                <View style={styles.userInfo}>
+                    <Text style={styles.userName} >{this.state.firstName.toString()} {this.state.lastName.toString()}</Text>
+                </View>
+
+                <View style={styles.headerInfoSection}>
+                    <Text style={styles.headerInfoText} >
+                        <Icon name={infoIconName1} style={styles.headerInfoIcon} /> {" "} {infoText1}
+                    </Text>
+                </View>
+
+                <View style={styles.headerInfoSection}>
+                    <Text style={styles.headerInfoText} >
+                        <Icon name={infoIconName2} style={styles.headerInfoIcon} /> {" "} {infoText2}
+                    </Text>
+                </View>
+            </ImageBackground>
+        )
+    }
 
     render() {
 
@@ -125,52 +221,14 @@ export default class DrawerScreen extends Component {
         let day = moment().format('dddd,');
         let monthPlusDate = moment().format('MMMM D');
 
-        let userImageUrl = this.state.userPhoto;
-        let userPhotoSource = (userImageUrl == null || userImageUrl.toString() == '') ? require('../images/default_user_photo.png') : { uri: userImageUrl.toString() };
-
-        let location = this.state.location;
-        if (location == null) {
-            location = 'richardson';
-        } else {
-            location = location.toString().replace(/{"name":"/g, '').replace(/"}/g, '');
-        }
-
-        let industry = this.state.industry;
-        if (industry == null) {
-            industry = 'Computer Science';
-        } else {
-            industry = industy.toString();
-        }
-
         return (
             <View>
                 <ScrollView>
                     <View>
                         <View>
-                            <ImageBackground style={styles.backdrop} source={require('../images/image7.jpg')} blurRadius={1.5}>
-                                <View style={styles.photo} >
-                                    <Thumbnail large source={userPhotoSource} />
-                                </View>
 
-                                <View style={styles.userInfo}>
-                                    <Text style={{ textAlign: 'center', fontSize: RF(3), fontWeight: '700', color: '#FFFFFF' }} >{this.state.firstName.toString()} {this.state.lastName.toString()}</Text>
-                                    {/* <Text style={{ fontSize: 20, fontWeight: '700', color: '#FFFFFF' }} >{this.state.lastName.toString()}</Text> */}
-                                </View>
+                            {this.renderUserHeader()}
 
-                                <View style={styles.industryInfo}>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: '#FFFFFF' }} >
-                                        <Icon name='ios-pin' style={{ fontSize: 14, color: '#FFFFFF' }} />
-                                        {" "}{location}
-                                    </Text>
-                                </View>
-
-                                <View style={styles.industryInfo}>
-                                    <Text style={{ fontSize: 14, fontWeight: '300', color: '#FFFFFF' }} >
-                                        <Icon name='ios-globe' style={{ fontSize: 14, color: '#FFFFFF' }} />
-                                        {" "}{industry}
-                                    </Text>
-                                </View>
-                            </ImageBackground>
                         </View>
                         <View style={styles.sidebarDay}>
                             <Text style={styles.day}>
@@ -187,35 +245,35 @@ export default class DrawerScreen extends Component {
                             <Icon type="FontAwesome" name='gift' style={{ color: '#c75b12' }} />
                             <Text style={styles.settingsStyle}>
                                 Rewards
-              </Text>
+                            </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.sidebar} onPress={() => { Linking.openURL('https://giving.utdallas.edu/ECS') }}>
                             <Icon type="FontAwesome" name='dollar' style={{ color: '#c75b12' }} />
                             <Text style={styles.settingsStyle}>
                                 Donate Now
-              </Text>
+                            </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToHelpPage()}>
                             <Icon type="FontAwesome" name='question' style={{ color: '#c75b12' }} />
                             <Text style={styles.settingsStyle}>
                                 Help & Feedback
-              </Text>
+                             </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToQrcodePage()}>
                             <Icon type="FontAwesome" name='qrcode' style={{ color: '#c75b12' }} />
                             <Text style={styles.settingsStyle}>
                                 Scan QR Code
-              </Text>
+                            </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.sidebar} onPress={() => this.navigateToSettingsPage()}>
                             <Icon type='FontAwesome' name='cog' style={{ color: '#c75b12' }} />
                             <Text style={styles.settingsStyle}>
                                 Settings
-              </Text>
+                             </Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -237,7 +295,6 @@ const styles = {
         height: '100%',
         flex: 1,
     },
-
     sidebar: {
 
         padding: 14,
@@ -305,16 +362,31 @@ const styles = {
         paddingTop: 30,
         paddingBottom: 3,
     },
+    userName: {
+        textAlign: 'center',
+        fontSize: RF(3),
+        fontWeight: '700',
+        color: '#FFFFFF'
+    },
     userInfo: {
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 5,
         paddingBottom: 5
     },
-    industryInfo: {
+    headerInfoSection: {
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 4,
         paddingBottom: 4,
-    }
+    },
+    headerInfoText: {
+        fontSize: 14,
+        fontWeight: '300',
+        color: '#FFFFFF'
+    },
+    headerInfoIcon: {
+        fontSize: 14,
+        color: '#FFFFFF'
+    },
 }

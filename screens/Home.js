@@ -48,7 +48,7 @@ export default class Home extends Component {
         });
 
         //Make sure that all required properties are available - otherwise log out
-        if (!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.userID || !this.state.email) {
+        if (!this.state.lastName || !this.state.firstName || !this.state.userID || !this.state.email) {
             await this.logout();
         }
 
@@ -64,29 +64,17 @@ export default class Home extends Component {
 
     updateClassification = () => {
         let userClassificationRef = firebase.database().ref("Users/" + this.state.userID + "/classification/");
-        userClassificationRef.on('value', this.loadedClassification, this.handleError);
+        userClassificationRef.once('value').then(this.loadedClassification).catch(this.handleError);
     }
 
     loadedClassification = (data) => {
         let studentClassification = data.val()
-
         if (studentClassification === null) {
             this.askUserClassification()
         } else {
-            this.updateUser();
+            AsyncStorage.setItem('userClassification', studentClassification);
+            this.saveUser(studentClassification);
         }
-    }
-
-    updateUser = () => {
-        let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
-
-        userRef.update({
-            firstName: this.state.firstName,
-            lastName: this.state.lastName,
-            userPhoto: this.state.userPhoto
-        }).catch(function (error) {
-            console.log(error);
-        });
     }
 
     handleError = (err) => {
@@ -107,7 +95,6 @@ export default class Home extends Component {
 
 
     saveUser = (classification) => {
-
         if (classification !== 'student' && classification !== 'alumni') {
             console.log("ERROR: Classification not recognized");
             return;
