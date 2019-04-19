@@ -113,7 +113,6 @@ export default class Home extends Component {
 
     userRef.update({
       classification: classification,
-      isAdmin: "false",
       numOfEvents: 0,
       points: 0,
       firstName: firstName,
