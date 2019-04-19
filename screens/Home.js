@@ -73,7 +73,7 @@ export default class Home extends Component {
             this.askUserClassification()
         } else {
             AsyncStorage.setItem('userClassification', studentClassification);
-            this.saveUser(studentClassification);
+            this.updateUserInfo();
         }
     }
 
@@ -93,6 +93,17 @@ export default class Home extends Component {
         )
     }
 
+    updateUserInfo = () => {
+        let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
+
+        userRef.update({
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            email: this.state.email,
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
 
     saveUser = (classification) => {
         if (classification !== 'student' && classification !== 'alumni') {
