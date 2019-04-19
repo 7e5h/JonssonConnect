@@ -60,7 +60,8 @@ export default class WebSSOLogin extends Component {
     //  Handling logged in user flow
     //
     getUserValues = (json) => {
-        let uid = json.uid;
+
+        let uid = json.mail;
         let classification = 'student';
         let firstName = json.givenName;
         let lastName = json.sn;
@@ -94,9 +95,6 @@ export default class WebSSOLogin extends Component {
     }
 
     userLoggedInSuccessfully = () => {
-
-        console.log("USER LOGGED IN WITH SSO");
-
         this.setState({ loggedInStatus: 'loggedIn' });
         this.props.navigation.navigate('DrawerNavigator');
     }

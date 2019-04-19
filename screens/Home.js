@@ -28,21 +28,29 @@ export default class Home extends Component {
     }
 
     async componentDidMount() {
+
         this.setState({
             userID: await AsyncStorage.getItem('userID'),
             firstName: await AsyncStorage.getItem('firstName'),
             lastName: await AsyncStorage.getItem('lastName'),
+            email: await AsyncStorage.getItem('email'),
+
+            // LinkedIN Specific
             userPhoto: await AsyncStorage.getItem('userPhoto'),
             headline: await AsyncStorage.getItem('headline'),
             location: await AsyncStorage.getItem('location'),
             industry: await AsyncStorage.getItem('industry'),
-            email: await AsyncStorage.getItem('email')
+
+            // UTD SSO Specific
+            majorName: await AsyncStorage.getItem('major'),
+            schoolClass: await AsyncStorage.getItem('schoolClass'),
+
         });
 
-        //Make sure that all of the properties that we need are available - otherwise log out
-        // if (!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
-        //     await this.logout();
-        // }
+        //Make sure that all required properties are available - otherwise log out
+        if (!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.userID || !this.state.email) {
+            await this.logout();
+        }
 
         this.updateClassification()
         this._downloadNews();
@@ -51,7 +59,6 @@ export default class Home extends Component {
     async logout() {
         await AsyncStorage.clear();
         await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
-
         this.props.navigation.navigate('Login');
     }
 
@@ -106,21 +113,57 @@ export default class Home extends Component {
             return;
         }
 
-        let firstName = this.state.firstName;
-        let lastName = this.state.lastName;
-        let userPhoto = this.state.userPhoto;
+        let userObject = {
 
-        let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
-
-        userRef.update({
-            classification: classification,
-            isAdmin: "false",
+            // Default values for every user
             numOfEvents: 0,
             points: 0,
-            firstName: firstName,
-            lastName: lastName,
-            userPhoto: userPhoto
-        }).catch(function (error) {
+        }
+
+
+        /*
+        *   Validate and set user values
+        */
+        userObject.classification = classification;
+        userObject.firstName = this.state.firstName;
+        userObject.lastName = this.state.lastName;
+        userObject.email = this.state.email;
+
+        /*
+        *   Optional LinkedIn Values
+        */
+        if (this.state.userPhoto != null && this.state.userPhoto != '') {
+            userObject.userPhoto = this.state.userPhoto;
+        }
+
+        if (this.state.headline != null && this.state.headline != '') {
+            userObject.headline = this.state.headline;
+        }
+
+        if (this.state.location != null && this.state.location != '') {
+            userObject.location = this.state.location;
+        }
+
+        if (this.state.industry != null && this.state.industrys != '') {
+            userObject.industry = this.state.industry;
+        }
+
+        /*
+        *   Optional UTD SSO Values
+        */
+        if (this.state.majorName != null && this.state.majorName != '') {
+            userObject.majorName = this.state.majorName;
+        }
+
+        if (this.state.schoolClass != null && this.state.schoolClass != '') {
+            userObject.schoolClass = this.state.schoolClass;
+        }
+
+        /*
+        *   Save user to firebase
+        */
+        let userRef = firebase.database().ref('Users/' + this.state.userID + "/");
+        userRef.update(userObject).catch(function (error) {
             console.log(error);
         });
     }
