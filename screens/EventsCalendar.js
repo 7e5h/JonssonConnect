@@ -90,6 +90,9 @@ export default class EventsCalendar extends Component {
                 }
 
             }
+            if(earliestDate === ''){
+                earliestDate = currentDate
+            }
         }
 
         this.setState({eventData: validEvents});
