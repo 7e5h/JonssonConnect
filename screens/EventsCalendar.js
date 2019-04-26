@@ -90,11 +90,11 @@ export default class EventsCalendar extends Component {
                 }
 
             }
-            if(earliestDate === ''){
-                earliestDate = currentDate
-            }
-        }
 
+        }
+        if(earliestDate === ''){
+            earliestDate = currentDate
+        }
         this.setState({eventData: validEvents});
         this.setState({multiDateEvents: multiDateEvents});
         this.setState({eventDates: dates});

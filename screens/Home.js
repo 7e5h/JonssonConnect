@@ -303,7 +303,7 @@ export default class Home extends Component {
         </View>
         <View style={{ backgroundColor: '#FFFFFF' }}>
           <Card>
-            <CardItem bordered style={{ borderLeftColor: '#0039A6', borderLeftWidth: 2}}>
+            <CardItem bordered style={{ borderLeftColor: '#008542', borderLeftWidth: 2}}>
               <Body>
                 <Text style={{ fontSize: 22, fontWeight: '800', color: '#C75B12' }}><Icon type='FontAwesome' name='newspaper-o' style={{ fontSize: 22, color: '#C75B12' }} /> {" "}Jonsson | News</Text>
               </Body>
