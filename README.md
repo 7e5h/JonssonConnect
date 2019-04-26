@@ -222,6 +222,7 @@ The assets used in the app are also located in its own folder, called images and
 
 ## Admin Portal
 
+The Jonsson Connect mobile application also utilizes an admin-facing web portal so that users who have been granted permissions may add events, update news articles, access user information, and create job listings. The portal was created using the CSS framework Bootstrap in order to be fully customizable for the product owner’s needs. Periodic updates to enhance performance, clear bugs, and add features can be pushed and immediately represented on the admin end
 
 ## Other Information
 
