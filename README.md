@@ -29,7 +29,9 @@ Below you'll find information about performing common tasks. The most recent ver
   * [Networking](#networking)
   * [iOS Simulator won't open](#ios-simulator-wont-open)
   * [QR Code does not scan](#qr-code-does-not-scan)
-* [Organization of the JS Files] 
+* [Organization of the JS Files](#organization-of-the-js-files)
+* [Admin Portal](#admin-portal)
+* [Other Information](#other-information)
 
 ## Updating to New Releases
 
@@ -217,3 +219,14 @@ The above files take care of all the navigation related to the applicaiton.
 Each individual screen on the app has it's own JS file located in the Screens folder on the repo.
 The App.JS file is located in the Root folder itself as well as the test files.
 The assets used in the app are also located in its own folder, called images and are to be imported into any file as needed.
+
+## Admin Portal
+
+
+## Other Information
+
+- Important to keep in mind that all the deployment is done through the UTD Mobile Team
+- There is an .gitignore file in the repo that is necessary for the operation of the project
+    - Contains the firebase external API keys
+
+
