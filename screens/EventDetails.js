@@ -6,6 +6,8 @@
 import React, { Component } from 'react';
 import { Alert, ActivityIndicator, AsyncStorage, Image, Linking, ListView, FlatList, StyleSheet, View, Modal, TouchableHighlight } from 'react-native';
 import { Container, Header, Content, Card, Col, CardItem, Grid, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, Row, H1, H2, H3 } from 'native-base';
+import PushNotification from 'react-native-push-notification';
+import RSVPNotifService from '../services/RSVPNotifService';
 import * as firebase from 'firebase';
 import moment from 'moment';
 
@@ -21,9 +23,14 @@ export default class EventDetails extends Component {
       volunteerState: false,
       event: this.props.navigation.state.params.event,
       pickerDisplayed: false,
+      notificationID: 0,
+      notificationMessage:"",
     }
+    this.notif = new RSVPNotifService();
+    this.notif.configure();
   }
 
+  //flag set to display rsvp dialog
   togglePicker(){
     this.setState({
       pickerDisplayed:!this.state.pickerDisplayed
@@ -186,6 +193,66 @@ export default class EventDetails extends Component {
     }
   }
 
+  //function called to handle setting up the scheudled notification for selected interval
+  setScheduleNotification(intervalValue) {
+
+    switch(intervalValue){
+      case '30min':
+      this.setState({
+        notificationMessage: event.eventTitle + " begins in 30 minutes."
+      })
+      sendNotificaion(1800);
+        break;
+
+      case '2hours':
+      this.setState({
+        notificationMessage: event.eventTitle + " begins in 2 hours."
+      })
+      sendNotificaion(7200);
+        break;
+
+      case '4hours':
+      this.setState({
+        notificationMessage: event.eventTitle + " begins in 4 hours."
+      })
+      sendNotificaion(14400);;
+        break;
+
+      case '1day':
+      tthis.setState({
+        notificationMessage: event.eventTitle + " begins in 1 day."
+      })
+      sendNotificaion(86400);
+        break;
+
+      case '2days':this.setState({
+        notificationMessage: event.eventTitle + " begins in 2 days."
+      })
+      sendNotificaion(172800);
+        break;
+    }
+  }
+
+  //function handles compiling and sending the notification
+  sendNotificaion(seconds){
+    PushNotification.localNotificationSchedule({
+      id: this.state.notificationID, 
+      title: "Jonnson Connect", 
+      message: this.state.notificationMessage,
+      date: new Date(Date.now() + (seconds * 1000)),
+      playSound: true,
+      soundName:'default',
+
+      //IOS only
+      userInfo: {id: this.state.notificationID}
+    });
+
+    this.setState({
+      notificationID: this.state.notificationID + 1
+    })
+  }
+
+  //values used for the rsvp dialog/modal
   reminderModalDisplayed = () =>{
     const pickerValues=[
       {
@@ -210,6 +277,7 @@ export default class EventDetails extends Component {
       }
     ]
 
+    //renders rsvp dialog/modal upon picker state
     if(this.state.pickerDisplayed){
       return(
         <View style = {styles.container}>
@@ -226,7 +294,7 @@ export default class EventDetails extends Component {
                   alignItems: 'center'}}>
                   <Text style={{fontWeight: 'bold', marginBottom: 10}}>Set a Reminder For: </Text>
                   { pickerValues.map((value, index) => { 
-                    return <TouchableHighlight key={index} /*onPress = {()=> )}*/ style = {{paddingTop: 4, paddingBottom: 4 }}>
+                    return <TouchableHighlight key={index} onPress = {()=> this.setScheduleNotification(value.value)} style = {{paddingTop: 4, paddingBottom: 4 }}>
                         <Text>{value.title}</Text>
                     </TouchableHighlight>
                   })}

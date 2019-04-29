@@ -3,6 +3,7 @@ package com.jonssonconnect;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.psykar.cookiemanager.CookieManagerPackage;
 import com.reactlibrary.linkedinsdk.RNLinkedInSessionManagerPackage;
 import net.jodybrewster.linkedinlogin.RNLinkedinLoginPackage;
@@ -30,6 +31,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
             new CookieManagerPackage(),
             new RNLinkedInSessionManagerPackage(),
             new RNLinkedinLoginPackage(),
