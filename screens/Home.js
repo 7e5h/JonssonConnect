@@ -9,14 +9,14 @@ import { Card, CardItem, Icon, Text, Body } from 'native-base';
 import * as firebase from 'firebase';
 import moment from 'moment';
 import * as xml2js from 'react-native-xml2js';
-import {Image} from 'react-native'; 
+import { Image } from 'react-native';
 
 
 const ECS_NEWS = "https://www.utdallas.edu/news/rss/utdallasnewsecs.xml";
 const TUTORIAL_COMPLETED_KEY = "tutorialCompleted";
 
 export default class Home extends Component {
-  
+
   constructor(props) {
     super(props);
 
@@ -40,7 +40,7 @@ export default class Home extends Component {
     });
 
     //Make sure that all of the properties that we need are available - otherwise log out
-    if(!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
+    if (!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
       await this.logout();
     } else {
       this.updateClassification()
@@ -48,7 +48,7 @@ export default class Home extends Component {
     }
   }
 
-  async logout () {
+  async logout() {
     await AsyncStorage.clear();
     await AsyncStorage.setItem(TUTORIAL_COMPLETED_KEY, 'true');
 
@@ -63,7 +63,7 @@ export default class Home extends Component {
   loadedClassification = (data) => {
     let studentClassification = data.val()
 
-    if(studentClassification === null) {
+    if (studentClassification === null) {
       this.askUserClassification()
     } else {
       this.updateUser();
@@ -88,13 +88,13 @@ export default class Home extends Component {
 
   askUserClassification = () => {
     Alert.alert(
-        'I am a ...',
-        'Please choose one of the options below. It will help us provide you with the most relevant news, events, & jobs!',
-        [
-          {text: 'Current Student', onPress: () => this.saveUser('student') },
-          {text: 'Alumnus', onPress: () => this.saveUser('alumni') },
-        ],
-        { cancelable: false }
+      'I am a ...',
+      'Please choose one of the options below. It will help us provide you with the most relevant news, events, & jobs!',
+      [
+        { text: 'Current Student', onPress: () => this.saveUser('student') },
+        { text: 'Alumnus', onPress: () => this.saveUser('alumni') },
+      ],
+      { cancelable: false }
     )
   }
 
@@ -131,29 +131,29 @@ export default class Home extends Component {
     let isDuplicate = false;
 
     //Check if article title is already included in newDataSource
-    for(let item in this.state.newDataSource) {
-      if(this.state.newDataSource[item][1].articleName === article.articleName) {
+    for (let item in this.state.newDataSource) {
+      if (this.state.newDataSource[item][1].articleName === article.articleName) {
         isDuplicate = true;
         break;
       }
     }
 
-    if(!isDuplicate)
+    if (!isDuplicate)
       this.state.newDataSource.push([id, article]);
   }
 
   _sortNews() {
     //Sorts news in descending order based on posted date
 
-    this.state.newDataSource.sort(function(a, b) {
+    this.state.newDataSource.sort(function (a, b) {
       let date1 = new Date(a[1].postedOn);
       let date2 = new Date(b[1].postedOn);
-      return -1*(date1 - date2);
+      return -1 * (date1 - date2);
     });
   }
 
   _finishNews() {
-    if(this.state.loadingFirebase && this.state.loadingUTD) {
+    if (this.state.loadingFirebase && this.state.loadingUTD) {
       this.setState({
         isLoading: false,
         refreshing: false,
@@ -190,7 +190,7 @@ export default class Home extends Component {
         //Parse XML into a JS object
         return new Promise((resolve, reject) => {
           xml2js.parseString(responseText, (err, result) => {
-            if(err) {
+            if (err) {
               reject(err);
             } else {
               resolve(result);
@@ -202,7 +202,7 @@ export default class Home extends Component {
         //title, link, description, enclosure, pubDate
         let articles = responseObj.rss.channel[0].item;
 
-        for(let obj in articles) {
+        for (let obj in articles) {
           let article = {
             articleAuthor: "",
             articleColor: "#000000",
@@ -238,7 +238,7 @@ export default class Home extends Component {
   }
 
   _downloadNews(refresh) {
-    if(refresh) {
+    if (refresh) {
       this.setState({
         refreshing: true
       });
@@ -259,29 +259,29 @@ export default class Home extends Component {
 
   _keyExtractor = (item, index) => item[0];
 
-  _renderArticle = ({item}) => {
+  _renderArticle = ({ item }) => {
 
     let dateString = moment(item[1].postedOn).format('  MMMM D, YYYY');
 
     return (
       <TouchableOpacity onPress={() => this.props.navigation.push("ArticleDetails", { item })}>
-        <View style={{paddingBottom: 10, backgroundColor: '#FFFFFF', flexDirection: 'row'}}>
+        <View style={{ paddingBottom: 10, backgroundColor: '#FFFFFF', flexDirection: 'row' }}>
           <View >
-            <Image source={{uri: item[1].articleImageURL}}  style={styles.thumbnailImage} ></Image>
+            <Image source={{ uri: item[1].articleImageURL }} defaultSource={require('../images/default_news_image.png')} style={styles.thumbnailImage} ></Image>
           </View>
-          <View style={{height: 100, flex:1}}>
-            
+          <View style={{ height: 100, flex: 1 }}>
+
             <Text style={styles.articleTitle} ellipsizeMode='tail' numberOfLines={3}>
-              { item[1].articleName }
+              {item[1].articleName}
             </Text>
 
-            <Text style={[styles.articleCategory, {color: item[1].articleColor,}]}>
+            <Text style={[styles.articleCategory, { color: item[1].articleColor, }]}>
               <Icon name='ios-pricetag' style={{ fontSize: 10, color: item[1].articleColor }} />  {item[1].articleType}
             </Text>
-            
+
             <Text style={styles.articleDate}>
               <Icon name='calendar' style={{ fontSize: 12, color: '#878787' }} />
-              { dateString }
+              {dateString}
             </Text>
 
           </View>
@@ -303,7 +303,7 @@ export default class Home extends Component {
         </View>
         <View style={{ backgroundColor: '#FFFFFF' }}>
           <Card>
-            <CardItem bordered style={{ borderLeftColor: '#008542', borderLeftWidth: 2}}>
+            <CardItem bordered style={{ borderLeftColor: '#008542', borderLeftWidth: 2 }}>
               <Body>
                 <Text style={{ fontSize: 22, fontWeight: '800', color: '#C75B12' }}><Icon type='FontAwesome' name='newspaper-o' style={{ fontSize: 22, color: '#C75B12' }} /> {" "}Jonsson | News</Text>
               </Body>
@@ -373,15 +373,15 @@ const styles = StyleSheet.create({
     flex: 4,
     fontSize: 16,
     fontWeight: '400',
-  
+
     paddingTop: 5,
     paddingLeft: 15,
     paddingRight: 5,
   },
-  articleCategory: { 
-    flex: 1, 
-    fontSize: 10, fontWeight: '100', 
-    paddingLeft: 15, 
+  articleCategory: {
+    flex: 1,
+    fontSize: 10, fontWeight: '100',
+    paddingLeft: 15,
     // paddingRight: 10, 
     // paddingTop: 5, 
     // paddingBottom: 10
