@@ -3,11 +3,10 @@
  * Developed in part by Manu, Akshay, Vignesh, Ramya, & Jahnavi
  */
 import React, { Component } from 'react';
-import { ActivityIndicator, Image, ListView, FlatList, StyleSheet, View, Linking, RefreshControl, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
-import { createBottomTabNavigator, createStackNavigator } from "react-navigation";
-import { Container, Header, Content, Card, CardItem, Thumbnail, List, ListItem, Icon, Item, Input, Text, Title, Button, Left, Body, Right, H1, H2, H3 } from 'native-base';
-import * as firebase from 'firebase';
+import { ActivityIndicator, Image, ListView, StyleSheet, View, Linking, RefreshControl, ImageBackground, TouchableOpacity } from 'react-native';
+import { Container, Content, Card, CardItem, Icon, Text, Body } from 'native-base';
 
+import * as firebase from 'firebase';
 import firebaseApp from './JobsDetails';
 import config from './JobsDetails';
 
@@ -15,6 +14,7 @@ export default class Jobs extends Component {
 
   constructor(props) {
     super(props);
+    
     this.state = {
       isLoading: true,
       refreshing: false,
@@ -30,14 +30,12 @@ export default class Jobs extends Component {
          isLoading: false,
          dataSource: ds.cloneWithRows(responseJson),
          data: responseJson.Jobs,
-       }, function() {
-         // do something with new state
        });
      })
      .catch((error) => {
        console.error(error);
      });
-   }
+  }
 
    _onRefresh() {
      this.setState({refreshing: true});
@@ -59,6 +57,25 @@ export default class Jobs extends Component {
         })
       });
    }
+
+  _renderJobListing = (rowData) => {
+    return (
+      <TouchableOpacity onPress={() => this.props.navigation.navigate("JobsDetails", { rowData })} >
+        <View style={styles.jobListingContainer}>
+          <View>
+            <Image source={{ uri: rowData.companyImageURL }} defaultSource={require('../images/default_job_icon.png')} style={styles.jobImage}/>
+          </View>
+          <View style={styles.jobInfoContainer}>
+            <Text style={styles.jobTitle}>{rowData.positionTitle}</Text>
+            <Text style={styles.jobCompany}>@ {rowData.companyName}</Text>
+            <Text style={styles.jobLocation}>
+              <Icon name='ios-pin' style={styles.jobPinIcon} /> {rowData.jobLocation}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
 
   render() {
     if (this.state.isLoading) {
@@ -99,31 +116,7 @@ export default class Jobs extends Component {
          </Content>
           <ListView
             dataSource={this.state.dataSource}
-            renderRow={(rowData) => {
-              const {uri} = rowData;
-              return (
-                <Content>
-                 <List style={{ backgroundColor: '#FFFFFF'}}>
-                   <CardItem style={{ margin: 0}}>
-                     <Left>
-                       <Thumbnail square source={{uri: rowData.companyImageURL}} />
-                       <Body>
-                         <Text onPress={() => this.props.navigation.navigate("JobsDetails", {rowData})} style={styles.positionTitleStyle}>
-                           {rowData.positionTitle}
-                         </Text>
-                         <Text onPress={() => this.props.navigation.navigate("JobsDetails", {rowData})} style={styles.companyNameStyle}>
-                           @ {rowData.companyName}
-                         </Text>
-                         <Text onPress={() => this.props.navigation.navigate("JobsDetails", {rowData})} style={styles.jobLocationStyle}>
-                           <Icon name='ios-pin' style={{ fontSize: 10, color: '#878787'}}/> {rowData.jobLocation}
-                         </Text>
-                       </Body>
-                     </Left>
-                   </CardItem>
-                 </List>
-               </Content>
-              )
-            }}
+            renderRow={this._renderJobListing}
           />
           <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center'}} onPress={ ()=>{ Linking.openURL('https://utdallas.joinhandshake.com/login')}}>
           <Text style={{fontSize: 15, textAlign: 'center'}} >Click here to find more opportunities!
@@ -141,87 +134,129 @@ export default class Jobs extends Component {
 }
 
 const styles = StyleSheet.create({
- container2: {
+  container2: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     width: null,
     backgroundColor: '#FFFFFF'
- },
- backdrop: {
+  },
+  backdrop: {
     width: null,
     height: 180,
- },
- backdropView: {
+  },
+  backdropView: {
     paddingTop: 20,
     width: 400,
     backgroundColor: 'rgba(0,0,0,0)',
     alignItems: 'center',
     justifyContent: 'center',
- },
- listStyle: {
+  },
+  listStyle: {
     backgroundColor: '#FFFFFF',
- },
- bigHeader: {
-   fontSize: 18,
-   fontWeight: '800',
-   paddingTop: 10,
-   paddingLeft: 15,
- },
- colorHeader: {
-   fontSize: 18,
-   fontWeight: '800',
-   paddingTop: 10,
-   paddingLeft: 15,
-   color: '#008542',
- },
- containerStyle: {
-   backgroundColor: '#FFFFFF',
- },
- buttonStyle: {
-   fontSize: 12,
- },
- search: {
-   backgroundColor: '#FFFFFF',
-   borderWidth: 1,
-   borderRadius: 2,
-   borderColor: '#ddd',
-   borderBottomWidth: 0,
-   shadowColor: '#000',
-   shadowOffset: { width: 0, height: 2 },
-   shadowOpacity: 0.5,
-   shadowRadius: 2,
-   elevation: 1,
- },
- searchbarColor: {
-   backgroundColor: '#0039A6',
- },
- searchButton: {
-   fontSize: 12,
-   color: '#ffffff',
- },
- textInput: {
-   height: 30,
-   backgroundColor: '#ffffff',
-   borderWidth: 1,
-   borderColor: '#FFFFFF',
-   marginBottom: 5,
-   marginVertical: 5,
-   marginHorizontal: 5,
- },
- companyNameStyle: {
-   fontWeight: '100',
-   fontSize: 12,
-   paddingTop: 3,
- },
- positionTitleStyle: {
+  },
+  bigHeader: {
+    fontSize: 18,
+    fontWeight: '800',
+    paddingTop: 10,
+    paddingLeft: 15,
+  },
+  colorHeader: {
+    fontSize: 18,
+    fontWeight: '800',
+    paddingTop: 10,
+    paddingLeft: 15,
+    color: '#008542',
+  },
+  containerStyle: {
+    backgroundColor: '#FFFFFF',
+  },
+  buttonStyle: {
+    fontSize: 12,
+  },
+  search: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderRadius: 2,
+    borderColor: '#ddd',
+    borderBottomWidth: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  searchbarColor: {
+    backgroundColor: '#0039A6',
+  },
+  searchButton: {
+    fontSize: 12,
+    color: '#ffffff',
+  },
+  textInput: {
+    height: 30,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+    marginBottom: 5,
+    marginVertical: 5,
+    marginHorizontal: 5,
+  },
+  companyNameStyle: {
+    fontWeight: '100',
+    fontSize: 12,
+    paddingTop: 3,
+  },
+  positionTitleStyle: {
     fontWeight: '500',
     fontSize: 14,
- },
- jobLocationStyle: {
+  },
+  jobLocationStyle: {
     fontSize: 12,
     color: '#808080',
     paddingTop: 3,
     fontWeight: '100'
- },
+  },
+  jobListingContainer: {
+    paddingBottom: 10, 
+    backgroundColor: '#FFFFFF', 
+    flexDirection: 'row'
+  },
+  jobImage: {
+    height: 80, 
+    width: 80, 
+    marginLeft: 5, 
+    borderRadius: 3
+  },
+  jobInfoContainer: {
+    height: 80, 
+    flex: 1
+  },
+  jobTitle: {
+    flex: 3,
+    fontSize: 16,
+    fontWeight: '400',
+
+    paddingTop: 5,
+    paddingLeft: 15,
+    paddingRight: 5,
+  },
+  jobCompany: {
+    flex: 2,
+    fontSize: 12, 
+    fontWeight: '200',
+
+    paddingLeft: 15,
+  },
+  jobPinIcon: {
+    fontSize: 10,
+    color: '#878787'
+  },
+  jobLocation: {
+    flex: 2,
+    fontSize: 12,
+    fontWeight: '200',
+    
+    paddingLeft: 15,
+  },
 });
