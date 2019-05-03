@@ -40,7 +40,8 @@ export default class Home extends Component {
     });
 
     //Make sure that all of the properties that we need are available - otherwise log out
-    if (!this.state.userPhoto || !this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
+    if (!this.state.lastName || !this.state.firstName || !this.state.headline || !this.state.userID || !this.state.location || !this.state.industry || !this.state.email) {
+      console.log("You don't have all the attributes that you should. Logging you out...");
       await this.logout();
     } else {
       this.updateClassification()
