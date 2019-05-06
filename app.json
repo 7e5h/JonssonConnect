@@ -3,7 +3,7 @@
     "name": "Jonsson Connect",
     "icon": "./images/appicon.png",
     "orientation": "portrait",
-    "version": "3.0.6",
+    "version": "3.0.7",
     "slug": "jonsson",
     "sdkVersion": "32.0.0",
     "splash": {
@@ -13,11 +13,11 @@
     },
     "ios": {
       "bundleIdentifier": "edu.utdallas.jonsson.connect",
-      "buildNumber": "10"
+      "buildNumber": "11"
     },
     "android": {
       "package": "edu.utdallas.jonsson.connect",
-      "versionCode": 10,
+      "versionCode": 11,
       "permissions": [
         "CAMERA",
         "ACCESS_COARSE_LOCATION",
