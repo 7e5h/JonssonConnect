@@ -9,9 +9,6 @@ import {ScrollView, AsyncStorage, FlatList, Text, TouchableOpacity, View,StyleSh
 import * as firebase from 'firebase';
 
 //The below 3 imports were used to fix the iterator error
-import 'core-js/es6/map'
-import 'core-js/es6/symbol'
-import 'core-js/fn/symbol/iterator'
 import moment from "moment";
 import {Body, Card, CardItem, Content, Icon, List} from "native-base";
 
